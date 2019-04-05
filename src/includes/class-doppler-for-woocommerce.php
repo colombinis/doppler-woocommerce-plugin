@@ -168,7 +168,7 @@ class Doppler_For_Woocommerce {
 		//Adds Doppler for WooCommerce main menu.
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'dplrwoo_init_menu' );
 		//Adds Doppler for WooCommerce submenues.
-		$this->loader->add_action( 'admin_menu', $plugin_admin, 'dplrwoo_init_submenues' );
+		//$this->loader->add_action( 'admin_menu', $plugin_admin, 'dplrwoo_init_submenues' );
 		//Adds settings options for plugin config.
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'dplrwoo_settings_init');
 		//Ajax function to connect to api from settings menu

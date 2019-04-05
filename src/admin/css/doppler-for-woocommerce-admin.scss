@@ -14,6 +14,7 @@ $main-text-color: #333;
 
 .dplrwoo-button{
     cursor: pointer;
+    margin-top: 15px;
 }
 
 
@@ -31,8 +32,11 @@ $main-text-color: #333;
 
 .doppler-woo-settings{
 
-    //Estilos de settings aquí:
+    h2.nav-tab-wrapper{
+      margin-bottom: 30px;
+    }
 
+    //Estilos de settings aquí:
     /*
     .loading {
         z-index: 999;

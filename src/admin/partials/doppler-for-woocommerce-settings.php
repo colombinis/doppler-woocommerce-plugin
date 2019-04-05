@@ -16,73 +16,65 @@
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
 <?php
 
-// check user capabilities
  if ( ! current_user_can( 'manage_options' ) ) {
  return;
  }
+
+ if( isset( $_GET[ 'tab' ] ) ) {
+    $active_tab = $_GET[ 'tab' ];
+ }else{
+     $active_tab = 'settings';
+ } 
 
  $connected = $this->connectionStatus;
 
  ?>
 
-<div class="doppler-woo-settings">
+<div class="wrap doppler-woo-settings">
 
-    <h1> <?php _e('Settings', 'doppler-for-woocommerce') ?> </h1>
+    <h2 class="nav-tab-wrapper">
+        <a href="?page=doppler_for_woocommerce_menu&tab=settings" class="nav-tab <?php echo $active_tab == 'settings' ? 'nav-tab-active' : ''; ?>"><?php _e('Settings', 'doppler-for-woocommerce')?></a>
+        <a href="?page=doppler_for_woocommerce_menu&tab=lists" class="nav-tab <?php echo $active_tab == 'lists' ? 'nav-tab-active' : ''; ?>"><?php _e('Lists', 'doppler-for-woocommerce')?></a>
+        <a href="?page=doppler_for_woocommerce_menu&tab=fields" class="nav-tab <?php echo $active_tab == 'fields' ? 'nav-tab-active' : ''; ?>"><?php _e('Fields', 'doppler-for-woocommerce')?></a>
+    </h2>
 
-    <?php 
-    
-    if(!$connected){
+    <h1 class="screen-reader-text"></h1>
 
-        ?>
+    <?php
 
-        <form id="dplrwoo-form-connect" action="options.php" method="post">
-            
-            <?php
-            // output security fields
-            settings_fields( 'doppler_for_woocommerce_menu' );
-            // output setting sections and their fields
-            do_settings_sections( 'doppler_for_woocommerce_menu' );
-            // output save settings button - not using, doing it with ajax
-            //submit_button( 'Save Settings' );
-            ?>
-
-            <button id="dplrwoo-connect" class="dplrwoo-button">
-                <div class="loading"></div>
-                <?php _e('Connect', 'doppler-for-woocommerce') ?>
-            </button>
-
-            <div id="dplrwoo-messages">
-            </div>
-
-        </form>
-
-        <?php
-
-    }else if($connected){
+    switch($active_tab){
         
-        ?>
-        <form id="dplrwoo-form-disconnect" action="options.php" method="post">
+        case 'lists':
+                
+                echo 'lists screen';
+                $list_resource = $this->doppler_service->getResource('lists');
+                $dplr_lists = $list_resource->getAllLists();
+            
+            break;
 
-            <?php settings_fields( 'doppler_for_woocommerce_menu' ); ?>
+        case 'fields':
 
-            <input type="hidden" name="dplrwoo_user" value="" />
-            <input type="hidden" name="dplrwoo_key" value="" />
+                $wc_fields = $this->getCheckoutFields();
 
-            <div class="connected_status">
-                <?php _e('You\'re connetcted to Doppler') ?> <br />
-                User Email: <strong><?php echo get_option('dplrwoo_user')?></strong> <br />
-                Api Key: <strong><?php echo get_option('dplrwoo_key')?></strong>
-            </div>
+                $res = $this->doppler_service->setCredentials($this->credentials);
+            
+                $fields_resource = $this->doppler_service->getResource('fields');
 
-            <button id="dplrwoo-disconnect" class="dplrwoo-button">
-                <?php _e('Disconnect', 'doppler-for-woocommerce') ?>
-            </button>
+                $dplr_fields = $fields_resource->getAllFields();
 
-        </form>
+                $dplr_fields = isset($dplr_fields->items) ? $dplr_fields->items : [];
 
-        <?php
+                require_once('mapping.php');
+
+            break;
+
+        default:
+
+                require_once('settings.php');
+
+            break;
     }
 
     ?>
-
+    
 </div>
