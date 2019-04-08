@@ -1,6 +1,6 @@
 <?php
 
-if( ! class_exists( 'Doppler_Service' ) ) :
+if( ! class_exists( 'Woo_Doppler_Service' ) ) :
 
 class Woo_Doppler_Service
 {
