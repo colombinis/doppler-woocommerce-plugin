@@ -36,6 +36,17 @@ $main-text-color: #333;
       margin-bottom: 30px;
     }
 
+    table.tbl-mapping{
+      width: 100%;
+      max-width: 500px;
+      tr{
+        th,td{
+          width: 50%;
+          text-align:left;
+        }
+      }
+    }
+
     //Estilos de settings aquí:
     /*
     .loading {

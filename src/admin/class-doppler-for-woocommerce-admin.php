@@ -150,8 +150,6 @@ class Doppler_For_Woocommerce_Admin {
 
 		$fields = $this->getCheckoutFields();
 
-		var_dump($fields);
-
 	}
 
 
@@ -162,53 +160,67 @@ class Doppler_For_Woocommerce_Admin {
 
 		// Add the section to doppler_for_woocommerce_menu settings so we can add our
 		// fields to it
-		add_settings_section(
-			'dplrwoo_setting_section',
-			'Example settings section in reading',
-			array($this,'eg_setting_section_callback_function'),
-			'doppler_for_woocommerce_menu'
-		);
 
-		// register a new field in the "dplrwoo_setting_section" section, inside the "doppler_for_woocommerce_menu" page
-		//@id: Slug-name to identify the field. Used in the 'id' attribute of tags.
-		//@title: Formatted title of the field. Shown as the label for the field during output.
-		//@callback: Function that fills the field with the desired form inputs. The function should echo its output.
-		//@page: The slug-name of the settings page on which to show the section (general, reading, writing, ...).
-		//@section: The slug-name of the section of the settings page in which to show the box. Default value: 'default'
-		//@args: Extra arguments used when outputting the field.
-		//	@label_for: When supplied, the setting title will be wrapped in a <label> element, its for attribute populated with this value.
-		// 	@class: CSS Class to be added to the <tr> element when the field is output.
-		add_settings_field(
-			'dplrwoo_user', // as of WP 4.6 this value is used only internally
-			// use $args' label_for to populate the id inside the callback
-			__( 'User Email', 'doppler-for-woocommerce' ),
-			array($this,'display_user_field'),
-			'doppler_for_woocommerce_menu',
-			'dplrwoo_setting_section',
-			[
-			'label_for' => 'dplrwoo_user',
-			'class' => 'dplrwoo_user_row',
-			//'wporg_custom_data' => 'custom',
-			]
-		);
+		if( !isset($_GET['tab']) || $_GET['tab']=='settings' ){
 
-		add_settings_field(
-			'dplrwoo_key', // as of WP 4.6 this value is used only internally
-			// use $args' label_for to populate the id inside the callback
-			__( 'API Key', 'doppler-for-woocommerce' ),
-			array($this,'display_key_field'),
-			'doppler_for_woocommerce_menu',
-			'dplrwoo_setting_section',
-			[
-			'label_for' => 'dplrwoo_key',
-			'class' => 'dplrwoo_key_row',
-			//'wporg_custom_data' => 'custom',
-			]
-		);
+			add_settings_section(
+				'dplrwoo_setting_section',
+				'Example settings section in reading',
+				array($this,'eg_setting_section_callback_function'),
+				'doppler_for_woocommerce_menu'
+			);
 
-		// Register the fields
-		register_setting( 'doppler_for_woocommerce_menu', 'dplrwoo_user' );
-		register_setting( 'doppler_for_woocommerce_menu', 'dplrwoo_key' );
+			// register a new field in the "dplrwoo_setting_section" section, inside the "doppler_for_woocommerce_menu" page
+			//@id: Slug-name to identify the field. Used in the 'id' attribute of tags.
+			//@title: Formatted title of the field. Shown as the label for the field during output.
+			//@callback: Function that fills the field with the desired form inputs. The function should echo its output.
+			//@page: The slug-name of the settings page on which to show the section (general, reading, writing, ...).
+			//@section: The slug-name of the section of the settings page in which to show the box. Default value: 'default'
+			//@args: Extra arguments used when outputting the field.
+			//	@label_for: When supplied, the setting title will be wrapped in a <label> element, its for attribute populated with this value.
+			// 	@class: CSS Class to be added to the <tr> element when the field is output.
+			add_settings_field(
+				'dplrwoo_user', // as of WP 4.6 this value is used only internally
+				// use $args' label_for to populate the id inside the callback
+				__( 'User Email', 'doppler-for-woocommerce' ),
+				array($this,'display_user_field'),
+				'doppler_for_woocommerce_menu',
+				'dplrwoo_setting_section',
+				[
+				'label_for' => 'dplrwoo_user',
+				'class' => 'dplrwoo_user_row',
+				//'wporg_custom_data' => 'custom',
+				]
+			);
+
+			add_settings_field(
+				'dplrwoo_key', // as of WP 4.6 this value is used only internally
+				// use $args' label_for to populate the id inside the callback
+				__( 'API Key', 'doppler-for-woocommerce' ),
+				array($this,'display_key_field'),
+				'doppler_for_woocommerce_menu',
+				'dplrwoo_setting_section',
+				[
+				'label_for' => 'dplrwoo_key',
+				'class' => 'dplrwoo_key_row',
+				//'wporg_custom_data' => 'custom',
+				]
+			);
+
+			register_setting( 'doppler_for_woocommerce_menu', 'dplrwoo_user' );
+			register_setting( 'doppler_for_woocommerce_menu', 'dplrwoo_key' );
+
+		}
+		
+		if($_GET['tab']=='fields'){
+
+			if(isset($_POST['dplrwoo_mapping'])){
+				update_option( 'dplrwoo_mapping', $_POST['dplrwoo_mapping'] );
+			}
+			
+			$maps = get_option('dplrwoo_mapping');
+
+		}
 
 	}
 
@@ -312,7 +324,10 @@ class Doppler_For_Woocommerce_Admin {
 		return false;
 
 	}
-	
+
+	/**
+	 * Get the customer's fields.
+	 */
 	public function getCheckoutFields(){
 
 		if ( ! class_exists( 'WC_Session' ) ) {

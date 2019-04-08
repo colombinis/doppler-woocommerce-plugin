@@ -1,24 +1,35 @@
-<table>
+<form id="dplrwoo-form-disconnect" action="" method="post">
+
+            <?php settings_fields( 'doppler_for_woocommerce_menu' ); ?>
+
+<table class="tbl-mapping">
+    
     <tbody>
+
 <?php
-
-//var_dump($dplr_fields);
-
-//var_dump($wc_fields);
 
 if(is_array($wc_fields)){
 
-    foreach($wc_fields as $k=>$v){
+    foreach($wc_fields as $fieldtype=>$arr){
 
-        foreach($v as $i=>$j){
+        foreach($arr as $fieldname=>$fieldAtrributes){
 
             ?>
 
             <tr>
-                <th><?php echo $i?></th>
+                <th><?php echo $fieldname?></th>
                 <td>
-                    <select name="dplr_fieldmap[]">
+                    <select name="dplrwoo_mapping[<?php echo $fieldname?>]">
                         <option></option>
+                        <?php 
+                        foreach ($dplr_fields as $field){
+                            ?>
+                            <option value="<?php echo $field->name?>">
+                                <?php echo $field->name?>
+                            </option>
+                            <?php
+                        }
+                        ?>
                     </select>
                 </td>
             </tr>
@@ -33,4 +44,11 @@ if(is_array($wc_fields)){
 
 ?>
     </tbody>
+
 </table>
+
+<button id="dplrwoo-mapping-btn" class="dplrwoo-button">
+    <?php _e('Save', 'doppler-for-woocommerce') ?>
+</button>
+
+</form>
