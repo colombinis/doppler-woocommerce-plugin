@@ -71,7 +71,7 @@ class Doppler_For_Woocommerce {
 	public function __construct() {
 		
 		require_once(dirname( __FILE__ ) . '/DopplerAPIClient/DopplerService.php');
-		$this->doppler_service = new Doppler_Service();
+		$this->doppler_service = new Woo_Doppler_Service();
 
 		if ( defined( 'DOPPLER_FOR_WOOCOMMERCE_VERSION' ) ) {
 			$this->version = DOPPLER_FOR_WOOCOMMERCE_VERSION;

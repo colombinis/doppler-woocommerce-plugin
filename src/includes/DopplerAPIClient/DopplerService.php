@@ -2,7 +2,7 @@
 
 if( ! class_exists( 'Doppler_Service' ) ) :
 
-class Doppler_Service
+class Woo_Doppler_Service
 {
 
   private $config;
