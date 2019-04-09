@@ -46,6 +46,8 @@ class Doppler_For_Woocommerce_Admin {
 
 	private $credentials;
 
+	private $admin_notice;
+
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -215,7 +217,9 @@ class Doppler_For_Woocommerce_Admin {
 		if($_GET['tab']=='fields'){
 
 			if(isset($_POST['dplrwoo_mapping'])){
+				
 				update_option( 'dplrwoo_mapping', $_POST['dplrwoo_mapping'] );
+				$this->admin_notice = array('success', __('Fields mapped succesfully', 'doppler-for-woocommerce'));
 			}
 
 		}
@@ -352,6 +356,22 @@ class Doppler_For_Woocommerce_Admin {
 		*/
 		return WC()->checkout->checkout_fields;
 
+	}
+
+	/**
+	 * If want to show an admin message, set $this->admin_notice = array( $class, $text), where class is success, warning, etc.
+	 */
+	public function show_admin_notice(){
+		
+		$class = $this->admin_notice[0];
+		$text = $this->admin_notice[1];
+		if( !empty($class) && !empty($class) ){
+			?>
+			<div class="notice notice-<?php echo $class?> is-dismissible">
+			<p><?php echo $text ?></p>
+			</div>
+			<?php
+		}
 	}
 	
 }

@@ -82,7 +82,30 @@
 			})
 		
 		}); 
-	
+
+		$('.dplrwoo-mapping-fields').focus(function(){
+			$(this).data('val', $(this).val());
+		}).change(function(previous){
+			
+			var prev = $(this).data('val');
+			var current = $(this).val();
+			
+			$(this).data('val', current);
+
+			//Adds old value to other dropdowns.
+			if(prev!==''){
+				$('.dplrwoo-mapping-fields').not(this).append('<option value="'+prev+'">'+prev+'</option>');
+			}
+
+			if(current!==''){
+				//Removes new value from all dropdowns (except this one)
+				//$('.dplrwoo-mapping-fields option[value="'+current+'"]').remove();
+				var s = $('.dplrwoo-mapping-fields').not(this);
+				s.find('option[value="'+current+'"]').remove();
+			}
+
+		});
+
 	});
 	
 

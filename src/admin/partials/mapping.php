@@ -8,6 +8,8 @@
 
 <?php
 
+$used_fields = array_filter($maps);
+
 if(is_array($wc_fields)){
 
     foreach($wc_fields as $fieldtype=>$arr){
@@ -19,15 +21,19 @@ if(is_array($wc_fields)){
             <tr>
                 <th><?php echo $fieldname?></th>
                 <td>
-                    <select name="dplrwoo_mapping[<?php echo $fieldname?>]">
+                    <select class="dplrwoo-mapping-fields" name="dplrwoo_mapping[<?php echo $fieldname?>]">
                         <option></option>
                         <?php 
                         foreach ($dplr_fields as $field){
-                            ?>
-                            <option value="<?php echo $field->name?>" <?php if( $maps[$fieldname] === $field->name ) echo 'selected' ?>>
-                                <?php echo $field->name?>
-                            </option>
-                            <?php
+                            
+                            if( !in_array($field->name,$used_fields) || $maps[$fieldname] === $field->name ){
+                                ?>
+                                <option value="<?php echo $field->name?>" <?php if( $maps[$fieldname] === $field->name ) echo 'selected' ?>>
+                                    <?php echo $field->name?>
+                                </option>
+                                <?php
+                            }
+                        
                         }
                         ?>
                     </select>
