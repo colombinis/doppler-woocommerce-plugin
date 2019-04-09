@@ -173,6 +173,7 @@ class Doppler_For_Woocommerce {
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'dplrwoo_settings_init');
 		//Ajax function to connect to api from settings menu
 		$this->loader->add_action( 'wp_ajax_dplrwoo_connect', $plugin_admin, 'dplrwoo_api_connect' );
+		
 	}
 
 	/**

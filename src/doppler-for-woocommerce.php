@@ -42,8 +42,21 @@ define( 'DOPPLER_FOR_WOOCOMMERCE_VERSION', '1.0.0' );
  * This action is documented in includes/class-doppler-for-woocommerce-activator.php
  */
 function activate_doppler_for_woocommerce() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-doppler-for-woocommerce-activator.php';
-	Doppler_For_Woocommerce_Activator::activate();
+	
+	if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+		include_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+	}
+	if ( current_user_can( 'activate_plugins' ) && ! class_exists( 'WooCommerce' ) ) {
+		// Deactivate the plugin.
+		deactivate_plugins( plugin_basename( __FILE__ ) );
+		// Throw an error in the WordPress admin console.
+		$error_message = '<p style="font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Oxygen-Sans,Ubuntu,Cantarell,\'Helvetica Neue\',sans-serif;font-size: 13px;line-height: 1.5;color:#444;">' . esc_html__( 'This plugin requires ', 'doppler-for-woocommerce' ) . '<a href="' . esc_url( 'https://wordpress.org/plugins/woocommerce/' ) . '" target="_blank">WooCommerce</a>' . esc_html__( ' plugin to be active.', 'doppler-for-woocommerce' ) . '</p>';
+		die( $error_message ); // WPCS: XSS ok.
+	}else{
+		require_once plugin_dir_path( __FILE__ ) . 'includes/class-doppler-for-woocommerce-activator.php';
+		Doppler_For_Woocommerce_Activator::activate();
+	}
+
 }
 
 /**
