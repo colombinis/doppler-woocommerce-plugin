@@ -24,7 +24,7 @@ if(is_array($wc_fields)){
                         <?php 
                         foreach ($dplr_fields as $field){
                             ?>
-                            <option value="<?php echo $field->name?>">
+                            <option value="<?php echo $field->name?>" <?php if( $maps[$fieldname] === $field->name ) echo 'selected' ?>>
                                 <?php echo $field->name?>
                             </option>
                             <?php

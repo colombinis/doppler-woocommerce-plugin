@@ -67,6 +67,8 @@
 
                 $dplr_fields = isset($dplr_fields->items) ? $dplr_fields->items : [];
 
+                $maps = get_option('dplrwoo_mapping');
+
                 require_once('mapping.php');
 
             break;

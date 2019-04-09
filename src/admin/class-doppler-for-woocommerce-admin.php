@@ -217,8 +217,6 @@ class Doppler_For_Woocommerce_Admin {
 			if(isset($_POST['dplrwoo_mapping'])){
 				update_option( 'dplrwoo_mapping', $_POST['dplrwoo_mapping'] );
 			}
-			
-			$maps = get_option('dplrwoo_mapping');
 
 		}
 
