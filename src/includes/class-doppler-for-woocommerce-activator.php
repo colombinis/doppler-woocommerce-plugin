@@ -32,6 +32,8 @@ class Doppler_For_Woocommerce_Activator {
 	 */
 	public static function activate() {
 
+		update_option('dplrwoo_version', DOPPLER_FOR_WOOCOMMERCE_VERSION);
+
 	}
 
 }
