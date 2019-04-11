@@ -52,6 +52,16 @@ $red: #b80d0d;
     table.tbl{
       width: 100%;
       max-width: 500px;
+      thead{
+        margin-bottom:10px;
+        tr{
+          th{
+            padding: 10px 0px;
+            text-align: center;
+            border-bottom: 1px solid #ccc;
+          }
+        }
+      }
       tr{
         th,td{
           width: 50%;
@@ -61,6 +71,21 @@ $red: #b80d0d;
           }
           &.text-right{
             text-align:right;
+          }
+        }
+      }
+      &.tbl--mapping{
+        margin-top: 30px;
+        &:first-child{
+          margin-top: 0px;
+        }
+        tbody{
+          tr{
+            &:first-child{
+              td{
+                padding-top: 10px;
+              }
+            }
           }
         }
       }
