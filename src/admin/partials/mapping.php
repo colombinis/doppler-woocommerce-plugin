@@ -1,8 +1,8 @@
 <form id="dplrwoo-form-disconnect" action="" method="post">
 
-            <?php settings_fields( 'doppler_for_woocommerce_menu' ); ?>
+<?php settings_fields( 'doppler_for_woocommerce_menu' ); ?>
 
-<table class="tbl-mapping">
+<table class="tbl">
     
     <tbody>
 

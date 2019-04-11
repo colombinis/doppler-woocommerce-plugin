@@ -7,6 +7,7 @@
 */
 
 $main-text-color: #333;
+$red: #b80d0d;
 
 /**
 * General elements.
@@ -32,62 +33,48 @@ $main-text-color: #333;
 
 .doppler-woo-settings{
 
+    .mt-30{
+      margin-top: 30px;
+    }
+
+    .text-right{
+      text-align: right;
+    }
+
+    .text-red{
+      color: $red;
+    }
+
     h2.nav-tab-wrapper{
       margin-bottom: 30px;
     }
 
-    table.tbl-mapping{
+    table.tbl{
       width: 100%;
       max-width: 500px;
       tr{
         th,td{
           width: 50%;
           text-align:left;
+          select{
+            width: 100%;
+          }
+          &.text-right{
+            text-align:right;
+          }
         }
       }
     }
 
-    //Estilos de settings aquí:
-    /*
-    .loading {
-        z-index: 999;
-        overflow: show;
-        margin: auto;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        display: table;
-        &:after {
-            content: '';
-            display: block;
-            font-size: 4px;
-            width: 1em;
-            height: 1em;
-            margin-top: -0.5em;
-            -webkit-animation: spinner 1500ms infinite linear;
-            -moz-animation: spinner 1500ms infinite linear;
-            -ms-animation: spinner 1500ms infinite linear;
-            -o-animation: spinner 1500ms infinite linear;
-            animation: spinner 1500ms infinite linear;
-            border-radius: 0.5em;
-            -webkit-box-shadow: rgba(255, 255, 255, 0.75) 1.5em 0 0 0, rgba(255, 255, 255, 0.75) 1.1em 1.1em 0 0, rgba(255, 255, 255, 0.75) 0 1.5em 0 0, rgba(255, 255, 255, 0.75) -1.1em 1.1em 0 0, rgba(0, 0, 0, 0.5) -1.5em 0 0 0, rgba(0, 0, 0, 0.5) -1.1em -1.1em 0 0, rgba(255, 255, 255, 0.75) 0 -1.5em 0 0, rgba(255, 255, 255, 0.75) 1.1em -1.1em 0 0;
-            -moz-box-shadow: rgba(255, 255, 255, 0.75) 1.5em 0 0 0, rgba(255, 255, 255, 0.75) 1.1em 1.1em 0 0, rgba(255, 255, 255, 0.75) 0 1.5em 0 0, rgba(255, 255, 255, 0.75) -1.1em 1.1em 0 0, rgba(0, 0, 0, 0.5) -1.5em 0 0 0, rgba(0, 0, 0, 0.5) -1.1em -1.1em 0 0, rgba(255, 255, 255, 0.75) 0 -1.5em 0 0, rgba(255, 255, 255, 0.75) 1.1em -1.1em 0 0;
-            box-shadow: rgba(255, 255, 255, 0.75) 1.5em 0 0 0, rgba(255, 255, 255, 0.75) 1.1em 1.1em 0 0, rgba(255, 255, 255, 0.75) 0 1.5em 0 0, rgba(255, 255, 255, 0.75) -1.1em 1.1em 0 0, rgba(255, 255, 255, 0.75) -1.5em 0 0 0, rgba(255, 255, 255, 0.75) -1.1em -1.1em 0 0, rgba(255, 255, 255, 0.75) 0 -1.5em 0 0, rgba(255, 255, 255, 0.75) 1.1em -1.1em 0 0; 
-        }
-
-    }
- 
-    @keyframes spinner {
-      0% {
-        transform: rotate(0deg); 
+    #dplrwoo-form-list-crud{
+      label{
+        display:block;
+        font-weight: 700;
       }
-      100% {
-        transform: rotate(360deg); 
-      } 
+      .tbl{
+        margin-top:30px;
+      }
     }
-    */
-
 }
 
 /**

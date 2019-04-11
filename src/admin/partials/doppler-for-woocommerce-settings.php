@@ -36,8 +36,9 @@
     <h2 class="nav-tab-wrapper">
         <a href="?page=doppler_for_woocommerce_menu&tab=settings" class="nav-tab <?php echo $active_tab == 'settings' ? 'nav-tab-active' : ''; ?>"><?php _e('Settings', 'doppler-for-woocommerce')?></a>
         <?php if ($connected) :?>
-            <a href="?page=doppler_for_woocommerce_menu&tab=lists" class="nav-tab <?php echo $active_tab == 'lists' ? 'nav-tab-active' : ''; ?>"><?php _e('Lists', 'doppler-for-woocommerce')?></a>
             <a href="?page=doppler_for_woocommerce_menu&tab=fields" class="nav-tab <?php echo $active_tab == 'fields' ? 'nav-tab-active' : ''; ?>"><?php _e('Fields', 'doppler-for-woocommerce')?></a>
+            <a href="?page=doppler_for_woocommerce_menu&tab=lists" class="nav-tab <?php echo $active_tab == 'lists' ? 'nav-tab-active' : ''; ?>"><?php _e('Lists subscriptions', 'doppler-for-woocommerce')?></a>
+            <a href="?page=doppler_for_woocommerce_menu&tab=lists_crud" class="nav-tab <?php echo $active_tab == 'lists_crud' ? 'nav-tab-active' : ''; ?>"><?php _e('Manage Lists', 'doppler-for-woocommerce')?></a>
         <?php endif; ?>
     </h2>
 
@@ -46,14 +47,27 @@
     <?php
 
     switch($active_tab){
-        
+
         case 'lists':
                 
-                echo 'lists screen';
-                $list_resource = $this->doppler_service->getResource('lists');
-                $dplr_lists = $list_resource->getAllLists();
+            //Ya estaba hecho esto negro!, se podría crear una function 
+            //con estas dos lineas, y que las ordene y la usamos acá 
+            //y en lists_crud.
+            $list_resource = $this->doppler_service->getResource('lists');
+            $dplr_lists = $list_resource->getAllLists();
+
+            require_once('lists.php');
             
-            break;
+        break;
+
+        case 'lists_crud':
+                
+            $list_resource = $this->doppler_service->getResource('lists');
+            $dplr_lists = $list_resource->getAllLists();
+
+            require_once('lists_crud.php');
+        
+        break;
 
         case 'fields':
 
