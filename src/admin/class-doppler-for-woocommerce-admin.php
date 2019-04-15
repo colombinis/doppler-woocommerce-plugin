@@ -224,6 +224,16 @@ class Doppler_For_Woocommerce_Admin {
 
 		}
 
+		if($_GET['tab']=='lists'){
+
+			if(isset($_POST['dplr_subsribers_list'])){
+				
+				update_option( 'dplr_subsribers_list', $_POST['dplr_subsribers_list'] );
+				$this->admin_notice = array('success', __('Subscribers lists saved succesfully', 'doppler-for-woocommerce'));
+			}
+
+		}
+
 	}
 
 	/**
@@ -356,6 +366,35 @@ class Doppler_For_Woocommerce_Admin {
 		*/
 		return WC()->checkout->checkout_fields;
 
+	}
+
+	/**
+	 * Get lists
+	 */
+	public function get_alpha_lists(){
+		
+		$this->doppler_service->setCredentials($this->credentials);
+		$list_resource = $this->doppler_service->getResource('lists');
+		$dplr_lists = $list_resource->getAllLists();
+		
+		if(is_array($dplr_lists)){
+
+			foreach($dplr_lists as $k=>$v){
+			  if(is_array($v)):
+				foreach($v as $i=>$j){
+				  $dplr_lists_aux[$j->listId] = trim($j->name);
+				}
+			  endif;
+			}
+	  
+			$dplr_lists_arr = $dplr_lists_aux;
+
+		}
+
+		asort($dplr_lists_arr);
+		
+		return $dplr_lists_arr;
+	
 	}
 
 	/**

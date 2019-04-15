@@ -50,21 +50,15 @@
 
         case 'lists':
                 
-            //Ya estaba hecho esto negro!, se podría crear una function 
-            //con estas dos lineas, y que las ordene y la usamos acá 
-            //y en lists_crud.
-            $list_resource = $this->doppler_service->getResource('lists');
-            $dplr_lists = $list_resource->getAllLists();
-
+            $lists = $this->get_alpha_lists();
+            $subscribers_lists = get_option('dplr_subsribers_list');
             require_once('lists.php');
             
         break;
 
         case 'lists_crud':
                 
-            $list_resource = $this->doppler_service->getResource('lists');
-            $dplr_lists = $list_resource->getAllLists();
-
+            $lists = $this->get_alpha_lists();
             require_once('lists_crud.php');
         
         break;
@@ -73,7 +67,7 @@
 
                 $wc_fields = $this->getCheckoutFields();
 
-                $res = $this->doppler_service->setCredentials($this->credentials);
+                $this->doppler_service->setCredentials($this->credentials);
             
                 $fields_resource = $this->doppler_service->getResource('fields');
 
