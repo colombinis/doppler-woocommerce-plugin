@@ -398,6 +398,45 @@ class Doppler_For_Woocommerce_Admin {
 	}
 
 	/**
+	 * Se ejecuta cuando se crea desde register. Testeado OK.
+	 * Cuando se crea una cuenta desde el checkout. Testeado OK.
+	 * Si no se selecciona crear cuenta en el checkout NO se ejecuta.
+	 * TODO: Ver hacer reutilizable la parte de subscripción
+	 */
+	public function dplrwoo_created_customer( $customer_id, $customer_data, $customer_password ){
+		
+		// Get an instance of the WC_Customer Object
+		//$user = new WC_Customer( $customer_id );
+
+		if( isset($_POST['register']) || $_POST['createaccount']==='1' ){
+			
+			$fields_map = get_option('dplrwoo_mapping');
+			$list_id = get_option('dplr_subsribers_list')['registered'];
+			
+			if( !empty($fields_map) && !empty($list_id) ){
+
+				$fields = array();
+				
+				foreach($fields_map as $k=>$v){
+					if($v!=''){
+						$fields[] = array('name'=>$v, 'value'=>$_POST[$k]);
+					}
+				}
+			
+				$subscriber['email'] = $customer_data['user_email'];
+				$subscriber['fields'] = $fields; 
+				
+				$this->doppler_service->setCredentials($this->credentials);
+				$subscriber_resource = $this->doppler_service->getResource('subscribers');
+				$result = $subscriber_resource->addSubscriber($list_id, $subscriber);
+			
+			}
+
+		}
+
+	}
+
+	/**
 	 * If want to show an admin message, set $this->admin_notice = array( $class, $text), where class is success, warning, etc.
 	 */
 	public function show_admin_notice(){
