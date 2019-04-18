@@ -172,8 +172,10 @@ class Doppler_For_Woocommerce {
 		//Adds settings options for plugin config.
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'dplrwoo_settings_init' );
 		//Ajax function to connect to api from settings menu
-		$this->loader->add_action( 'wp_ajax_dplrwoo_connect', $plugin_admin, 'dplrwoo_api_connect' );
-		//Se ejecuta al crear un customer PERO no guarda los campos de checkout...
+		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_connect', $plugin_admin, 'dplrwoo_api_connect' );
+		//Ajax function to get lists
+		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_get_lists', $plugin_admin, 'dplrwoo_get_lists' );
+		//Se ejecuta al crear un customer
 		$this->loader->add_action( 'woocommerce_created_customer', $plugin_admin, 'dplrwoo_created_customer', 10, 3);
 		//Se ejecuta después de crear un customer. Podría acá guardar todos los campos de checkout!!
 		//$this->loader->add_action( 'woocommerce_checkout_update_user_meta', $plugin_admin, 'dplrwoo_after_created_customer');

@@ -288,13 +288,13 @@ if( ! class_exists( 'Doppler_Service_Lists_Resource' ) ) :
       return json_decode($this->service->call($method, array("listId" => $listId))['body']);
     }
 
-    
+    /**
+     * Get all lists recursively
+     */
     public function getAllLists( $listId = null, $lists = [], $page = 1  ){
       
       $method = $this->methods['list'];
       
-      //$z = $this->service->call($method, array("listId" => $listId, 'page' => $page))->body;
-
       $z = json_decode($this->service->call($method, array("listId" => $listId, 'page' => $page))['body']);
       
       $lists[] = $z->items;
@@ -310,6 +310,16 @@ if( ! class_exists( 'Doppler_Service_Lists_Resource' ) ) :
         
       }
       
+    }
+
+    public function getListsByPage( $page = 1 ) {
+
+      $method = $this->methods['list'];
+
+      $z = json_decode($this->service->call($method, array("listId" => null, 'page' => $page))['body']);
+
+      return $z->items;
+
     }
     
   }

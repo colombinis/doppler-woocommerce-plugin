@@ -275,12 +275,19 @@ class Doppler_For_Woocommerce_Admin {
 	 * Handles ajax connection with API
 	 * used by "connect" button in dopper-for-woocommerce-settings.php
 	 */
-	public function dplrwoo_api_connect(){
+	public function dplrwoo_api_connect() {
 		
 		$connected = $this->doppler_service->setCredentials(['api_key' => $_POST['key'], 'user_account' => $_POST['user']]);
 		echo ($connected)? 1:0;
 		exit();
 
+	}
+
+	public function dplrwoo_get_lists() {
+		
+		echo json_encode( $this->get_lists_by_page( $_POST['page'] ) );
+		exit();
+	
 	}
 
 	/**
@@ -397,6 +404,14 @@ class Doppler_For_Woocommerce_Admin {
 	
 	}
 
+	public function get_lists_by_page( $page = 1 ) {
+
+		$this->doppler_service->setCredentials( $this->credentials );
+		$list_resource = $this->doppler_service->getResource( 'lists' );
+		return $list_resource->getListsByPage( $page );
+
+	}
+
 	/**
 	 * Send email and fields to a Doppler List
 	 */
@@ -498,13 +513,17 @@ class Doppler_For_Woocommerce_Admin {
 		
 		$class = $this->admin_notice[0];
 		$text = $this->admin_notice[1];
+		
 		if( !empty($class) && !empty($class) ){
+			
 			?>
-			<div class="notice notice-<?php echo $class?> is-dismissible">
-			<p><?php echo $text ?></p>
-			</div>
+				<div class="notice notice-<?php echo $class?> is-dismissible">
+					<p><?php echo $text ?></p>
+				</div>
 			<?php
-		}
+		
+	}
+	
 	}
 	
 }

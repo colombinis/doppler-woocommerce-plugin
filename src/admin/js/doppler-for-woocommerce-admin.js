@@ -41,7 +41,7 @@
 			var keyfield = $('input[name="dplrwoo_key"]');
 
 			var data = {
-				action: 'dplrwoo_connect',
+				action: 'dplrwoo_ajax_connect',
 				user: userfield.val(),
 				key: keyfield.val()
 			}
@@ -98,15 +98,46 @@
 			}
 
 			if(current!==''){
-				//Removes new value from all dropdowns (except this one)
-				//$('.dplrwoo-mapping-fields option[value="'+current+'"]').remove();
 				var s = $('.dplrwoo-mapping-fields').not(this);
 				s.find('option[value="'+current+'"]').remove();
 			}
 
 		});
 
+		if($("#dprwoo-tbl-lists").length>0){
+
+			var data = {
+				action: 'dplrwoo_ajax_get_lists',
+				page: '1'
+			};
+
+			$.post( ajaxurl, data, function( response ) {
+		
+				if(response.length>0){
+
+					var obj = JSON.parse(response)
+
+					var html = '';
+					
+					for (const key in obj) {
+						
+						var value = obj[key];
+						
+						html='<tr>';
+						html+='<td>'+value.listId+'</td><td>'+value.name+'</td>';
+						html+='<td>'+value.subscribersCount+'</td>';
+						html+='</tr>';
+						
+					}
+
+					$("#dprwoo-tbl-lists tbody").append(html);
+				}
+
+			})
+		}
+
 	});
 	
 
 })( jQuery );
+
