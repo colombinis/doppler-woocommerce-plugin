@@ -92,7 +92,6 @@
 			
 			$(this).data('val', current);
 
-			//Adds old value to other dropdowns.
 			if(prev!==''){
 				$('.dplrwoo-mapping-fields').not(this).append('<option value="'+prev+'">'+prev+'</option>');
 			}
@@ -105,39 +104,89 @@
 		});
 
 		if($("#dprwoo-tbl-lists").length>0){
-
-			var data = {
-				action: 'dplrwoo_ajax_get_lists',
-				page: '1'
-			};
-
-			$.post( ajaxurl, data, function( response ) {
-		
-				if(response.length>0){
-
-					var obj = JSON.parse(response)
-
-					var html = '';
-					
-					for (const key in obj) {
-						
-						var value = obj[key];
-						
-						html='<tr>';
-						html+='<td>'+value.listId+'</td><td>'+value.name+'</td>';
-						html+='<td>'+value.subscribersCount+'</td>';
-						html+='</tr>';
-						
-					}
-
-					$("#dprwoo-tbl-lists tbody").append(html);
-				}
-
-			})
+			loadLists(1);
 		}
+
+		$("#dplrwoo-save-list").click(function(e){
+
+			e.preventDefault();			
+			var listName = $(this).closest('form').find('input[type="text"]').val();
+
+			if(listName!==''){
+				
+				var data = {
+					action: 'dplrwoo_ajax_save_list',
+					listName: listName
+				};
+
+				listsLoading();
+
+				$.post( ajaxurl, data, function( response ) {
+					var obj = JSON.parse(response)					
+					if(obj.createdResourceId){
+						loadLists(1);
+					}else{
+						var body = JSON.parse(obj.body);
+						if(body.status == '400'){
+							alert(body.title);
+						}
+						listsLoaded();
+					}
+				});
+			
+			}
+
+		});
 
 	});
 	
+	function listsLoading(){
+		$('form input, form button').prop('disabled', true);
+		$('#dplrwoo-crud').addClass('loading');
+	}
+
+	function listsLoaded(){
+		$('form input, form button').prop('disabled', false);
+		$('form input').val('');
+		$('#dplrwoo-crud').removeClass('loading');
+	}
+
+	function loadLists( page ){
+
+		var data = {
+			action: 'dplrwoo_ajax_get_lists',
+			page: page
+		};
+		
+		listsLoading();
+
+		$("#dprwoo-tbl-lists tbody tr").remove();
+
+		$.post( ajaxurl, data, function( response ) {
+	
+			if(response.length>0){
+
+				var obj = JSON.parse(response);
+				var html = '';
+				
+				for (const key in obj) {
+					
+					var value = obj[key];
+					
+					html+='<tr>';
+					html+='<td>'+value.listId+'</td><td>'+value.name+'</td>';
+					html+='<td>'+value.subscribersCount+'</td>';
+					html+='</tr>';
+					
+				}
+
+				$("#dprwoo-tbl-lists tbody").append(html);
+				$("#dprwoo-tbl-lists").attr('data-page','1');
+				
+				listsLoaded();
+			}
+
+		})
+	}
 
 })( jQuery );
-

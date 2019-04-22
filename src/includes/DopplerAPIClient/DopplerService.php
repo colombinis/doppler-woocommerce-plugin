@@ -24,9 +24,7 @@ class Woo_Doppler_Service
       $usr_account = $config['credentials'][ 'user_account'] . '/';
     }
 
-    //$this->baseUrl = 'https://restapi.fromdoppler.com/accounts/'. $usr_account;
     $this->baseUrl = 'http://newapiqa.fromdoppler.net/accounts/' . $usr_account;
-
 
     $this->resources = [
 	  'home'	=> new Doppler_Service_Home_Resource(
@@ -63,6 +61,13 @@ class Woo_Doppler_Service
                   'on_query_string' => true
                 ),
                 'per_page' => 200
+              )
+            ),
+            'new' => array(
+              'route' => 'lists',
+              'httpMethod' => 'post',
+              'parameters' => array(
+                'hola' => 'ketal' 
               )
             )
           )
@@ -104,7 +109,6 @@ class Woo_Doppler_Service
     $this->config['credentials'] = array_merge($credentials, $this->config['credentials'] );
     $connectionStatus = $this->connectionStatus();
     
-    //switch($connectionStatus->code) {
     switch($connectionStatus['response']['code']) {
       case 200:
         return true;
@@ -173,12 +177,6 @@ class Woo_Doppler_Service
         
         case 'get':
             
-          /*
-            $response = \Httpful\Request::get($url)
-            ->addHeaders( $headers )
-            ->timeoutIn(12)
-            ->send();
-            */
             $response = wp_remote_get($url, array(
               'headers'=>$headers,
               'timeout' => 12
@@ -186,13 +184,7 @@ class Woo_Doppler_Service
             break;
         
         case 'post':
-            /*
-            $response = \Httpful\Request::post($url)
-              ->body( json_encode($body) )
-              ->addHeaders( $headers )
-              ->timeoutIn(12)
-              ->send();
-            */
+           
             $response = wp_remote_post($url, array(
               'headers'=>$headers,
               'timeout' => 12,
@@ -282,10 +274,10 @@ if( ! class_exists( 'Doppler_Service_Lists_Resource' ) ) :
     }
 
     public function getList( $listId ){
-      //$method = $methods['get'];
+  
       $method = $this->methods['get'];
-     // return $this->service->call($method, array("listId" => $listId) )->body;
       return json_decode($this->service->call($method, array("listId" => $listId))['body']);
+    
     }
 
     /**
@@ -321,6 +313,15 @@ if( ! class_exists( 'Doppler_Service_Lists_Resource' ) ) :
       return $z->items;
 
     }
+
+    public function saveList( $list_name ){
+      
+      if($list_name!=''):
+        $method = $this->methods['new'];
+        return $this->service->call( $method, null, array('name'=>$list_name)  );
+      endif;
+    
+    }
     
   }
 
@@ -345,7 +346,6 @@ if( ! class_exists( 'Doppler_Service_Fields' ) ) :
 
     public function getAllFields( $listId = null ){
       $method = $this->methods['list'];
-      //return $this->service->call($method, array("listId" => $listId) )->body;
       return json_decode($this->service->call($method, array("listId" => $listId) )['body']);
     }
 

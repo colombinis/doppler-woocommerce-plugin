@@ -290,6 +290,23 @@ class Doppler_For_Woocommerce_Admin {
 	
 	}
 
+	public function dplrwoo_save_list() {
+
+		/**
+		 * TODO: Validar nombre de la lista
+		 * largo, mínimo, etc.
+		 */
+		if(!empty($_POST['listName'])){
+
+			$this->doppler_service->setCredentials($this->credentials);
+			$subscriber_resource = $this->doppler_service->getResource('lists');
+			echo json_encode( $subscriber_resource->saveList( $_POST['listName'] ) );
+		}
+
+		exit();
+
+	}
+
 	/**
 	 * Check connection status.
 	 * If user and key are not stored returns false.
@@ -353,24 +370,9 @@ class Doppler_For_Woocommerce_Admin {
 			include_once( WP_PLUGIN_DIR . '/woocommerce/includes/abstracts/abstract-wc-session.php' );
 		}
 
-		/*
-		* First lets start the session. You cant use here WC_Session directly
-		* because it's an abstract class. But you can use WC_Session_Handler which
-		* extends WC_Session
-		*/
 		WC()->session = new WC_Session_Handler;
-
-		/*
-		* Next lets create a customer so we can access checkout fields
-		* If you will check a constructor for WC_Customer class you will see
-		* that if you will not provide user to create customer it will use some
-		* default one. Magic.
-		*/
 		WC()->customer = new WC_Customer;
 
-		/*
-		* Done. You can browse all chceckout fields (including custom ones)
-		*/
 		return WC()->checkout->checkout_fields;
 
 	}
@@ -395,10 +397,9 @@ class Doppler_For_Woocommerce_Admin {
 			}
 	  
 			$dplr_lists_arr = $dplr_lists_aux;
+			asort($dplr_lists_arr);
 
 		}
-
-		asort($dplr_lists_arr);
 		
 		return $dplr_lists_arr;
 	
