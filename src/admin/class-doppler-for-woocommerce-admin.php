@@ -300,7 +300,8 @@ class Doppler_For_Woocommerce_Admin {
 
 			$this->doppler_service->setCredentials($this->credentials);
 			$subscriber_resource = $this->doppler_service->getResource('lists');
-			echo json_encode( $subscriber_resource->saveList( $_POST['listName'] ) );
+			//echo json_encode( $subscriber_resource->saveList( $_POST['listName'] ) );
+			echo $subscriber_resource->saveList( $_POST['listName'] )['body'];
 		}
 
 		exit();
@@ -381,6 +382,7 @@ class Doppler_For_Woocommerce_Admin {
 	 * Get lists
 	 */
 	public function get_alpha_lists() {
+		
 		
 		$this->doppler_service->setCredentials($this->credentials);
 		$list_resource = $this->doppler_service->getResource('lists');

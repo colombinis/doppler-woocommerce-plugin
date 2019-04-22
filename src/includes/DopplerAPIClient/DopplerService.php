@@ -115,9 +115,11 @@ class Woo_Doppler_Service
         break;
       case 401:
         //TODO: Return formated error 
+        return false;
         break;
       case 403:
         //TODO: Return formated error
+        return false;
         break;
     }
 

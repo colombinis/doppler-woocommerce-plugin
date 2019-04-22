@@ -122,16 +122,27 @@
 				listsLoading();
 
 				$.post( ajaxurl, data, function( response ) {
-					var obj = JSON.parse(response)					
-					if(obj.createdResourceId){
-						loadLists(1);
+
+					var body = 	JSON.parse(response);
+					
+					if(body.createdResourceId){
+						
+						var html ='<tr>';
+						html+='<td>'+body.createdResourceId+'</td><td>'+listName+'</td>';
+						html+='<td>0</td>';
+						html+='</tr>';
+
+						$("#dprwoo-tbl-lists tbody").prepend(html);
+
 					}else{
-						var body = JSON.parse(obj.body);
+						
 						if(body.status == '400'){
 							alert(body.title);
 						}
-						listsLoaded();
 					}
+
+					listsLoaded();
+
 				});
 			
 			}
