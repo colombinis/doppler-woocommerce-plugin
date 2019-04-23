@@ -382,7 +382,7 @@ class Doppler_For_Woocommerce_Admin {
 	/**
 	 * Get the customer's fields.
 	 */
-	public function getCheckoutFields(){
+	public function getCheckoutFields() {
 
 		if ( ! class_exists( 'WC_Session' ) ) {
 			include_once( WP_PLUGIN_DIR . '/woocommerce/includes/abstracts/abstract-wc-session.php' );
@@ -392,6 +392,87 @@ class Doppler_For_Woocommerce_Admin {
 		WC()->customer = new WC_Customer;
 
 		return WC()->checkout->checkout_fields;
+
+	}
+
+	/**
+	 * Compares field types between WC and Doppler
+	 */
+	function check_field_type($wc_field_type, $dplr_field_type) {
+		
+		empty($wc_field_type)? $wc_field_type = 'string' : '';
+		
+		switch($wc_field_type){
+			case 'string':
+					if($dplr_field_type === 'string'){
+						return true;
+					}
+					return false;
+				break;
+			case 'state':
+					if($dplr_field_type === 'string'){
+						return true;
+					}
+					return false;
+				break;
+			case 'radio':
+					if($dplr_field_type === 'gender'){
+						return true;
+					}
+					return false;
+				break;
+			case 'email':
+					if($dplr_field_type === 'email'){
+						return true;
+					}
+					return false;
+				break;
+			case 'country':
+					if($dplr_field_type === 'country'){
+						return true;
+					}
+					return false;
+				break;
+			case 'tel':
+					if($dplr_field_type === 'phone'){
+						return true;
+					}
+					return false;
+				break;
+			case 'date':
+					if($dplr_field_type === 'date'){
+						return true;
+					}
+					return false;
+				break;
+			case 'datetime':
+					if($dplr_field_type === 'date'){
+						return true;
+					}
+					return false;
+				break;
+			case 'datetime-local':
+					if($dplr_field_type === 'date'){
+						return true;
+					}
+					return false;
+				break;
+			case 'number':
+				if($dplr_field_type === 'number'){
+						return true;
+					}
+					return false;
+				break;
+			case 'checkbox':
+				if($dplr_field_type === 'boolean'){
+						return true;
+					}
+					return false;
+				break;
+			default:
+				return true;
+				break;
+		}
 
 	}
 

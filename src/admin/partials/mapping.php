@@ -45,17 +45,17 @@ if(is_array($wc_fields)){
                 ?>
 
                     <tr>
-                        <td><?php echo $fieldAtributes['label']?></td>
+                        <td><?php echo $fieldAtributes['label']?> <span style="opacity:0.6"><?php echo $fieldAtributes['type']?></span></td>
                         <td>
                             <select class="dplrwoo-mapping-fields" name="dplrwoo_mapping[<?php echo $fieldname?>]">
                                 <option></option>
                                 <?php 
                                 foreach ($dplr_fields as $field){
                                     
-                                    if( !in_array($field->name,$used_fields) || $maps[$fieldname] === $field->name ){
+                                    if( $this->check_field_type($fieldAtributes['type'],$field->type) && !in_array($field->name,$used_fields) || $maps[$fieldname] === $field->name ){
                                         ?>
                                         <option value="<?php echo $field->name?>" <?php if( $maps[$fieldname] === $field->name ) echo 'selected' ?>>
-                                            <?php echo $field->name?>
+                                            <?php echo $field->name?> (<?php echo $field->type?>)
                                         </option>
                                         <?php
                                     }
