@@ -300,10 +300,19 @@ class Doppler_For_Woocommerce_Admin {
 
 			$this->doppler_service->setCredentials($this->credentials);
 			$subscriber_resource = $this->doppler_service->getResource('lists');
-			//echo json_encode( $subscriber_resource->saveList( $_POST['listName'] ) );
 			echo $subscriber_resource->saveList( $_POST['listName'] )['body'];
 		}
+		exit();
 
+	}
+
+	public function dplrwoo_delete_list() {
+
+		if(!empty($_POST['listId'])){
+			$this->doppler_service->setCredentials($this->credentials);
+			$subscriber_resource = $this->doppler_service->getResource('lists');
+			echo json_encode($subscriber_resource->deleteList( $_POST['listId'] ));
+		}
 		exit();
 
 	}

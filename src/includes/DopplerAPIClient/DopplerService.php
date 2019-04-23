@@ -66,8 +66,15 @@ class Woo_Doppler_Service
             'new' => array(
               'route' => 'lists',
               'httpMethod' => 'post',
-              'parameters' => array(
-                'hola' => 'ketal' 
+              'parameters' => array()
+            ),
+            'delete' => array(
+              'route' => 'lists/:listId',
+              'httpMethod' => 'delete',
+              'parameters'  => array(
+                'listId' => array(
+                  'on_query_string' => false,
+                )
               )
             )
           )
@@ -164,7 +171,6 @@ class Woo_Doppler_Service
 
     }
 
-
     $headers=array(
             "Accept" => "application/json",
             "Content-Type" => "application/json",
@@ -193,6 +199,17 @@ class Woo_Doppler_Service
               'body'=> json_encode($body)
             ));
             break;
+
+        case 'delete':
+           
+            $response = wp_remote_request($url, array(
+              'method' => 'DELETE',
+              'headers'=>$headers,
+              'timeout' => 12,
+              'body'=> json_encode($body)
+            ));
+            break;
+
       }
 
     }
@@ -285,23 +302,17 @@ if( ! class_exists( 'Doppler_Service_Lists_Resource' ) ) :
     /**
      * Get all lists recursively
      */
-    public function getAllLists( $listId = null, $lists = [], $page = 1  ){
+    public function getAllLists( $listId = null, $lists = [], $page = 1  ) {
       
       $method = $this->methods['list'];
-      
       $z = json_decode($this->service->call($method, array("listId" => $listId, 'page' => $page))['body']);
-      
       $lists[] = $z->items;
 
       if($z->currentPage < $z->pagesCount && $page<4){
-        
         $page = $page+1;
         return $this->getAllLists(null, $lists, $page);
-
       }else{
-
         return $lists;
-        
       }
       
     }
@@ -309,18 +320,25 @@ if( ! class_exists( 'Doppler_Service_Lists_Resource' ) ) :
     public function getListsByPage( $page = 1 ) {
 
       $method = $this->methods['list'];
-
       $z = json_decode($this->service->call($method, array("listId" => null, 'page' => $page))['body']);
-
       return $z->items;
 
     }
 
-    public function saveList( $list_name ){
+    public function saveList( $list_name ) {
       
-      if($list_name!=''):
+      if(!empty($list_name)):
         $method = $this->methods['new'];
         return $this->service->call( $method, null, array('name'=>$list_name)  );
+      endif;
+    
+    }
+
+    public function deleteList($list_id) {
+      
+      if(!empty($list_id)):
+        $method = $this->methods['delete'];
+        return $this->service->call( $method, array('listId'=>$list_id) );
       endif;
     
     }

@@ -121,6 +121,27 @@ $red: #b80d0d;
      
       #dprwoo-tbl-lists{
         display: block;
+        a{
+          cursor: pointer;
+        }
+        tr{
+          &.deleting{
+            pointer-events: none;
+            opacity: 0.6;
+            a{
+              visibility:hidden;
+              &:after{
+                background-image: url('../img/loading.gif');
+                background-repeat: no-repeat;
+                content: '';
+                height: 18px;
+                margin-top: -18px;
+                visibility: visible;
+                display:block;
+              }
+            }
+          }
+        }
       }
 
       &.loading{

@@ -130,9 +130,11 @@
 						var html ='<tr>';
 						html+='<td>'+body.createdResourceId+'</td><td>'+listName+'</td>';
 						html+='<td>0</td>';
+						html+='<td><a href="#" data-list-id="'+body.createdResourceId+'">Delete</a></td>'
 						html+='</tr>';
 
 						$("#dprwoo-tbl-lists tbody").prepend(html);
+						//$("#dprwoo-tbl-lists tbody tr a").on("click",deleteList);
 
 					}else{
 						
@@ -148,6 +150,21 @@
 			}
 
 		});
+
+		
+		if($('#dplr-dialog-confirm').length>0){
+			
+			$("#dplr-dialog-confirm").dialog({
+				autoOpen: false,
+				resizable: false,
+				height: "auto",
+				width: 400,
+				modal: true
+			});
+		
+		}
+
+		$("#dprwoo-tbl-lists tbody").on("click","tr a",deleteList);
 
 	});
 	
@@ -187,6 +204,7 @@
 					html+='<tr>';
 					html+='<td>'+value.listId+'</td><td>'+value.name+'</td>';
 					html+='<td>'+value.subscribersCount+'</td>';
+					html+='<td><a href="#" data-list-id="'+value.listId+'">Delete</a></td>'
 					html+='</tr>';
 					
 				}
@@ -198,6 +216,44 @@
 			}
 
 		})
+	}
+
+	function deleteList(e){
+
+		e.preventDefault();
+
+		var a = $(this);
+		var tr = a.closest('tr');
+		var listId = a.attr('data-list-id');
+		var data = {
+			action: 'dplrwoo_ajax_delete_list',
+			listId : listId
+		};
+		
+		$("#dplr-dialog-confirm").dialog("option", "buttons", [{
+			text: 'Delete',
+			click: function() {
+				$(this).dialog("close");
+				tr.addClass('deleting');
+				$.post( ajaxurl, data, function( response ) {
+					var obj = JSON.parse(response);
+					if(obj.response.code == 200){
+						tr.remove();
+					}else{
+						alert('Error.');
+					}
+				});
+			}
+		  }, 
+		  {
+			text: 'Cancel',
+			click: function() {
+			  $(this).dialog("close");
+			}
+		  }]);
+  
+		  $("#dplr-dialog-confirm").dialog("open");
+
 	}
 
 })( jQuery );
