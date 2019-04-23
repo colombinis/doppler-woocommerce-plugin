@@ -309,9 +309,17 @@ class Doppler_For_Woocommerce_Admin {
 	public function dplrwoo_delete_list() {
 
 		if(!empty($_POST['listId'])){
-			$this->doppler_service->setCredentials($this->credentials);
-			$subscriber_resource = $this->doppler_service->getResource('lists');
-			echo json_encode($subscriber_resource->deleteList( $_POST['listId'] ));
+
+			$subscribers_lists = get_option('dplr_subsribers_list');
+
+			if(!array_search($_POST['listId'],$subscribers_lists)){
+				$this->doppler_service->setCredentials($this->credentials);
+				$subscriber_resource = $this->doppler_service->getResource('lists');
+				echo json_encode($subscriber_resource->deleteList( $_POST['listId'] ));
+			}else{
+				echo json_encode(array('response'=>array('code'=>'0')));
+			}
+
 		}
 		exit();
 

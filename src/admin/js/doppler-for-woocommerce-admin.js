@@ -240,7 +240,12 @@
 					if(obj.response.code == 200){
 						tr.remove();
 					}else{
-						alert('Error.');
+						if(obj.response.code == 0){
+							alert('No se puede eliminar lista.')
+						}else{
+							alert('Error');
+						}
+						tr.removeClass('deleting');
 					}
 				});
 			}

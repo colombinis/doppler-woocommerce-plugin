@@ -65,27 +65,21 @@
 
         case 'fields':
 
-                $wc_fields = $this->getCheckoutFields();
+            $wc_fields = $this->getCheckoutFields();
+            $this->doppler_service->setCredentials($this->credentials);
+            $fields_resource = $this->doppler_service->getResource('fields');
+            $dplr_fields = $fields_resource->getAllFields();
+            $dplr_fields = isset($dplr_fields->items) ? $dplr_fields->items : [];
+            $maps = get_option('dplrwoo_mapping');
+            require_once('mapping.php');
 
-                $this->doppler_service->setCredentials($this->credentials);
-            
-                $fields_resource = $this->doppler_service->getResource('fields');
-
-                $dplr_fields = $fields_resource->getAllFields();
-
-                $dplr_fields = isset($dplr_fields->items) ? $dplr_fields->items : [];
-
-                $maps = get_option('dplrwoo_mapping');
-
-                require_once('mapping.php');
-
-            break;
+        break;
 
         default:
 
-                require_once('settings.php');
+            require_once('settings.php');
 
-            break;
+        break;
     }
 
     ?>
