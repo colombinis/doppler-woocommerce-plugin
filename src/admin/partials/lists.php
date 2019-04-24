@@ -1,6 +1,8 @@
 
 <form id="dplrwoo-form-list" action="" method="post">
 
+    <?php wp_nonce_field( 'map-lists' );?>
+
     <table class="tbl">
         
         <tbody>

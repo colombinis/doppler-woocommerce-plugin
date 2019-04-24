@@ -24,7 +24,7 @@
  if( isset( $_GET[ 'tab' ] ) ) {
     $active_tab = $_GET[ 'tab' ];
  }else{
-     $active_tab = 'settings';
+    $active_tab = 'settings';
  } 
 
  $connected = $this->connectionStatus;

@@ -216,8 +216,7 @@ class Doppler_For_Woocommerce_Admin {
 		
 		if($_GET['tab']=='fields'){
 
-			if(isset($_POST['dplrwoo_mapping'])){
-				
+			if( isset($_POST['dplrwoo_mapping']) && current_user_can('manage_options') && check_admin_referer('map-fields') ){
 				update_option( 'dplrwoo_mapping', $_POST['dplrwoo_mapping'] );
 				$this->admin_notice = array('success', __('Fields mapped succesfully', 'doppler-for-woocommerce'));
 			}
@@ -226,8 +225,7 @@ class Doppler_For_Woocommerce_Admin {
 
 		if($_GET['tab']=='lists'){
 
-			if(isset($_POST['dplr_subsribers_list'])){
-				
+			if( isset($_POST['dplr_subsribers_list']) && current_user_can('manage_options') && check_admin_referer('map-lists') ){
 				update_option( 'dplr_subsribers_list', $_POST['dplr_subsribers_list'] );
 				$this->admin_notice = array('success', __('Subscribers lists saved succesfully', 'doppler-for-woocommerce'));
 			}
@@ -243,7 +241,7 @@ class Doppler_For_Woocommerce_Admin {
 
 		$option = get_option( 'dplrwoo_user' );
 		?>
-			<input type="text" value="<?php echo $option ?>" name="dplrwoo_user" />
+			<input type="email" value="<?php echo $option ?>" name="dplrwoo_user" />
 		<?php
 	
 	}
@@ -255,7 +253,7 @@ class Doppler_For_Woocommerce_Admin {
 		
 		$option = get_option( 'dplrwoo_key' );
 		?>
-			<input type="text" value="<?php echo $option ?>" name="dplrwoo_key" />
+			<input type="text" value="<?php echo $option ?>" name="dplrwoo_key" maxlength="32" />
 		<?php
 	
 	}

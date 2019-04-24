@@ -1,6 +1,6 @@
 <form id="dplrwoo-form-disconnect" action="" method="post">
 
-<?php settings_fields( 'doppler_for_woocommerce_menu' ); ?>
+<?php wp_nonce_field( 'map-fields' );?>
 
 <?php
 
