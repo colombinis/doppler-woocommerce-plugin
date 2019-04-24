@@ -266,7 +266,7 @@ class Doppler_For_Woocommerce_Admin {
 	function eg_setting_section_callback_function( $args ) {
 		
 		?>
-			<p id="<?php echo esc_attr( $args['id'] ); ?>"><?php esc_html_e( 'Follow the white rabbit.', 'wporg' ); ?></p>
+			<p id="<?php echo esc_attr( $args['id'] ); ?>"><?php esc_html_e( 'Example text', 'doppler-for-woocommerce' ); ?></p>
 		<?php
 	
 	}
