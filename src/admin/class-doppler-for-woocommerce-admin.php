@@ -470,7 +470,7 @@ class Doppler_For_Woocommerce_Admin {
 					return false;
 				break;
 			default:
-				return true;
+					return true;
 				break;
 		}
 

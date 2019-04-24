@@ -84,16 +84,22 @@
 		}); 
 
 		$('.dplrwoo-mapping-fields').focus(function(){
-			$(this).data('val', $(this).val());
-		}).change(function(previous){
+			$(this).data('fieldData', {'val':$(this).val(),'type':$('option:selected', this).attr('data-type'),'name':$(this).attr('name')});
+		}).change(function(){
 			
-			var prev = $(this).data('val');
+			var prevData = $(this).data('fieldData');
 			var current = $(this).val();
+			var oSel = $(this);
 			
 			$(this).data('val', current);
 
-			if(prev!==''){
-				$('.dplrwoo-mapping-fields').not(this).append('<option value="'+prev+'">'+prev+'</option>');
+			if(prevData.val!==''){
+				//$('.dplrwoo-mapping-fields').not(this).append('<option value="'+prev+'">'+prev+'</option>');
+				$('.dplrwoo-mapping-fields').each(function(){
+					if( checkFieldType(prevData.type,$(this).attr('data-type')) && (prevData.name !== $(this).attr('name')) ){
+						$(this).append('<option value="'+prevData.val+'">'+prevData.val+'</option>');
+					}
+				});
 			}
 
 			if(current!==''){
@@ -134,7 +140,6 @@
 						html+='</tr>';
 
 						$("#dprwoo-tbl-lists tbody").prepend(html);
-						//$("#dprwoo-tbl-lists tbody tr a").on("click",deleteList);
 
 					}else{
 						
@@ -259,6 +264,26 @@
   
 		  $("#dplr-dialog-confirm").dialog("open");
 
+	}
+
+	function checkFieldType(dplrType, wcType){
+
+		var types = {
+			'string':['string','state'],
+			'gender':['radio'],
+			'email':['email'],
+			'country':['country'],
+			'phone':['tel'],
+			'number':['number'],
+			'date':['date','datetime','datetime-local'],
+			'boolean':['checkbox'],
+		}
+
+		if( $.inArray(wcType,types[dplrType]) !== -1 || (dplrType === 'string' && wcType === '') ) {
+			return true;
+		}
+
+		return false;
 	}
 
 })( jQuery );
