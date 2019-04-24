@@ -89,7 +89,6 @@
 			
 			var prevData = $(this).data('fieldData');
 			var current = $(this).val();
-			var oSel = $(this);
 			
 			$(this).data('val', current);
 
