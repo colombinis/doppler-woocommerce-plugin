@@ -1,4 +1,4 @@
-<form id="dplrwoo-form-disconnect" action="" method="post">
+<form id="dplrwoo-form-mapping" action="" method="post">
 
 <?php wp_nonce_field( 'map-fields' );?>
 
