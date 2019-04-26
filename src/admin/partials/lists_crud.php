@@ -2,7 +2,7 @@
 
     <form id="dplrwoo-form-list-crud" action="" method="post">
 
-        <label><?php _e('Agregar nueva lista')?></label>
+        <label><?php _e('Create new List')?></label>
         <input type="text" value="" maxlength="20" disabled="disabled" maxlength="100"/>
 
         <button id="dplrwoo-save-list" class="dplrwoo-button" disabled="disabled">
