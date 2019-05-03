@@ -125,7 +125,7 @@
 					if(body.createdResourceId){
 						
 						var html ='<tr>';
-						html+='<td>'+body.createdResourceId+'</td><td>'+listName+'</td>';
+						html+='<td>'+body.createdResourceId+'</td><td><strong>'+listName+'</strong></td>';
 						html+='<td>0</td>';
 						html+='<td><a href="#" class="text-dark-red" data-list-id="'+body.createdResourceId+'">Delete</a></td>'
 						html+='</tr>';
@@ -197,15 +197,16 @@
 					
 					var value = obj[key];
 					
-					html+='<tr>';
-					html+='<td>'+value.listId+'</td><td>'+value.name+'</td>';
-					html+='<td>'+value.subscribersCount+'</td>';
-					html+='<td><a href="#" class="text-dark-red" data-list-id="'+value.listId+'">Delete</a></td>'
-					html+='</tr>';
+					html += '<tr>';
+					html += '<td>'+value.listId+'</td>';
+					html += '<td><strong>'+value.name+'</strong></td>';
+					html += '<td>'+value.subscribersCount+'</td>';
+					html += '<td><a href="#" class="text-dark-red" data-list-id="'+value.listId+'">Delete</a></td>'
+					html += '</tr>';
 					
 				}
 
-				$("#dprwoo-tbl-lists tbody").append(html);
+				$("#dprwoo-tbl-lists tbody").prepend(html);
 				$("#dprwoo-tbl-lists").attr('data-page','1');
 				
 				listsLoaded();

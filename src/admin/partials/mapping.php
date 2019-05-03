@@ -1,93 +1,101 @@
-<form id="dplrwoo-form-mapping" action="" method="post">
+<div class="dplr-tab-content">
 
-<?php wp_nonce_field( 'map-fields' );?>
+    <p>
+        Field mapping instructions
+    </p>
 
-<?php
+    <form id="dplrwoo-form-mapping" action="" method="post">
 
-$used_fields = array_filter($maps);
+    <?php wp_nonce_field( 'map-fields' );?>
 
-if(is_array($wc_fields)){
+    <?php
 
-    foreach($wc_fields as $fieldtype=>$arr){
+    $used_fields = array_filter($maps);
 
-        if( $fieldtype!='' && $fieldtype!='order' ):
+    if(is_array($wc_fields)){
 
-            ?>
-            <table class="tbl tbl--mapping">
-                <thead>
-                    <tr>
-                        <th colspan="2">
-                            <?php
-                            switch($fieldtype){
-                                case 'billing':
-                                    _e('Billing fields', 'doppler-for-woocommerce');
-                                    break;
-                                case 'shipping':
-                                    _e('Shipping fields', 'doppler-for-woocommerce');
-                                    break;
-                                case 'account':
-                                    _e('Account fields', 'doppler-for-woocommerce');
-                                    break;
-                                default:
-                                    echo $fieldtype;
-                                    break;
-                            }
-                            ?>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-            
-            <?php
+        foreach($wc_fields as $fieldtype=>$arr){
 
-            foreach($arr as $fieldname=>$fieldAtributes){
+            if( $fieldtype!='' && $fieldtype!='order' ):
 
                 ?>
-
-                    <tr>
-                        <td><?php echo $fieldAtributes['label']?> <span style="opacity:0.6"><?php echo $fieldAtributes['type']?></span></td>
-                        <td>
-                            <select class="dplrwoo-mapping-fields" name="dplrwoo_mapping[<?php echo $fieldname?>]" data-type="<?php echo $fieldAtributes['type']?>">
-                                <option></option>
-                                <?php 
-                                foreach ($dplr_fields as $field){
-                                    
-                                    if( $this->check_field_type($fieldAtributes['type'],$field->type) && !in_array($field->name,$used_fields) || $maps[$fieldname] === $field->name ){
-                                        ?>
-                                        <option value="<?php echo $field->name?>" <?php if( $maps[$fieldname] === $field->name ) echo 'selected' ?> data-type="<?php echo $field->type ?>">
-                                            <?php echo $field->name?> (<?php echo $field->type?>)
-                                        </option>
-                                        <?php
-                                    }
-                                
+                <table class="grid">
+                    <thead>
+                        <tr>
+                            <th colspan="2">
+                                <?php
+                                switch($fieldtype){
+                                    case 'billing':
+                                        _e('Billing fields', 'doppler-for-woocommerce');
+                                        break;
+                                    case 'shipping':
+                                        _e('Shipping fields', 'doppler-for-woocommerce');
+                                        break;
+                                    case 'account':
+                                        _e('Account fields', 'doppler-for-woocommerce');
+                                        break;
+                                    default:
+                                        echo $fieldtype;
+                                        break;
                                 }
                                 ?>
-                            </select>
-                        </td>
-                    </tr>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
                 
                 <?php
 
-            }
+                foreach($arr as $fieldname=>$fieldAtributes){
 
-            ?>
-                </tbody>
-            </table>
+                    ?>
 
-            <?php
+                        <tr>
+                            <td><?php echo $fieldAtributes['label']?> <span style="opacity:0.6"><?php echo $fieldAtributes['type']?></span></td>
+                            <td>
+                                <select class="dplrwoo-mapping-fields" name="dplrwoo_mapping[<?php echo $fieldname?>]" data-type="<?php echo $fieldAtributes['type']?>">
+                                    <option></option>
+                                    <?php 
+                                    foreach ($dplr_fields as $field){
+                                        
+                                        if( $this->check_field_type($fieldAtributes['type'],$field->type) && !in_array($field->name,$used_fields) || $maps[$fieldname] === $field->name ){
+                                            ?>
+                                            <option value="<?php echo $field->name?>" <?php if( $maps[$fieldname] === $field->name ) echo 'selected' ?> data-type="<?php echo $field->type ?>">
+                                                <?php echo $field->name?> (<?php echo $field->type?>)
+                                            </option>
+                                            <?php
+                                        }
+                                    
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                        </tr>
+                    
+                    <?php
 
-        endif;
+                }
+
+                ?>
+                    </tbody>
+                </table>
+
+                <?php
+
+            endif;
+        }
+
     }
 
-}
+    ?>
+        </tbody>
 
-?>
-    </tbody>
+    </table>
 
-</table>
+    <button id="dplrwoo-mapping-btn" class="dplrwoo-button">
+        <?php _e('Save', 'doppler-for-woocommerce') ?>
+    </button>
 
-<button id="dplrwoo-mapping-btn" class="dplrwoo-button">
-    <?php _e('Save', 'doppler-for-woocommerce') ?>
-</button>
+    </form>
 
-</form>
+</div>

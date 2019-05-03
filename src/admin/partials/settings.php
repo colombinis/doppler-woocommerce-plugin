@@ -1,3 +1,5 @@
+<div class="dplr-tab-content">
+
 <?php 
     
     if(!$connected){
@@ -15,7 +17,7 @@
             //submit_button( 'Save Settings' );
             ?>
 
-            <button id="dplrwoo-connect" class="dplrwoo-button">
+            <button id="dplrwoo-connect" class="dplrwoo-button dplrwoo-button--rounded">
                 <div class="loading"></div>
                 <?php _e('Connect', 'doppler-for-woocommerce') ?>
             </button>
@@ -38,9 +40,13 @@
             <input type="hidden" name="dplrwoo_key" value="" />
 
             <div class="connected-status">
-                <?php _e('You\'re connetcted to Doppler') ?> <br />
+                <p>
+                    <?php _e('You\'re connetcted to Doppler') ?>
+                </p>
+                <p>
                 User Email: <strong><?php echo get_option('dplrwoo_user')?></strong> <br />
                 Api Key: <strong><?php echo get_option('dplrwoo_key')?></strong>
+                </p>
             </div>
 
             <button id="dplrwoo-disconnect" class="dplrwoo-button">
@@ -53,3 +59,5 @@
     }
 
 ?>
+
+</div>

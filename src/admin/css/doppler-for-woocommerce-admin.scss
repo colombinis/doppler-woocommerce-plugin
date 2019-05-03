@@ -2,6 +2,8 @@
 * Admin styles for Doppler for WooCommerce
 */
 
+@import url(fonts.css);
+
 /**
 * Variables
 */
@@ -12,6 +14,13 @@ $text-green: #33AC72;
 $text-dark-green: #027B44;
 $bggreen: #33AD73;
 $dark-red: darkred;
+$doppler-grey: #94917f;
+$doppler-grey-bg: #cac7be;
+$yellow-hightlight:#ffc;
+$grey: #666;
+$main-font-size: 15px;
+$small-font-size: 13px;
+$content-width: 940px;
 
 /**
 * Menu
@@ -27,10 +36,32 @@ $dark-red: darkred;
 
 .doppler-woo-settings{
 
+  font-family: "Proxima Nova Rg", arial;
+
+  h2.main-title{
+    margin-bottom: 15px;
+  }
+
+  font-size: $main-font-size;
+
+  .small-text{
+    font-size: $small-font-size;
+  }
+
   .d-none{
     display: none;
   }
+
+  hr{
+    margin-top: 15px;
+    margin-bottom: 15px;
+  }
   
+  .dplr-tab-content{
+    max-width: $content-width;
+    margin: auto;
+  }
+
   .dplrwoo-button{
       cursor: pointer;
       margin-top: 15px;
@@ -47,12 +78,9 @@ $dark-red: darkred;
       &:hover{
         background-color: $text-dark-green;
       }
-  }
-  
-  .dplrwoo-button.dplrwoo-button--sm{
-    line-height: 25px;
-    padding-left: 15px;
-    padding-right: 14px;
+    &.dplrwoo-button--rounded{
+      border-radius: 100px;
+    }
   }
   
   a{
@@ -96,32 +124,55 @@ $dark-red: darkred;
     display: none;
   }
 
-  table.tbl{
+  .connected-status{
+    p{
+      font-size: 15px;
+    }
+  }
+
+  table.grid{
+  
+    border-spacing: 0;
+    background: none repeat scroll 0 0 #fff;
     width: 100%;
-    max-width: 600px;
+
     thead{
       margin-bottom:10px;
       tr{
         th{
-          padding: 10px 0px;
-          text-align: center;
-          border-bottom: 1px solid #ccc;
+          background: $doppler-grey-bg;
+          color: #fff;
+          font-size: 13px;
+          height: 40px;
+          text-align: left;
+          padding-left: 10px;
+          vertical-align: middle;
         }
       }
     }
     tr{
       th,td{
+        border-bottom: 1px solid #e8e8e8;
+        color: $grey;
+        font-size: $small-font-size;
+        height: 39px;
+        line-height: 21px;
+        padding: 0 15px 0 15px;
+        vertical-align: middle;
+        white-space: nowrap;
         text-align: left;
-        padding-left: 10px;
-        padding-right: 10px;
         select{
           width: 100%;
         }
         &.text-right{
           text-align:right;
         }
-        &.td-sm{
-          width: 5%;
+      }
+    }
+    tbody{
+      tr{
+        &:hover{
+          background-color: $yellow-hightlight;
         }
       }
     }
@@ -142,6 +193,21 @@ $dark-red: darkred;
     }
   }
 
+  #dplrwoo-form-connect,
+  #dplrwoo-form-disconnect{
+    width: 500px;
+    margin: auto;
+    table{
+      th{
+        width: 20%;
+      }
+    }
+    input[type="email"],
+    input[type="text"]{
+      width:100%;
+    }
+  }
+
   #dplrwoo-crud{
 
     #dplrwoo-form-list-crud{
@@ -159,7 +225,6 @@ $dark-red: darkred;
     }
     
     #dprwoo-tbl-lists{
-      display: block;
       a{
         cursor: pointer;
       }
@@ -197,6 +262,23 @@ $dark-red: darkred;
       }
     }
 
+  }
+
+  form{
+    input[type="text"], input[type="url"], input[type="email"], textarea, select{
+      box-sizing: border-box;
+      background-color: #fff;
+      border: 1px solid #d3d3d3;
+      border-radius: 3px;
+      box-sizing: border-box;
+      color: $doppler-grey;
+      font-family: inherit;
+      font-size: 15px;
+      height: 42px;
+      padding: 10px;
+      position: relative;
+      box-shadow: none;
+    }
   }
     
 }

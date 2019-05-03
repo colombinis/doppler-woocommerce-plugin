@@ -1,11 +1,11 @@
-<div id="dplrwoo-crud">
+<div id="dplrwoo-crud" class="dplr-tab-content">
 
     <form id="dplrwoo-form-list-crud" action="" method="post">
 
         <label><?php _e('Create new List')?></label>
         <input type="text" value="" maxlength="20" disabled="disabled" maxlength="100" placeholder="<?php _e('Enter List name', 'doppler-for-woocommerce')?>"/>
 
-        <button id="dplrwoo-save-list" class="dplrwoo-button dplrwoo-button--sm" disabled="disabled">
+        <button id="dplrwoo-save-list" class="dplrwoo-button" disabled="disabled">
             <?php _e('Create list', 'doppler-for-woocommerce') ?>
         </button>
 
@@ -13,7 +13,7 @@
 
     <div class="dplrwoo-loading"></div>
 
-    <table id="dprwoo-tbl-lists" class="tbl widefat mt-30 d-none">
+    <table id="dprwoo-tbl-lists" class="grid widefat mt-30">
         <thead>
             <tr>
                 <th><?php _e('List ID', 'doppler-form')?></th>
@@ -23,6 +23,12 @@
             </tr>
         </thead>
         <tbody>
+            <tr>
+                <td>1</td>
+                <td>2</td>
+                <td>3</td>
+                <td>4</td>
+            </tr>
         </tbody>
     </table>
 
