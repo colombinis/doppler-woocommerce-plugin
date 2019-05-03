@@ -8,9 +8,15 @@
         <tbody>
 
             <tr>
-                <td>
-                    <?php _e('Compradores', 'doppler-for-woocommerce')?>
-                </td>
+                <th colspan="2"></th>
+                <th class="text-right td-sm"><?php _e('Subscriptors', 'doppler-for-woocommerce')?></th>
+                <th></th>
+            </tr>
+
+            <tr>
+                <th>
+                    <?php _e('Buyers', 'doppler-for-woocommerce')?>
+                </th>
                 <td>
                     <select name="dplr_subsribers_list[buyers]">
                         <option value=""></option>
@@ -18,19 +24,28 @@
                         if(!empty($lists)){
                             foreach($lists as $k=>$v){
                                 ?>
-                                <option value="<?php echo $k?>" <?php if($subscribers_lists['buyers']==$k) echo 'selected' ?>><?php echo $v?></option>
+                                <option value="<?php echo $k?>" 
+                                    <?php if($subscribers_lists['buyers']==$k){ echo 'selected'; $scount = $v['subscribersCount']; } ?>
+                                    data-subscriptors="<?php echo $v['subscribersCount']?>">
+                                    <?php echo $v['name']?>
+                                </option>
                                 <?php
                             }
                         }   
                         ?>
                     </select>
                 </td>
+                <td class="text-right td-sm">
+                    <span><?php echo $scount?></span>
+                </td>
+                <td>
+                </td>
             </tr>
 
             <tr>
-                <td>
-                    <?php _e('Usuarios registrados', 'doppler-for-woocommerce')?>
-                </td>
+                <th>
+                    <?php _e('Registered users', 'doppler-for-woocommerce')?>
+                </th>
                 <td>
                     <select name="dplr_subsribers_list[registered]">
                         <option value=""></option>
@@ -38,12 +53,21 @@
                             if(!empty($lists)){
                                 foreach($lists as $k=>$v){
                                     ?>
-                                    <option value="<?php echo $k?>" <?php if($subscribers_lists['registered']==$k) echo 'selected' ?>><?php echo $v?></option>
+                                    <option value="<?php echo $k?>" 
+                                        <?php if($subscribers_lists['registered']==$k){ echo 'selected'; $scount = $v['subscribersCount']; }?>
+                                        data-subscriptors="<?php echo $v['subscribersCount']?>">
+                                        <?php echo $v['name']?>
+                                    </option>
                                     <?php
                                 }
                             }
                         ?>
                     </select>
+                </td>
+                <td class="text-right td-sm">
+                    <span><?php echo $scount?></span>
+                </td>
+                <td>
                 </td>
             </tr>
         </tbody>
@@ -55,3 +79,9 @@
     </button>
 
 </form>
+
+<hr/>
+
+<a href="#" id="btn-synch"><?php _e('Synchronize lists', 'doppler-for-woocommerce')?></a>
+<img class="doing-synch" src="<?php echo DOPPLER_FOR_WOOCOMMERCE_URL . 'admin/img/ajax-synch.gif' ?>" alt="<?php _e('Synchronizing', 'doppler-for-woocommerce')?>"/>
+<span class="doing-synch">Sincronizando lista de compradores</span>

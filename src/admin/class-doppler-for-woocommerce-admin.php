@@ -489,13 +489,14 @@ class Doppler_For_Woocommerce_Admin {
 			foreach($dplr_lists as $k=>$v){
 			  if(is_array($v)):
 				foreach($v as $i=>$j){
-				  $dplr_lists_aux[$j->listId] = trim($j->name);
+				  $dplr_lists_aux[$j->listId] = array('name'=>trim($j->name), 'subscribersCount'=>$j->subscribersCount);
 				}
 			  endif;
 			}
 	  
 			$dplr_lists_arr = $dplr_lists_aux;
-			asort($dplr_lists_arr);
+
+			//Ordenar?
 
 		}
 		
@@ -524,6 +525,7 @@ class Doppler_For_Woocommerce_Admin {
 			$this->doppler_service->setCredentials($this->credentials);
 			$subscriber_resource = $this->doppler_service->getResource('subscribers');
 			$result = $subscriber_resource->addSubscriber($list_id, $subscriber);
+			var_dump($result);
 		
 		}
 				
@@ -531,7 +533,7 @@ class Doppler_For_Woocommerce_Admin {
 
 	/**
 	 * Se ejecuta cuando se crea desde register. Testeado OK.
-	 * Cuando se crea una cuenta desde el checkout. Testeado OK.
+	 * Cuando se crea una cuenta desde el checkout también. Testeado OK.
 	 * Si no se selecciona crear cuenta en el checkout NO se ejecuta.
 	 * TODO: Ver hacer reutilizable la parte de subscripción
 	 */
@@ -568,7 +570,7 @@ class Doppler_For_Woocommerce_Admin {
 	 * registrado o invitado.
 	 * Sólo para WC > 3.0
 	 */
-	public function dporwoo_customer_checkout_success( $order_id ) {
+	public function dplrwoo_customer_checkout_success( $order_id ) {
 
 		$order = wc_get_order( $order_id );
 		$order_data = $order->get_data();
@@ -603,6 +605,62 @@ class Doppler_For_Woocommerce_Admin {
 		
 		}
 
+	}
+
+	/**
+	 * Syncrhonizes the store's buyers with the Doppler List.
+	 * Sobre coordinar los compradores:
+	 *  - Puedo obtener todos los usuarios con su get_order_count( )
+	 *    pero no puedo elegir una fecha para coordinar a partir de ella,
+	 * 	  debería recorrer todos siempre.
+	 *  - Y cómo funcionaría con los usuarios no registrados? (no funcionaría)
+	 *  - Elijo recorrer ordenes, que sí puedo elegir a partir de una fecha,
+	 *    y además no necesariamente debe ser un usuario, puede ser un 
+	 *    guest.
+	 *  - ¿Las ordenes deberán ser ordenes en estado completada o simplemente
+	 *    con hacer CHECKOUT es un comprador? Si consideramos un comprador
+	 *    alguien con una orden COMPLETA hay que modificar lo hecho
+	 *    en la subscripción de usario al hacer Checkout, ya que 
+	 *    ya no sería ahí donde se enviaría el usuario a la lista,
+	 *    sino que sería cuando la orden cambia de estado a "COMPLETA"
+	 *    Esta función tiene que ser coherente con dporwoo_customer_checkout_success()
+	 *    Probar hook: add_action( 'woocommerce_payment_complete', 'so_payment_complete' );
+	 */
+	function dplrwoo_synch_buyers(){
+		$list_id = get_option('dplr_subsribers_list')['buyers'];
+		$users = get_users( array('role'=>'Customer') );
+		/*
+		if(!empty($users)){
+			foreach($users as $k=>$user){
+				$user = new WC_Customer( $user->ID );
+				if($user = )
+			}
+		}*/
+	}
+
+	/**
+	 * Syncrhonizes the store's registered users with the Doppler List.
+	 * TODO: guardar una fecha luego de sincronizar
+	 * y luego sincronizar a partir de esa fecha (usuarios registrados a partir de fecha).
+	 */
+	function dplrwoo_synch_registered(){
+		$list_id = get_option('dplr_subsribers_list')['registered'];
+		$users = get_users( array('role'=>'Customer') );
+		$fields_map = get_option('dplrwoo_mapping');
+		if(!empty($users)){
+			foreach($users as $k=>$user){
+				$meta_fields = get_user_meta($user->ID);
+				$fields = array();
+				foreach($fields_map as $k=>$v){
+					if($v!=''){
+						$value = array_shift(array_values($meta_fields[$k]));
+						$fields[] = array('name'=>$v, 'value'=>$value);
+					}
+				}
+				$email = array_shift(array_values($meta_fields['billing_email']));
+				$this->subscribe_customer($list_id, $email, $fields);
+			}
+		}
 	}
 
 	/**

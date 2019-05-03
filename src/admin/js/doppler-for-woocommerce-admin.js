@@ -66,7 +66,6 @@
 			$(this).data('val', current);
 
 			if(prevData.val!==''){
-				//$('.dplrwoo-mapping-fields').not(this).append('<option value="'+prev+'">'+prev+'</option>');
 				$('.dplrwoo-mapping-fields').each(function(){
 					if( checkFieldType(prevData.type,$(this).attr('data-type')) && (prevData.name !== $(this).attr('name')) ){
 						$(this).append('<option value="'+prevData.val+'">'+prevData.val+'</option>');
@@ -84,6 +83,26 @@
 		if($("#dprwoo-tbl-lists").length>0){
 			loadLists(1);
 		}
+
+		$("#dplrwoo-form-list select").change(function(){
+			$(this).closest('tr').find('td span').html($('option:selected', this).attr('data-subscriptors'));
+		});
+
+		$("#btn-synch").click(function(){
+			var link = $(this);
+			link.css('display','none');
+			$('.doing-synch').css('display', 'inline-block');
+			var synchBuyers = $.post(ajaxurl, {action:'dplrwoo_ajax_synch_buyers'}, function(response){
+				console.log(response);
+			});
+			var synchRegistered = $.post(ajaxurl, {action: 'dplrwoo_ajax_synch_registered'}, function(response){
+				console.log(response);
+			});
+			$.when(synchBuyers, synchRegistered).then(function(response){
+				link.css('display','inline-block');
+				$('.doing-synch').css('display', 'none');
+			});
+		});
 
 		$("#dplrwoo-save-list").click(function(e){
 
@@ -108,7 +127,7 @@
 						var html ='<tr>';
 						html+='<td>'+body.createdResourceId+'</td><td>'+listName+'</td>';
 						html+='<td>0</td>';
-						html+='<td><a href="#" data-list-id="'+body.createdResourceId+'">Delete</a></td>'
+						html+='<td><a href="#" class="text-dark-red" data-list-id="'+body.createdResourceId+'">Delete</a></td>'
 						html+='</tr>';
 
 						$("#dprwoo-tbl-lists tbody").prepend(html);
@@ -181,7 +200,7 @@
 					html+='<tr>';
 					html+='<td>'+value.listId+'</td><td>'+value.name+'</td>';
 					html+='<td>'+value.subscribersCount+'</td>';
-					html+='<td><a href="#" data-list-id="'+value.listId+'">Delete</a></td>'
+					html+='<td><a href="#" class="text-dark-red" data-list-id="'+value.listId+'">Delete</a></td>'
 					html+='</tr>';
 					
 				}

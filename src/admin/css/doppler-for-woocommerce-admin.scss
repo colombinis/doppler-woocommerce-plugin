@@ -8,6 +8,9 @@
 
 $main-text-color: #333;
 $red: #b80d0d;
+$text-green: #33AC72;
+$text-dark-green: #027B44;
+$dark-red: darkred;
 
 /**
 * General elements.
@@ -20,6 +23,16 @@ $red: #b80d0d;
 .dplrwoo-button{
     cursor: pointer;
     margin-top: 15px;
+}
+
+a{
+  color: $text-green;
+  &:hover{
+    color: $text-dark-green;
+  }
+  &.text-dark-red{
+    color: $dark-red;
+  }
 }
 
 
@@ -61,9 +74,13 @@ $red: #b80d0d;
       background-position: 50% 50%;
     }
 
+    .doing-synch{
+      display: none;
+    }
+
     table.tbl{
       width: 100%;
-      max-width: 500px;
+      max-width: 600px;
       thead{
         margin-bottom:10px;
         tr{
@@ -76,13 +93,17 @@ $red: #b80d0d;
       }
       tr{
         th,td{
-          width: 50%;
-          text-align:left;
+          text-align: left;
+          padding-left: 10px;
+          padding-right: 10px;
           select{
             width: 100%;
           }
           &.text-right{
             text-align:right;
+          }
+          &.td-sm{
+            width: 5%;
           }
         }
       }
