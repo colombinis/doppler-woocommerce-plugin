@@ -21,8 +21,8 @@
  return;
  }
 
- if( isset( $_GET[ 'tab' ] ) ) {
-    $active_tab = $_GET[ 'tab' ];
+ if( isset($_GET['tab']) ) {
+    $active_tab = $_GET['tab'];
  }else{
     $active_tab = 'settings';
  } 
@@ -32,6 +32,8 @@
  ?>
 
 <div class="wrap doppler-woo-settings">
+
+    <h2>Doppler for WooCommerce <?php echo $this->get_version()?></h2> 
 
     <h2 class="nav-tab-wrapper">
         <a href="?page=doppler_for_woocommerce_menu&tab=settings" class="nav-tab <?php echo $active_tab == 'settings' ? 'nav-tab-active' : ''; ?>"><?php _e('Settings', 'doppler-for-woocommerce')?></a>
