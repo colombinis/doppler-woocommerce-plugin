@@ -5,7 +5,7 @@
         <label><?php _e('Create new List')?></label>
         <input type="text" value="" maxlength="20" disabled="disabled" maxlength="100"/>
 
-        <button id="dplrwoo-save-list" class="dplrwoo-button" disabled="disabled">
+        <button id="dplrwoo-save-list" class="dplrwoo-button dplrwoo-button--sm" disabled="disabled">
             <?php _e('Create list', 'doppler-for-woocommerce') ?>
         </button>
 

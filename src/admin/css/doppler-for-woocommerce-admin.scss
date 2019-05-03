@@ -10,6 +10,7 @@ $main-text-color: #333;
 $red: #b80d0d;
 $text-green: #33AC72;
 $text-dark-green: #027B44;
+$bggreen: #33AD73;
 $dark-red: darkred;
 
 /**
@@ -23,6 +24,25 @@ $dark-red: darkred;
 .dplrwoo-button{
     cursor: pointer;
     margin-top: 15px;
+    background-color: $bggreen;
+    line-height: 40px;
+    padding-left: 30px;
+    padding-right: 30px;
+    border: 0px;
+    box-shadow: none;
+    text-shadow: none;
+    color: #fff;
+    border-radius: 3px;
+    transition: background-color .5s;
+    &:hover{
+      background-color: $text-dark-green;
+    }
+}
+
+.dplrwoo-button.dplrwoo-button--sm{
+  line-height: 25px;
+  padding-left: 15px;
+  padding-right: 14px;
 }
 
 a{
