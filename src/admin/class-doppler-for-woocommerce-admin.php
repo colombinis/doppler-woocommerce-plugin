@@ -525,7 +525,6 @@ class Doppler_For_Woocommerce_Admin {
 			$this->doppler_service->setCredentials($this->credentials);
 			$subscriber_resource = $this->doppler_service->getResource('subscribers');
 			$result = $subscriber_resource->addSubscriber($list_id, $subscriber);
-			var_dump($result);
 		
 		}
 				
