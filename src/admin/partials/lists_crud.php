@@ -3,7 +3,7 @@
     <form id="dplrwoo-form-list-crud" action="" method="post">
 
         <label><?php _e('Create new List')?></label>
-        <input type="text" value="" maxlength="20" disabled="disabled" maxlength="100"/>
+        <input type="text" value="" maxlength="20" disabled="disabled" maxlength="100" placeholder="<?php _e('Enter List name', 'doppler-for-woocommerce')?>"/>
 
         <button id="dplrwoo-save-list" class="dplrwoo-button dplrwoo-button--sm" disabled="disabled">
             <?php _e('Create list', 'doppler-for-woocommerce') ?>
