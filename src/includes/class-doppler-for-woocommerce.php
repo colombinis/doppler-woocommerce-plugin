@@ -177,8 +177,8 @@ class Doppler_For_Woocommerce {
 		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_get_lists', $plugin_admin, 'dplrwoo_get_lists' );
 		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_save_list', $plugin_admin, 'dplrwoo_save_list' );
 		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_delete_list', $plugin_admin, 'dplrwoo_delete_list' );
-		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_synch_buyers', $plugin_admin, 'dplrwoo_synch_buyers' );
-		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_synch_contacts', $plugin_admin, 'dplrwoo_synch_contacts' );
+		//$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_synch_buyers', $plugin_admin, 'dplrwoo_synch_buyers' );
+		//$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_synch_contacts', $plugin_admin, 'dplrwoo_synch_contacts' );
 		//$this->loader->add_action( 'woocommerce_created_customer', $plugin_admin, 'dplrwoo_created_customer', 10, 3);
 		//Se ejecuta después de crear un customer. Podría acá guardar todos los campos de checkout!!
 		//$this->loader->add_action( 'woocommerce_checkout_update_user_meta', $plugin_admin, 'dplrwoo_after_created_customer');
@@ -189,7 +189,7 @@ class Doppler_For_Woocommerce {
 		 * Entonces, luego de hacer el checkout, guardamos en la nueva lista Contactos.
 		 */
 		$this->loader->add_action( 'woocommerce_thankyou', $plugin_admin, 'dplrwoo_customer_checkout_success' );
-		$this->loader->add_action( 'woocommerce_order_status_changed', $plugin_admin, 'dplrwoo_order_completed' );
+		$this->loader->add_action( 'woocommerce_order_status_changed', $plugin_admin, 'dplrwoo_order_completed', 10, 4 );
 		//Shows admin notices if $adminNotice parameter is not empty in admin class
 		$this->loader->add_action( 'admin_notices', $plugin_admin, 'show_admin_notice' );
 		

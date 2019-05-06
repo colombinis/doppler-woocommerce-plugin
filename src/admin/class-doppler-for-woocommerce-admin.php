@@ -517,29 +517,12 @@ class Doppler_For_Woocommerce_Admin {
 
 	}
 
-	/**
-	 * Send email and fields to a Doppler List
-	 */
-	public function subscribe_customer( $list_id, $email, $fields ){
-						
-		if( !empty($list_id) && !empty($email) ){
-
-			$subscriber['email'] = $email;
-			$subscriber['fields'] = $fields; 
-			
-			$this->doppler_service->setCredentials($this->credentials);
-			$subscriber_resource = $this->doppler_service->getResource('subscribers');
-			$result = $subscriber_resource->addSubscriber($list_id, $subscriber);
-		
-		}
-				
-	}
 
 	/**
+	 * DEPRECATED
 	 * Se ejecuta cuando se crea desde register. Testeado OK.
 	 * Cuando se crea una cuenta desde el checkout también. Testeado OK.
 	 * Si no se selecciona crear cuenta en el checkout NO se ejecuta.
-	 * TODO: Ver hacer reutilizable la parte de subscripción
 	 */
 	public function dplrwoo_created_customer( $customer_id, $customer_data, $customer_password ) {
 		
@@ -568,46 +551,37 @@ class Doppler_For_Woocommerce_Admin {
 		}
 
 	}
+	
+	/**
+	 * Envía subscriptor a la lista de compradores
+	 * cuando una orden pasa a estado "completo".
+	 */
+	public function dplrwoo_order_completed( $order_id, $old_status, $new_status, $instance ) {
+
+		if( $new_status == "completed" ) {
+			
+			$list_id = get_option('dplr_subsribers_list')['buyers'];
+			$order = wc_get_order( $order_id );
+			$order_data = $order->get_data();
+			$fields = $this->get_mapped_fields($order_data);
+			$this->subscribe_customer($list_id, $order_data['billing']['email'], $fields);
+
+		}
+
+	}
 
 	/**
-	 * Envía a la lista de compradores los datos del cliente
-	 * registrado o invitado.
+	 * Envía a la lista de contactos los datos del cliente
+	 * en el checkout.
 	 * Sólo para WC > 3.0
 	 */
 	public function dplrwoo_customer_checkout_success( $order_id ) {
 
+		$list_id = get_option('dplr_subsribers_list')['contacts'];
 		$order = wc_get_order( $order_id );
 		$order_data = $order->get_data();
-		$user_id = $order->get_user_id();
-
-		if(!empty($order_data)){
-
-			$list_id = get_option('dplr_subsribers_list')['buyers'];
-			$fields_map = get_option('dplrwoo_mapping');
-			
-			foreach($order_data as $key=>$fieldgroup){
-
-				if( $key === 'shipping' || $key === 'billing' ){	
-
-					foreach($fieldgroup as $fieldname=>$v){
-
-						$f = $key.'_'.$fieldname;
-
-						if( isset($fields_map[$f]) && $fields_map[$f] != '' ){
-
-							$fields[] = array('name'=>$fields_map[$f], 'value'=>$v);
-
-						}
-
-					}
-
-				}
-
-			}
-
-			$this->subscribe_customer($list_id, $order_data['billing']['email'], $fields);
-		
-		}
+		$fields = $this->get_mapped_fields($order_data);
+		$this->subscribe_customer($list_id, $order_data['billing']['email'], $fields);
 
 	}
 
@@ -630,7 +604,7 @@ class Doppler_For_Woocommerce_Admin {
 	 *    Esta función tiene que ser coherente con dporwoo_customer_checkout_success()
 	 *    Probar hook: add_action( 'woocommerce_payment_complete', 'so_payment_complete' );
 	 */
-	function dplrwoo_synch_buyers(){
+	public function dplrwoo_synch_buyers(){
 
 		$list_id = get_option('dplr_subsribers_list')['buyers'];
 		$users = get_users( array('role'=>'Customer') );
@@ -648,7 +622,7 @@ class Doppler_For_Woocommerce_Admin {
 	 * TODO: guardar una fecha luego de sincronizar
 	 * y luego sincronizar a partir de esa fecha (usuarios registrados a partir de fecha).
 	 */
-	function dplrwoo_synch_contacts() {
+	public function dplrwoo_synch_contacts() {
 
 		$list_id = get_option('dplr_subsribers_list')['contacts'];
 		$users = get_users( array('role'=>'Customer') );
@@ -690,5 +664,56 @@ class Doppler_For_Woocommerce_Admin {
 		}
 	
 	}
+
+	/**
+	 * Get the mapped fields of a given order.
+	 */
+	private function get_mapped_fields( $order_data ) {
 	
+		if(!empty($order_data)){
+
+			$list_id = get_option('dplr_subsribers_list')['contacts'];
+			$fields_map = get_option('dplrwoo_mapping');
+			
+			foreach($order_data as $key=>$fieldgroup){
+				
+				if( $key === 'shipping' || $key === 'billing' ){	
+					
+					foreach($fieldgroup as $fieldname=>$v){
+						
+						$f = $key.'_'.$fieldname;
+						
+						if( isset($fields_map[$f]) && $fields_map[$f] != '' ){
+							$fields[] = array('name'=>$fields_map[$f], 'value'=>$v);
+						}
+					
+					}
+				
+				}
+			
+			}
+
+			return $fields;
+		}
+
+	}
+
+	/**
+	 * Send email and fields to a Doppler List
+	 */
+	private function subscribe_customer( $list_id, $email, $fields ){
+						
+		if( !empty($list_id) && !empty($email) ){
+
+			$subscriber['email'] = $email;
+			$subscriber['fields'] = $fields; 
+			
+			$this->doppler_service->setCredentials($this->credentials);
+			$subscriber_resource = $this->doppler_service->getResource('subscribers');
+			$result = $subscriber_resource->addSubscriber($list_id, $subscriber);
+		
+		}
+				
+	}
+
 }

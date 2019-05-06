@@ -67,7 +67,7 @@
 
         case 'fields':
 
-            $wc_fields = $this->getCheckoutFields();
+            $wc_fields = $this->get_checkout_fields();
             $this->doppler_service->setCredentials($this->credentials);
             $fields_resource = $this->doppler_service->getResource('fields');
             $dplr_fields = $fields_resource->getAllFields();
