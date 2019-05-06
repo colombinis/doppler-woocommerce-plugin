@@ -45,17 +45,17 @@
 
                 <tr>
                     <th>
-                        <?php _e('Registered users', 'doppler-for-woocommerce')?>
+                        <?php _e('Contacts', 'doppler-for-woocommerce')?>
                     </th>
                     <td>
-                        <select name="dplr_subsribers_list[registered]">
+                        <select name="dplr_subsribers_list[contacts]">
                             <option value=""></option>
                             <?php 
                                 if(!empty($lists)){
                                     foreach($lists as $k=>$v){
                                         ?>
                                         <option value="<?php echo $k?>" 
-                                            <?php if($subscribers_lists['registered']==$k){ echo 'selected'; $scount = $v['subscribersCount']; }?>
+                                            <?php if($subscribers_lists['contacts']==$k){ echo 'selected'; $scount = $v['subscribersCount']; }?>
                                             data-subscriptors="<?php echo $v['subscribersCount']?>">
                                             <?php echo $v['name']?>
                                         </option>

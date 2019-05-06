@@ -95,10 +95,10 @@
 			var synchBuyers = $.post(ajaxurl, {action:'dplrwoo_ajax_synch_buyers'}, function(response){
 				console.log(response);
 			});
-			var synchRegistered = $.post(ajaxurl, {action: 'dplrwoo_ajax_synch_registered'}, function(response){
+			var synchContacts = $.post(ajaxurl, {action: 'dplrwoo_ajax_synch_registered'}, function(response){
 				console.log(response);
 			});
-			$.when(synchBuyers, synchRegistered).then(function(response){
+			$.when(synchBuyers, synchContacts).then(function(response){
 				link.css('display','inline-block');
 				$('.doing-synch').css('display', 'none');
 			});
