@@ -83,7 +83,7 @@
 
     <hr/>
 
-    <a href="#" id="btn-synch" class="small-text"><?php _e('Synchronize lists', 'doppler-for-woocommerce')?></a>
+    <a id="btn-synch" class="small-text pointer"><?php _e('Synchronize lists', 'doppler-for-woocommerce')?></a>
     <img class="doing-synch" src="<?php echo DOPPLER_FOR_WOOCOMMERCE_URL . 'admin/img/ajax-synch.gif' ?>" alt="<?php _e('Synchronizing', 'doppler-for-woocommerce')?>"/>
     <span class="doing-synch">Sincronizando lista de compradores</span>
 

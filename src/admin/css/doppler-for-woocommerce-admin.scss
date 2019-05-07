@@ -56,6 +56,35 @@ $content-width: 940px;
     margin-top: 15px;
     margin-bottom: 15px;
   }
+
+  a{
+    color: $text-green;
+    &:hover{
+      color: $text-dark-green;
+    }
+    &.text-dark-red{
+      color: $dark-red;
+    }
+    &.nav-tab{
+      color: #555;
+    }
+  }
+
+  .mt-30{
+    margin-top: 30px;
+  }
+
+  .text-right{
+    text-align: right;
+  }
+
+  .text-red{
+    color: $red;
+  }
+
+  .pointer{
+    cursor: pointer;
+  }
   
   .dplr-tab-content{
     max-width: $content-width;
@@ -83,31 +112,6 @@ $content-width: 940px;
     }
   }
   
-  a{
-    color: $text-green;
-    &:hover{
-      color: $text-dark-green;
-    }
-    &.text-dark-red{
-      color: $dark-red;
-    }
-    &.nav-tab{
-      color: #555;
-    }
-  }
-
-  .mt-30{
-    margin-top: 30px;
-  }
-
-  .text-right{
-    text-align: right;
-  }
-
-  .text-red{
-    color: $red;
-  }
-
   h2.nav-tab-wrapper{
     margin-bottom: 30px;
   }

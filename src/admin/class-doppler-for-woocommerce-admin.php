@@ -519,17 +519,13 @@ class Doppler_For_Woocommerce_Admin {
 
 
 	/**
-	 * DEPRECATED
-	 * Se ejecuta cuando se crea desde register. Testeado OK.
-	 * Cuando se crea una cuenta desde el checkout también. Testeado OK.
-	 * Si no se selecciona crear cuenta en el checkout NO se ejecuta.
+	 * Al registrarse se guarda el usuario
+	 * en la lista de contactos.
 	 */
 	public function dplrwoo_created_customer( $customer_id, $customer_data, $customer_password ) {
-		
-		// Get an instance of the WC_Customer Object
-		//$user = new WC_Customer( $customer_id );
 
-		if( isset($_POST['register']) || $_POST['createaccount']==='1' ){
+		//if( isset($_POST['register']) || $_POST['createaccount']==='1' ){
+		if( isset($_POST['register']) ){
 			
 			$fields_map = get_option('dplrwoo_mapping');
 			$list_id = get_option('dplr_subsribers_list')['contacts'];
@@ -586,62 +582,60 @@ class Doppler_For_Woocommerce_Admin {
 	}
 
 	/**
-	 * Syncrhonizes the store's buyers with the Doppler List.
-	 * Sobre coordinar los compradores:
-	 *  - Puedo obtener todos los usuarios con su get_order_count( )
-	 *    pero no puedo elegir una fecha para coordinar a partir de ella,
-	 * 	  debería recorrer todos siempre.
-	 *  - Y cómo funcionaría con los usuarios no registrados? (no funcionaría)
-	 *  - Elijo recorrer ordenes, que sí puedo elegir a partir de una fecha,
-	 *    y además no necesariamente debe ser un usuario, puede ser un 
-	 *    guest.
-	 *  - ¿Las ordenes deberán ser ordenes en estado completada o simplemente
-	 *    con hacer CHECKOUT es un comprador? Si consideramos un comprador
-	 *    alguien con una orden COMPLETA hay que modificar lo hecho
-	 *    en la subscripción de usario al hacer Checkout, ya que 
-	 *    ya no sería ahí donde se enviaría el usuario a la lista,
-	 *    sino que sería cuando la orden cambia de estado a "COMPLETA"
-	 *    Esta función tiene que ser coherente con dporwoo_customer_checkout_success()
-	 *    Probar hook: add_action( 'woocommerce_payment_complete', 'so_payment_complete' );
+	 * Syncrhonizes "Contacts" or "Buyers"
+	 *
+	 * Contacts are customers who completed 
+	 * a checkout form. 
+	 * 
 	 */
-	public function dplrwoo_synch_buyers(){
+	public function dplrwoo_synch() {
 
-		$list_id = get_option('dplr_subsribers_list')['buyers'];
-		$users = get_users( array('role'=>'Customer') );
-		/*
-		if(!empty($users)){
-			foreach($users as $k=>$user){
-				$user = new WC_Customer( $user->ID );
-				if($user = )
+		$orders_by_email = array();
+		$last_synch_date = get_option('dplr_last_synch');
+		$args = array(
+			'limit'		=> -1,
+			'orderby'	=> 'date',
+			'order'		=> 'DESC'
+		);
+
+		if( $_POST['list_type'] == 'contacts' ){
+			$list_id = get_option('dplr_subsribers_list')['contacts'];
+		}else if($_POST['list_type'] == 'buyers'){
+			$list_id = get_option('dplr_subsribers_list')['buyers'];
+			$args['status'] = 'completed';
+		}
+	
+		if(!empty($last_synch)){
+			$args['date_created'] = '<' . $last_synch;
+		}
+
+		$orders = wc_get_orders( $args );
+
+		if(!empty($orders)){
+			foreach($orders as $k=>$order){
+				$orders_by_email[$order->data['billing']['email']] = $this->get_mapped_fields($order->data);
 			}
-		}*/
-	}
+		}
 
-	/**
-	 * Syncrhonizes the store's registered users with the Doppler List.
-	 * TODO: guardar una fecha luego de sincronizar
-	 * y luego sincronizar a partir de esa fecha (usuarios registrados a partir de fecha).
-	 */
-	public function dplrwoo_synch_contacts() {
-
-		$list_id = get_option('dplr_subsribers_list')['contacts'];
-		$users = get_users( array('role'=>'Customer') );
-		$fields_map = get_option('dplrwoo_mapping');
-		
-		if(!empty($users)){
-			foreach($users as $k=>$user){
-				$meta_fields = get_user_meta($user->ID);
-				$fields = array();
-				foreach($fields_map as $k=>$v){
-					if($v!=''){
-						$value = array_shift(array_values($meta_fields[$k]));
-						$fields[] = array('name'=>$v, 'value'=>$value);
-					}
-				}
-				$email = array_shift(array_values($meta_fields['billing_email']));
+		if(count($orders_by_email)>0){
+			foreach($orders_by_email as $email=>$fields){
 				$this->subscribe_customer($list_id, $email, $fields);
 			}
 		}
+
+		/**
+		 * TODO: Save last synch date
+		 * in option dplr_last_synch
+		 */
+
+
+		 /**
+			* TODO: Get lists subscriber count
+			* and update the counter in the HTML.
+			*/
+			$this->doppler_service->setCredentials( $this->credentials );
+			$list_resource = $this->doppler_service->getResource( 'lists' );
+			$list = $list_resource->getList($list_id);
 
 	}
 

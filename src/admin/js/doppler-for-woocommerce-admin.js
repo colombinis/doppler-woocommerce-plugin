@@ -57,7 +57,10 @@
 		}); 
 
 		$('.dplrwoo-mapping-fields').focus(function(){
-			$(this).data('fieldData', {'val':$(this).val(),'type':$('option:selected', this).attr('data-type'),'name':$(this).attr('name')});
+			$(this).data('fieldData', {'val':$(this).val(),
+				'type':$('option:selected', this).attr('data-type'),
+				'name':$(this).attr('name')
+			});
 		}).change(function(){
 			
 			var prevData = $(this).data('fieldData');
@@ -67,7 +70,8 @@
 
 			if(prevData.val!==''){
 				$('.dplrwoo-mapping-fields').each(function(){
-					if( checkFieldType(prevData.type,$(this).attr('data-type')) && (prevData.name !== $(this).attr('name')) ){
+					if( checkFieldType(prevData.type,
+						$(this).attr('data-type')) && (prevData.name !== $(this).attr('name')) ){
 						$(this).append('<option value="'+prevData.val+'">'+prevData.val+'</option>');
 					}
 				});
@@ -85,20 +89,33 @@
 		}
 
 		$("#dplrwoo-form-list select").change(function(){
-			$(this).closest('tr').find('td span').html($('option:selected', this).attr('data-subscriptors'));
+			$(this).closest('tr').find('td span').html(
+				$('option:selected', this).attr('data-subscriptors')
+			);
 		});
 
 		$("#btn-synch").click(function(){
 			var link = $(this);
 			link.css('display','none');
 			$('.doing-synch').css('display', 'inline-block');
-			var synchBuyers = $.post(ajaxurl, {action:'dplrwoo_ajax_synch_buyers'}, function(response){
-				console.log(response);
+			
+			var synchBuyers = $.post(ajaxurl, 
+			{
+				action:'dplrwoo_ajax_synch', 
+				list_type: 'buyers'
+			}, function(response){
+				console.log('Buyers ok');
 			});
-			var synchContacts = $.post(ajaxurl, {action: 'dplrwoo_ajax_synch_registered'}, function(response){
-				console.log(response);
+			
+			var synchContacts = $.post(ajaxurl, 
+				{
+					action: 'dplrwoo_ajax_synch', 
+					list_type: 'contacts'
+				}, function(response){
+					console.log('Contacts ok');
 			});
-			$.when(synchBuyers, synchContacts).then(function(response){
+
+			$.when(synchContacts, synchBuyers).then(function(response){
 				link.css('display','inline-block');
 				$('.doing-synch').css('display', 'none');
 			});
