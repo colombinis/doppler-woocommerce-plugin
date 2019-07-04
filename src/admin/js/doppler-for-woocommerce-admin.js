@@ -104,7 +104,9 @@
 				action:'dplrwoo_ajax_synch', 
 				list_type: 'buyers'
 			}, function(response){
-				console.log('Buyers ok');
+				if(response == 1){
+					$("span.doing-synch").html('Lista de compradores actualizada...');
+				}
 			});
 			
 			var synchContacts = $.post(ajaxurl, 
@@ -112,12 +114,20 @@
 					action: 'dplrwoo_ajax_synch', 
 					list_type: 'contacts'
 				}, function(response){
-					console.log('Contacts ok');
+					if(response == 1){
+						$("span.doing-synch").html('Lista de contactos actualizada...');
+					}
 			});
 
-			$.when(synchContacts, synchBuyers).then(function(response){
+			$.when(synchContacts, synchBuyers).then(function(){
 				link.css('display','inline-block');
-				$('.doing-synch').css('display', 'none');
+				$.post(ajaxurl,{action: 'dplrwoo_ajax_update_counter'}, function(response){
+					var obj = JSON.parse(response);
+					console.log(obj);
+					console.log(obj.contacts);
+					console.log(obj.buyers);
+					$('.doing-synch').css('display', 'none');
+				})
 			});
 		});
 
@@ -163,7 +173,6 @@
 			}
 
 		});
-
 		
 		if($('#dplr-dialog-confirm').length>0){
 			

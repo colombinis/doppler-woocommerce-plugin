@@ -97,7 +97,24 @@ class Doppler_For_Woocommerce_Public {
 		 */
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/doppler-for-woocommerce-public.js', array( 'jquery' ), $this->version, false );
+		if(get_option('dplrwoo')){
+			wp_enqueue_script( 'hub-fromdoppler', '//hub.fromdoppler.com/public/dhtrack.js', array(), false, false );
+		}
+	}
 
+	/**
+	 * Add async tag to hub script
+	 */
+	public function dplrwoo_script_loader_tag($tag, $handle) {
+		if ($handle === 'hub-fromdoppler') {
+			if (false === stripos($tag, 'async')) {
+				$tag = str_replace(' src', ' async="async" src', $tag);	
+			}
+			if (false === stripos($tag, 'defer')) {
+				$tag = str_replace('<script ', '<script defer ', $tag);	
+			}
+		}
+		return $tag;
 	}
 
 }

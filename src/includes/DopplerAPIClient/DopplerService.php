@@ -104,6 +104,15 @@ class Woo_Doppler_Service
                   'on_query_string' => false,
                 )
               )
+            ),
+            'get' => array(
+              'route'       => 'lists/:listId/subscribers',
+              'httpmethod'  => 'get',
+              'parameters'  => array(
+                'listId' => array(
+                  'on_query_string' => false,
+                )
+              )
             )
           )
         )
@@ -392,6 +401,23 @@ if( ! class_exists( 'Doppler_Service_Subscribers' ) ) :
     public function addSubscriber( $listId, $subscriber ){
       $method = $this->methods['post'];
       return $this->service->call( $method, array( 'listId' => $listId ),  $subscriber );
+    }
+
+    public function getSubscribers( $listId, $page = 1 ) {
+      /*
+      $method = $this->methods['list'];
+      $z = json_decode($this->service->call($method, array("listId" => $listId, 'page' => $page))['body']);
+      $lists[] = $z->items;
+
+      if($z->currentPage < $z->pagesCount && $page<4){
+        $page = $page+1;
+        return $this->getAllLists(null, $lists, $page);
+      }else{
+        return $lists;
+      }*/
+
+      $method = $this->methods['get'];
+      return $this->service->call( $method, array( 'listId' => $listId ) );
     }
 
   }

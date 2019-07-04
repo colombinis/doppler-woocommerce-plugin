@@ -582,10 +582,44 @@ class Doppler_For_Woocommerce_Admin {
 	}
 
 	/**
+	 * Get "Registered" users
+	 *
+	 * Registered users are also saved
+	 * to Contact List. 
+	 * 
+	 */
+	private function get_registered_users() {
+
+		$users = get_users( array('role'=>'Customer') );
+		$fields_map = get_option('dplrwoo_mapping');
+		$registered_users = array();
+		
+		if(!empty($users)){
+			foreach($users as $k=>$user){
+				$meta_fields = get_user_meta($user->ID);
+				$fields = array();
+				foreach($fields_map as $k=>$v){
+					if($v!=''){
+						$value = array_shift(array_values($meta_fields[$k]));
+						$fields[] = array('name'=>$v, 'value'=>$value);
+					}
+				}
+				$email = array_shift(array_values($meta_fields['billing_email']));
+				$registered_users[$email] = $fields;
+			}
+		}
+
+		return $registered_users;
+	
+	}
+
+	/**
 	 * Syncrhonizes "Contacts" or "Buyers"
 	 *
 	 * Contacts are customers who completed 
-	 * a checkout form. 
+	 * a checkout form or are registered users.
+	 * Buyers are users who was orders that
+	 * have been completed.
 	 * 
 	 */
 	public function dplrwoo_synch() {
@@ -598,8 +632,9 @@ class Doppler_For_Woocommerce_Admin {
 			'order'		=> 'DESC'
 		);
 
-		if( $_POST['list_type'] == 'contacts' ){
+		if($_POST['list_type'] == 'contacts'){
 			$list_id = get_option('dplr_subsribers_list')['contacts'];
+			$registered_users = $this->get_registered_users();
 		}else if($_POST['list_type'] == 'buyers'){
 			$list_id = get_option('dplr_subsribers_list')['buyers'];
 			$args['status'] = 'completed';
@@ -609,7 +644,7 @@ class Doppler_For_Woocommerce_Admin {
 			$args['date_created'] = '<' . $last_synch;
 		}
 
-		$orders = wc_get_orders( $args );
+		$orders = wc_get_orders($args);
 
 		if(!empty($orders)){
 			foreach($orders as $k=>$order){
@@ -617,26 +652,62 @@ class Doppler_For_Woocommerce_Admin {
 			}
 		}
 
+		if($_POST['list_type'] == 'contacts'){
+			$users = array_merge($registered_users,$orders_by_email);
+		}else{
+			$users = $orders_by_email;
+		}
+
+		$this->doppler_service->setCredentials($this->credentials);
+		$subscriber_resource = $this->doppler_service->getResource('subscribers');
+		$suscribers = $subscriber_resource->getSubscribers($list_id);
+
+		
+
+		/*
 		if(count($orders_by_email)>0){
 			foreach($orders_by_email as $email=>$fields){
 				$this->subscribe_customer($list_id, $email, $fields);
 			}
-		}
+		}*/
 
 		/**
 		 * TODO: Save last synch date
 		 * in option dplr_last_synch
 		 */
 
+		 echo 1;
+		 exit();
 
-		 /**
-			* TODO: Get lists subscriber count
-			* and update the counter in the HTML.
-			*/
+	}
+
+	/**
+		* Update Subscribers count
+		*
+		* After synchronizing update 
+		* the subscribers counter
+		* next to the lists selector.
+		*
+		*/
+	public function update_subscribers_count() {
+			
+			$c_count = 0;
+			$b_count = 0;
+
 			$this->doppler_service->setCredentials( $this->credentials );
 			$list_resource = $this->doppler_service->getResource( 'lists' );
-			$list = $list_resource->getList($list_id);
+			
+			$c_list_id = get_option('dplr_subsribers_list')['contacts'];
+			if(!empty($c_list_id)){
+				$c_count = $list_resource->getList($c_list_id)->subscribersCount;
+			}
+			$b_list_id = get_option('dplr_subsribers_list')['buyers'];
+			if(!empty($b_list_id)){
+				$b_count = $list_resource->getList($b_list_id)->subscribersCount;
+			}
 
+			echo json_encode(array('contacts'=>$c_count, 'buyers'=>$b_count));
+			exit();
 	}
 
 	/**
