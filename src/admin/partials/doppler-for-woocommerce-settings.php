@@ -41,6 +41,7 @@
             <a href="?page=doppler_for_woocommerce_menu&tab=fields" class="nav-tab <?php echo $active_tab == 'fields' ? 'nav-tab-active' : ''; ?>"><?php _e('Fields', 'doppler-for-woocommerce')?></a>
             <a href="?page=doppler_for_woocommerce_menu&tab=lists" class="nav-tab <?php echo $active_tab == 'lists' ? 'nav-tab-active' : ''; ?>"><?php _e('Lists subscriptions', 'doppler-for-woocommerce')?></a>
             <a href="?page=doppler_for_woocommerce_menu&tab=lists_crud" class="nav-tab <?php echo $active_tab == 'lists_crud' ? 'nav-tab-active' : ''; ?>"><?php _e('Manage Lists', 'doppler-for-woocommerce')?></a>
+            <a href="?page=doppler_for_woocommerce_menu&tab=hub" class="nav-tab <?php echo $active_tab == 'hub' ? 'nav-tab-active' : ''; ?>"><?php _e('Data Hub', 'doppler-for-woocommerce')?></a>
         <?php endif; ?>
     </h2>
 
@@ -77,8 +78,11 @@
 
         break;
 
-        default:
+        case 'hub':
+            require_once('hub.php');
+            break;
 
+        default:
             require_once('settings.php');
 
         break;
