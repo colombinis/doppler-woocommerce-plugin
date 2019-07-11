@@ -248,43 +248,42 @@ class Doppler_For_Woocommerce_Admin {
 			}
 		}
 
+		if($_GET['tab']=='hub'){
+			if( $_POST['_wpnonce'] && current_user_can('manage_options') && check_admin_referer('use-hub') ){
+				update_option( 'dplr_use_hub', isset($_POST['dplr_use_hub'])? 1:0 );
+				$this->admin_notice = array('success', __('Datahub setting saved successfully', 'doppler-for-woocommerce'));
+			}
+		}
+
 	}
 
 	/**
 	 * Shows user field.
 	 */
 	function display_user_field( $args ) {
-
 		$option = get_option( 'dplrwoo_user' );
-
 		?>
 			<input type="email" value="<?php echo $option ?>" name="dplrwoo_user" />
 		<?php
-	
 	}
 
 	/**
 	 * Shows API Key field
 	 */
 	function display_key_field( $args ) {
-		
 		$option = get_option( 'dplrwoo_key' );
-		
 		?>
 			<input type="text" value="<?php echo $option ?>" name="dplrwoo_key" maxlength="32" />
 		<?php
-	
 	}
 
 	/**
 	 * Example for section text.
 	 */
 	function eg_setting_section_callback_function( $args ) {
-		
 		?>
 			<p id="<?php echo esc_attr( $args['id'] ); ?>"><?php esc_html_e( 'Example text', 'doppler-for-woocommerce' ); ?></p>
 		<?php
-	
 	}
 
 	/**

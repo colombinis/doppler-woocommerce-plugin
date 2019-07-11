@@ -97,7 +97,7 @@ class Doppler_For_Woocommerce_Public {
 		 */
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/doppler-for-woocommerce-public.js', array( 'jquery' ), $this->version, false );
-		if(get_option('dplrwoo')){
+		if(get_option('dplr_use_hub') === '1'){
 			wp_enqueue_script( 'hub-fromdoppler', '//hub.fromdoppler.com/public/dhtrack.js', array(), false, false );
 		}
 	}
