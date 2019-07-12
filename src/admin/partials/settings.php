@@ -6,7 +6,7 @@
 
         ?>
 
-        <form id="dplrwoo-form-connect" action="options.php" method="post">
+        <form id="dplrwoo-form-connect" action="options.php" method="post" easy-validate>
             
             <?php
             // output security fields

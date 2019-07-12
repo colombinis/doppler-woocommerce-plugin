@@ -23,6 +23,17 @@ $small-font-size: 13px;
 $content-width: 940px;
 
 /**
+* Mixins
+*/
+@mixin transition($args...) {
+  -webkit-transition: $args;
+  -moz-transition: $args;
+  -ms-transition: $args;
+  -o-transition: $args;
+  transition: $args;
+}
+
+/**
 * Menu
 */
 
@@ -78,8 +89,12 @@ $content-width: 940px;
     text-align: right;
   }
 
-  .text-red{
+  .text-red, .ev-error{
     color: $red;
+  }
+  
+  .text-dark-green{
+    color: $text-dark-green;
   }
 
   .pointer{
@@ -103,7 +118,7 @@ $content-width: 940px;
       text-shadow: none;
       color: #fff;
       border-radius: 3px;
-      transition: background-color .5s;
+      @include transition(background-color .5s);
       &:hover{
         background-color: $text-dark-green;
       }
@@ -124,8 +139,25 @@ $content-width: 940px;
     background-position: 50% 50%;
   }
 
+  img.doing-synch{
+    position: relative;
+    top: 3px;
+    margin-left: 10px;
+    opacity: 0.9;
+    @include transition(opacity .5s);
+  }
   .doing-synch{
     display: none;
+  }
+
+  .synch-ok{
+    position: relative;
+    top: 3px;
+    opacity: 0;
+  }
+
+  a#btn-synch{
+    line-height:30px;
   }
 
   .connected-status{

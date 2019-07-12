@@ -113,6 +113,15 @@ class Woo_Doppler_Service
                   'on_query_string' => false,
                 )
               )
+            ),
+            'import' => array(
+              'route'   => 'lists/:listId/subscribers/import',
+              'httpMethod'  => 'post',
+              'parameters'  => array(
+                'listId' => array(
+                  'on_query_string' => false,
+                )
+              )
             )
           )
         )
@@ -148,7 +157,6 @@ class Woo_Doppler_Service
   }
 
   function call( $method, $args=null, $body=null ) {
-    
     //$url = 'https://restapi.fromdoppler.com/accounts/'. $this->config['credentials']['user_account'] . '/';
     $url = 'http://newapiqa.fromdoppler.net/accounts/' . $this->config['credentials']['user_account'] . '/';
     $url .= $method[ 'route' ];
@@ -160,7 +168,7 @@ class Woo_Doppler_Service
       
       foreach ($args as $name => $val) {
         
-        isset( $resourceArg[ $name ])? $parameter = $resourceArg[ $name ] : $parameter = ''; 
+        isset($resourceArg[ $name ])? $parameter = $resourceArg[ $name ] : $parameter = ''; 
         
         if( $parameter && $parameter[ 'on_query_string' ] ){
           $query .= $name . "=" . $val ;
@@ -401,6 +409,11 @@ if( ! class_exists( 'Doppler_Service_Subscribers' ) ) :
     public function addSubscriber( $listId, $subscriber ){
       $method = $this->methods['post'];
       return $this->service->call( $method, array( 'listId' => $listId ),  $subscriber );
+    }
+
+    public function importSubscribers($listId, $subscribers){
+      $method = $this->methods['import'];
+      return $this->service->call( $method, array( 'listId' => $listId ), $subscribers);
     }
 
     public function getSubscribers( $listId, $page = 1 ) {

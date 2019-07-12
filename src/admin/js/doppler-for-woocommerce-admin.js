@@ -3,6 +3,8 @@
 
 	$(function() {
 
+		easyValidator.init();
+
 		$('#dplrwoo-form-connect').submit(function(e){
 
 			e.preventDefault();
@@ -18,21 +20,10 @@
 				key: keyfield.val()
 			}
 
-			$('.doppler-woo-settings .error').remove();
-			$('#dplrwoo-messages').html('');
-
-			if(data.user === ''){
-				userfield.after('<span class="error">Mensaje de error</span>');
-			}
-
-			if(data.key === ''){
-				keyfield.after('<span class="error">Mensaje de error</span>');
-			}
-
-			if( data.user === '' || data.key === '' ){
+			if(!easyValidator.isValidForm()){
 				return false;
 			}
-			
+
 			button.attr('disabled','disabled');
 
 			$.post( ajaxurl, data, function( response ) {
@@ -96,39 +87,38 @@
 
 		$("#btn-synch").click(function(){
 			var link = $(this);
-			link.css('display','none');
+			var synchOk = $('.synch-ok');
+			link.css('pointer-events','none');
+			synchOk.css('opacity','0');
 			$('.doing-synch').css('display', 'inline-block');
-			
-			var synchBuyers = $.post(ajaxurl, 
-			{
-				action:'dplrwoo_ajax_synch', 
-				list_type: 'buyers'
-			}, function(response){
-				if(response == 1){
-					$("span.doing-synch").html('Lista de compradores actualizada...');
-				}
-			});
-			
-			var synchContacts = $.post(ajaxurl, 
-				{
-					action: 'dplrwoo_ajax_synch', 
-					list_type: 'contacts'
-				}, function(response){
-					if(response == 1){
-						$("span.doing-synch").html('Lista de contactos actualizada...');
-					}
-			});
 
-			$.when(synchContacts, synchBuyers).then(function(){
-				link.css('display','inline-block');
-				$.post(ajaxurl,{action: 'dplrwoo_ajax_update_counter'}, function(response){
-					var obj = JSON.parse(response);
-					console.log(obj);
-					console.log(obj.contacts);
-					console.log(obj.buyers);
-					$('.doing-synch').css('display', 'none');
+			var synchBuyers = function(){
+				var deferred = new $.Deferred();
+				$.post( ajaxurl, {action:'dplrwoo_ajax_synch',list_type: 'buyers'}, function( response ){
+					deferred.resolve(response);
+				})
+				return deferred.promise();
+			}
+			
+			var synchContacts = function(){
+				var deferred = new $.Deferred();
+				$.post(ajaxurl, {action: 'dplrwoo_ajax_synch', list_type: 'contacts'}, function(response){
+					deferred.resolve(response);
+				});
+				return deferred.promise();
+			} 
+
+			synchBuyers().then(function(response){
+				synchContacts().then(function(response){
+					$.post(ajaxurl,{action: 'dplrwoo_ajax_update_counter'}, function(response){
+						var obj = JSON.parse(response);
+						link.css('pointer-events','initial');
+						$('.doing-synch').css('display', 'none');
+						synchOk.css('opacity','.9');
+					})
 				})
 			});
+
 		});
 
 		$("#dplrwoo-save-list").click(function(e){
@@ -302,6 +292,84 @@
 		}
 
 		return false;
+	}
+
+	var easyValidator = {
+		strInvalidEmail: 'Email is invalid',
+		strEmptyField: 'Field is empty',
+		event: 'blur',
+		emailRegex: /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/,
+		init: function(data){
+			easyValidator.config = {
+				form: $('form[easy-validate]'),
+			}
+			easyValidator.config.form.attr('novalidate','novalidate');
+			if(typeof data !== "undefined"){
+				if(typeof data.invalid_email_message !== "undefined"){
+					this.strInvalidEmail = data.invalid_email_message;
+				}
+				if(typeof data.empty_field_message !== "undefined"){
+					this.strEmptyField = data.empty_field_message;
+				}
+				if(typeof data.event !== "undefined"){
+					if( $.inArray(data.event,['keyup','blur']) === -1 ){
+						console.log('Invalid event attribute, use keyup or blur');
+						return false;
+					}
+					easyValidator.event = data.event;
+				}
+			}
+			var emailFields = easyValidator.config.form.find('input[type="email"]');
+			var emptyFields = easyValidator.config.form.find('input[required]');
+			var fields = easyValidator.config.form.find('input[required],input[type="email"]');
+			fields.on('focus',this.clearError);
+			emptyFields.on(easyValidator.event,this.validateEmpty);
+			emailFields.on(easyValidator.event,this.validateEmail);
+		},
+		isValidForm: function(){
+			easyValidator.config.form.find('.ev-error').remove();
+			var fields = easyValidator.config.form.find('input');
+			$.each(fields,function(){
+				easyValidator.validateField($(this));
+			})
+			if(easyValidator.config.form.find('.ev-error').length>0){
+				return false;
+			}
+			return true;
+		},
+		validateField: function(field){
+			if(field.attr("type") === 'email'){
+				easyValidator.validateEmailField(field);
+			}
+			if(field.attr("required") !== null){
+				easyValidator.validateEmptyField(field);
+			} 
+		},
+		validateEmptyField: function(e){
+			if(e.val()==""){	
+				e.after('<span class="ev-error">'+easyValidator.strEmptyField+'</span>');
+				return false;
+			}
+		},
+		validateEmailField: function(e){
+			if( !easyValidator.emailRegex.test(e.val()) && e.val()!==''){
+				e.after('<span class="ev-error">'+easyValidator.strInvalidEmail+'</span>');
+				return false;
+			}
+		},
+		validateEmail: function(){
+			var element = $(this);
+			element.next('.ev-error').remove();
+			easyValidator.validateEmailField(element);
+		},
+		validateEmpty: function(){
+			var element = $(this);
+			element.next('.ev-error').remove();
+			easyValidator.validateEmptyField($(element));
+		},
+		clearError: function(){
+			$(this).next('.ev-error').remove();
+		}
 	}
 
 })( jQuery );

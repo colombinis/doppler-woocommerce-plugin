@@ -273,7 +273,7 @@ class Doppler_For_Woocommerce_Admin {
 	function display_key_field( $args ) {
 		$option = get_option( 'dplrwoo_key' );
 		?>
-			<input type="text" value="<?php echo $option ?>" name="dplrwoo_key" maxlength="32" />
+			<input type="text" value="<?php echo $option ?>" name="dplrwoo_key" maxlength="32" required/>
 		<?php
 	}
 
@@ -617,14 +617,14 @@ class Doppler_For_Woocommerce_Admin {
 	 *
 	 * Contacts are customers who completed 
 	 * a checkout form or are registered users.
-	 * Buyers are users who was orders that
+	 * Buyers are users who has orders that
 	 * have been completed.
 	 * 
 	 */
 	public function dplrwoo_synch() {
 
 		$orders_by_email = array();
-		$last_synch_date = get_option('dplr_last_synch');
+
 		$args = array(
 			'limit'		=> -1,
 			'orderby'	=> 'date',
@@ -637,10 +637,6 @@ class Doppler_For_Woocommerce_Admin {
 		}else if($_POST['list_type'] == 'buyers'){
 			$list_id = get_option('dplr_subsribers_list')['buyers'];
 			$args['status'] = 'completed';
-		}
-	
-		if(!empty($last_synch)){
-			$args['date_created'] = '<' . $last_synch;
 		}
 
 		$orders = wc_get_orders($args);
@@ -656,27 +652,21 @@ class Doppler_For_Woocommerce_Admin {
 		}else{
 			$users = $orders_by_email;
 		}
-
-		$this->doppler_service->setCredentials($this->credentials);
-		$subscriber_resource = $this->doppler_service->getResource('subscribers');
-		$suscribers = $subscriber_resource->getSubscribers($list_id);
-
 		
+		$subscribers['items'] =  array();
+		$subscribers['fields'] =  array();
 
-		/*
-		if(count($orders_by_email)>0){
-			foreach($orders_by_email as $email=>$fields){
-				$this->subscribe_customer($list_id, $email, $fields);
-			}
-		}*/
+		if(empty($users)) return false;
 
-		/**
-		 * TODO: Save last synch date
-		 * in option dplr_last_synch
-		 */
+		foreach($users as $email=>$fields){
+			$subscribers['items'][] = array('email'=>$email, 'fields'=>$fields);
+		}
 
-		 echo 1;
-		 exit();
+		$this->doppler_service->setCredentials( $this->credentials );
+		$subscriber_resource = $this->doppler_service->getResource( 'subscribers' );
+		$resp = $subscriber_resource->importSubscribers($list_id, $subscribers);
+		echo 1;
+		exit();
 
 	}
 
