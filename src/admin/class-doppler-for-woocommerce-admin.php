@@ -104,6 +104,12 @@ class Doppler_For_Woocommerce_Admin {
 				$this->version, false 
 		);
 
+		wp_localize_script( $this->plugin_name, 'ObjWCStr', array( 
+			'invalidUser'	=> __( 'Ouch! Enter a valid Email.', 'doppler-for-woocommerce' ),
+			'emptyField'	=> __( 'Ouch! The Field is empty.', 'doppler-for-woocommerce'),
+		    'wrongData'		=> __( 'Ouch! There\'s something wrong with your Username or API Key. Please, try again.')							 				
+		) );
+
 	}
 
 	/**
@@ -340,7 +346,7 @@ class Doppler_For_Woocommerce_Admin {
 	 * Check connection status.
 	 * If user and key are not stored returns false.
 	 * If user and key are stored checks if transient exists.
-	 * If transient exits congrants you are connected.
+	 * If transient exits congrats you are connected.
 	 * If transient doesnt exists calls api with dprwoo_api_connect and saves transient to avoid more calls.
 	 * IMPORTANT: Don't forget to delete transient when pressing "disconnect" button in plugin settings.
 	 */

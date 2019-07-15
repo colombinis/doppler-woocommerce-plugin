@@ -3,7 +3,11 @@
 
 	$(function() {
 
-		easyValidator.init();
+		easyValidator.init({
+			invalid_email_message:ObjWCStr.invalidUser,
+			empty_field_message:ObjWCStr.emptyField,
+			event: 'keyup',
+		});
 
 		$('#dplrwoo-form-connect').submit(function(e){
 
@@ -26,23 +30,16 @@
 
 			button.attr('disabled','disabled');
 
-			$.post( ajaxurl, data, function( response ) {
-		
+			$.post( ajaxurl, data, function( response ) {		
 				if(response == 0){
-					
 					$("#dplrwoo-messages").html('Mensaje de datos incorrectos');
-					button.removeAttr('disabled');
-
-				
+					button.removeAttr('disabled');				
 				}else if(response == 1){
-					
 					var fields =  f.serialize();
 					$.post( 'options.php', fields, function(obj){
 						window.location.reload(false); 					
 					});
-				
 				}
-
 			})
 		
 		}); 
@@ -80,6 +77,7 @@
 		}
 
 		$("#dplrwoo-form-list select").change(function(){
+			$('#btn-synch').css('display','none');
 			$(this).closest('tr').find('td span').html(
 				$('option:selected', this).attr('data-subscriptors')
 			);
@@ -88,6 +86,8 @@
 		$("#btn-synch").click(function(){
 			var link = $(this);
 			var synchOk = $('.synch-ok');
+			var bc = $('#buyers-count');
+			var cc = $('#contacts-count');
 			link.css('pointer-events','none');
 			synchOk.css('opacity','0');
 			$('.doing-synch').css('display', 'inline-block');
@@ -112,6 +112,13 @@
 				synchContacts().then(function(response){
 					$.post(ajaxurl,{action: 'dplrwoo_ajax_update_counter'}, function(response){
 						var obj = JSON.parse(response);
+						console.log(obj);
+						if(bc.html()!=''){
+							bc.html(obj.buyers);
+						}
+						if(cc.html()!=''){
+							cc.html(obj.contacts);
+						}
 						link.css('pointer-events','initial');
 						$('.doing-synch').css('display', 'none');
 						synchOk.css('opacity','.9');
@@ -127,37 +134,27 @@
 			var listName = $(this).closest('form').find('input[type="text"]').val();
 
 			if(listName!==''){
-				
 				var data = {
 					action: 'dplrwoo_ajax_save_list',
 					listName: listName
 				};
-
 				listsLoading();
-
+				
 				$.post( ajaxurl, data, function( response ) {
-
 					var body = 	JSON.parse(response);
-					
-					if(body.createdResourceId){
-						
+					if(body.createdResourceId){		
 						var html ='<tr>';
 						html+='<td>'+body.createdResourceId+'</td><td><strong>'+listName+'</strong></td>';
 						html+='<td>0</td>';
 						html+='<td><a href="#" class="text-dark-red" data-list-id="'+body.createdResourceId+'">Delete</a></td>'
 						html+='</tr>';
-
 						$("#dprwoo-tbl-lists tbody").prepend(html);
-
 					}else{
-						
 						if(body.status == '400'){
 							alert(body.title);
 						}
 					}
-
 					listsLoaded();
-
 				});
 			
 			}
@@ -203,28 +200,20 @@
 		$("#dprwoo-tbl-lists tbody tr").remove();
 
 		$.post( ajaxurl, data, function( response ) {
-	
 			if(response.length>0){
-
 				var obj = JSON.parse(response);
 				var html = '';
-				
 				for (const key in obj) {
-					
 					var value = obj[key];
-					
 					html += '<tr>';
 					html += '<td>'+value.listId+'</td>';
 					html += '<td><strong>'+value.name+'</strong></td>';
 					html += '<td>'+value.subscribersCount+'</td>';
 					html += '<td><a href="#" class="text-dark-red" data-list-id="'+value.listId+'">Delete</a></td>'
 					html += '</tr>';
-					
 				}
-
 				$("#dprwoo-tbl-lists tbody").prepend(html);
 				$("#dprwoo-tbl-lists").attr('data-page','1');
-				
 				listsLoaded();
 			}
 
@@ -277,13 +266,13 @@
 	function checkFieldType(dplrType, wcType){
 
 		var types = {
-			'string':['string','state'],
-			'gender':['radio'],
-			'email':['email'],
+			'string': ['string','state'],
+			'gender': ['radio'],
+			'email' : ['email'],
 			'country':['country'],
-			'phone':['tel'],
-			'number':['number'],
-			'date':['date','datetime','datetime-local'],
+			'phone' : ['tel'],
+			'number': ['number'],
+			'date'  : ['date','datetime','datetime-local'],
 			'boolean':['checkbox'],
 		}
 
