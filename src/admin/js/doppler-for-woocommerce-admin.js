@@ -76,8 +76,29 @@
 			loadLists(1);
 		}
 
-		$("#dplrwoo-form-list select").change(function(){
+		$(".dplr-lists-sel").focus(function(){
+			$(this).data('fieldData', {'val':$(this).val(),
+				'name':$(this).attr('name'),
+				'selectedName':$(this).children("option:selected").text()
+			});
+		}).change(function(){
+			var prevData = $(this).data('fieldData');
+			var current = $(this).val();
 			$('#btn-synch').css('display','none');
+			if(prevData.val!==''){
+				console.log(prevData);
+				$('.dplr-lists-sel').each(function(){
+					if( prevData.name !== $(this).attr('name') ){
+						$(this).append('<option value="'+prevData.val+'">'+prevData.selectedName+'</option>');
+					}
+				});
+			}
+			if(current!==''){
+				var s = $('.dplr-lists-sel').not(this);
+				//var s = $('.dplr-list');
+				console.log(s.find('option[value="'+current+'"]').val());
+				s.find('option[value="'+current+'"]').remove();
+			}
 			$(this).closest('tr').find('td span').html(
 				$('option:selected', this).attr('data-subscriptors')
 			);

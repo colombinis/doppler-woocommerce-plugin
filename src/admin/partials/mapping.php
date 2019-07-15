@@ -10,7 +10,8 @@
 
     <?php
 
-    $used_fields = array_filter($maps);
+    //$used_fields = array_filter($maps);
+    $maps? $used_fields = array_filter($maps): $used_fields = array();
 
     if(is_array($wc_fields)){
 

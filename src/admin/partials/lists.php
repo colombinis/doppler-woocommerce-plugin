@@ -19,11 +19,12 @@
                         <?php _e('Buyers', 'doppler-for-woocommerce')?>
                     </th>
                     <td>
-                        <select name="dplr_subsribers_list[buyers]">
+                        <select name="dplr_subsribers_list[buyers]" class="dplr-lists-sel">
                             <option value=""></option>
                             <?php 
                             if(!empty($lists)){
                                 foreach($lists as $k=>$v){
+                                    if( $subscribers_lists['contacts'] != $k ):
                                     ?>
                                     <option value="<?php echo $k?>" 
                                         <?php if($subscribers_lists['buyers']==$k){ echo 'selected'; $scount = $v['subscribersCount']; } ?>
@@ -31,6 +32,7 @@
                                         <?php echo $v['name']?>
                                     </option>
                                     <?php
+                                    endif;
                                 }
                             }   
                             ?>
@@ -48,11 +50,12 @@
                         <?php _e('Contacts', 'doppler-for-woocommerce')?>
                     </th>
                     <td>
-                        <select name="dplr_subsribers_list[contacts]">
+                        <select name="dplr_subsribers_list[contacts]" class="dplr-lists-sel">
                             <option value=""></option>
                             <?php 
                                 if(!empty($lists)){
                                     foreach($lists as $k=>$v){
+                                        if( $subscribers_lists['buyers'] != $k ):
                                         ?>
                                         <option value="<?php echo $k?>" 
                                             <?php if($subscribers_lists['contacts']==$k){ echo 'selected'; $scount = $v['subscribersCount']; }?>
@@ -60,6 +63,7 @@
                                             <?php echo $v['name']?>
                                         </option>
                                         <?php
+                                        endif;
                                     }
                                 }
                             ?>
