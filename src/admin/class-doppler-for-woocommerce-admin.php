@@ -564,7 +564,7 @@ class Doppler_For_Woocommerce_Admin {
 			$list_id = get_option('dplr_subsribers_list')['buyers'];
 			$order = wc_get_order( $order_id );
 			$order_data = $order->get_data();
-			$fields = $this->get_mapped_fields($order_data);
+			$fields = $this->get_mapped_fields($order);
 			$this->subscribe_customer($list_id, $order_data['billing']['email'], $fields);
 
 		}
@@ -581,7 +581,7 @@ class Doppler_For_Woocommerce_Admin {
 		$list_id = get_option('dplr_subsribers_list')['contacts'];
 		$order = wc_get_order( $order_id );
 		$order_data = $order->get_data();
-		$fields = $this->get_mapped_fields($order_data);
+		$fields = $this->get_mapped_fields($order);
 		$this->subscribe_customer($list_id, $order_data['billing']['email'], $fields);
 
 	}
@@ -649,7 +649,7 @@ class Doppler_For_Woocommerce_Admin {
 
 		if(!empty($orders)){
 			foreach($orders as $k=>$order){
-				$orders_by_email[$order->data['billing']['email']] = $this->get_mapped_fields($order->data);
+				$orders_by_email[$order->data['billing']['email']] = $this->get_mapped_fields($order);
 			}
 		}
 
@@ -728,31 +728,36 @@ class Doppler_For_Woocommerce_Admin {
 	/**
 	 * Get the mapped fields of a given order.
 	 */
-	private function get_mapped_fields( $order_data ) {
-	
-		if(!empty($order_data)){
+	private function get_mapped_fields( $order ) {
+		
+		$order_data = $order->get_data();
+		$fields = array();
 
-			$list_id = get_option('dplr_subsribers_list')['contacts'];
+		if(!empty($order_data)){
+			
 			$fields_map = get_option('dplrwoo_mapping');
 			
+			//Map default fields.
 			foreach($order_data as $key=>$fieldgroup){
-				
 				if( $key === 'shipping' || $key === 'billing' ){	
-					
 					foreach($fieldgroup as $fieldname=>$v){
-						
 						$f = $key.'_'.$fieldname;
-						
 						if( isset($fields_map[$f]) && $fields_map[$f] != '' ){
 							$fields[] = array('name'=>$fields_map[$f], 'value'=>$v);
 						}
-					
 					}
-				
 				}
-			
 			}
 
+			//Map custom fields
+			if(!empty($fields_map)){
+				foreach($fields_map as $wc_field=>$dplr_field){
+					if(!empty($order->get_meta('_'.$wc_field))){
+						$fields[] = array('name'=>$dplr_field, 'value'=>$order->get_meta('_'.$wc_field));
+					}
+				}
+			}
+			
 			return $fields;
 		}
 
