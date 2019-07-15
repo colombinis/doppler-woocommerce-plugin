@@ -11,9 +11,13 @@ class Woo_Doppler_Service
 
   private $httpClient;
 
+  private $errors;
+
   function __construct($credentials = null) {
     
     $this->config = ['credentials' => []];
+
+    $this->error = 0;
 
     $usr_account = '';
 
@@ -229,18 +233,21 @@ class Woo_Doppler_Service
 
       }
 
+      if($response['response']['code']>='400'){
+        throw new Exception($response['response']['code'].' - '.$response['response']['message']);
+      }
+
+      if(empty($response)){
+        throw new Exception('Error.');
+      }
+
     }
     catch(\Exception $e){
-      $this->throwConnectionErr();
+      $this->throwConnectionErr($e->getMessage());
       return;
     }
 
-    if(is_array($response)){
-      return $response;
-    }else{
-      $this->throwConnectionErr();
-      return;
-    }
+    return $response;
 
   }
 
@@ -248,19 +255,20 @@ class Woo_Doppler_Service
     return $this->resources[ $resourceName ];
   }
 
-  function throwConnectionErr(){
-    add_action( 'admin_notices', function(){
+  function throwConnectionErr($msg) {
+      if($this->error == 0):
       ?>
       <div class="notice notice-error">
 				<p>
-					<?php _e( '<b>Doppler Forms:</b> Connection error. Please contact support.', 'doppler-form');?>
+					<b>Doppler Forms:</b> Connection error. <?php echo $msg ?>. Please contact support.
 				</p>
 			</div>
       <?php
-    } );
-  }
-
+      endif;
+      $this->error = 1;
  }
+
+}
 
 endif;
 
@@ -417,6 +425,7 @@ if( ! class_exists( 'Doppler_Service_Subscribers' ) ) :
     }
 
     public function getSubscribers( $listId, $page = 1 ) {
+      
       /*
       $method = $this->methods['list'];
       $z = json_decode($this->service->call($method, array("listId" => $listId, 'page' => $page))['body']);
