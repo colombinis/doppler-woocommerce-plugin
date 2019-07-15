@@ -37,12 +37,12 @@
                         </select>
                     </td>
                     <td class="text-right td-sm">
-                        <span><?php echo $scount?></span>
+                        <span id="buyers-count"><?php echo $scount?></span>
                     </td>
                     <td>
                     </td>
                 </tr>
-
+                <?php $scount='' ?>
                 <tr>
                     <th>
                         <?php _e('Contacts', 'doppler-for-woocommerce')?>
@@ -66,7 +66,7 @@
                         </select>
                     </td>
                     <td class="text-right td-sm">
-                        <span><?php echo $scount?></span>
+                        <span id="contacts-count"><?php echo $scount?></span>
                     </td>
                     <td>
                     </td>
@@ -82,8 +82,9 @@
     </form>
 
     <hr/>
-
-    <a id="btn-synch" class="small-text pointer"><?php _e('Synchronize lists', 'doppler-for-woocommerce')?></a>
-    <img class="doing-synch" src="<?php echo DOPPLER_FOR_WOOCOMMERCE_URL . 'admin/img/ajax-synch.gif' ?>" alt="<?php _e('Synchronizing', 'doppler-for-woocommerce')?>"/>
-    <span class="synch-ok dashicons dashicons-yes text-dark-green"></span>                         
+    <?php if(!empty($subscribers_lists['contacts']) || !empty($subscribers_lists['buyers'])): ?>                     
+        <a id="btn-synch" class="small-text pointer"><?php _e('Synchronize lists', 'doppler-for-woocommerce')?></a>
+        <img class="doing-synch" src="<?php echo DOPPLER_FOR_WOOCOMMERCE_URL . 'admin/img/ajax-synch.gif' ?>" alt="<?php _e('Synchronizing', 'doppler-for-woocommerce')?>"/>
+        <span class="synch-ok dashicons dashicons-yes text-dark-green"></span>        
+    <?php endif;?>                 
 </div>
