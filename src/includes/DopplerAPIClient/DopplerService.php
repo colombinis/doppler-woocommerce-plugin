@@ -205,15 +205,13 @@ class Woo_Doppler_Service
       switch($method['httpMethod']){
         
         case 'get':
-            
             $response = wp_remote_get($url, array(
               'headers'=>$headers,
               'timeout' => 12
             ));
             break;
         
-        case 'post':
-           
+        case 'post':  
             $response = wp_remote_post($url, array(
               'headers'=>$headers,
               'timeout' => 12,
@@ -246,8 +244,7 @@ class Woo_Doppler_Service
       $this->throwConnectionErr($e->getMessage());
       return;
     }
-
-    return $response;
+    return $response;		  
 
   }
 
