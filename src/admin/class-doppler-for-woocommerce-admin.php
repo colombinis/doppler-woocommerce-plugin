@@ -399,15 +399,19 @@ class Doppler_For_Woocommerce_Admin {
 	 * to the user.
 	 */
   public function check_saved_lists() {
+		
 		$lists = get_option('dplr_subsribers_list');
+		
 		if( empty($lists['buyers']) && empty($lists['contacts']) ){
 			$this->admin_notice = array( 'warning',
 			 __('Currently you have no lists selected to subscribe your WooCommerce buyers and contacts. 
-			 Go to <a href="#">List settings</a> to set up your Doppler lists, or if you want to create a new list 
-			 go to <a href="#">Manage lists</a>') 
+			 Go to <a href="' . admin_url( 'admin.php?page=doppler_for_woocommerce_menu&tab=lists' ) . '">List settings</a> to set up your Doppler lists, or if you want to create a new list 
+			 go to <a href=' . admin_url( 'admin.php?page=doppler_for_woocommerce_menu&tab=lists_crud' ) . '>Manage lists</a>') 
 			);
 		}
+	
 	}
+
 	/**
 	 * Get the customer's fields.
 	 */
@@ -767,7 +771,7 @@ class Doppler_For_Woocommerce_Admin {
 			//Map custom fields
 			if(!empty($fields_map)){
 				foreach($fields_map as $wc_field=>$dplr_field){
-					if(!empty($order->get_meta('_'.$wc_field))){
+					if( !empty($order->get_meta('_'.$wc_field)) && !empty($dplr_field) ){
 						$fields[] = array('name'=>$dplr_field, 'value'=>$order->get_meta('_'.$wc_field));
 					}
 				}
@@ -787,7 +791,7 @@ class Doppler_For_Woocommerce_Admin {
 
 			$subscriber['email'] = $email;
 			$subscriber['fields'] = $fields; 
-			
+
 			$this->doppler_service->setCredentials($this->credentials);
 			$subscriber_resource = $this->doppler_service->getResource('subscribers');
 			$result = $subscriber_resource->addSubscriber($list_id, $subscriber);
