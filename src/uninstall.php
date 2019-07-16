@@ -55,4 +55,8 @@ if( $_REQUEST['slug']==='doppler-for-woocommerce' ){
 	delete_option($option_name);
 	delete_site_option($option_name);
 
+	$option_name = 'dplrwoo_version';
+	delete_option($option_name);
+	delete_site_option($option_name);
+
 }
