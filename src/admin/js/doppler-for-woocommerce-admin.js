@@ -84,7 +84,7 @@
 		}).change(function(){
 			var prevData = $(this).data('fieldData');
 			var current = $(this).val();
-			$('#btn-synch').css('display','none');
+			$('#btn-synch,.synch-ok').css('display','none');
 			if(prevData.val!==''){
 				console.log(prevData);
 				$('.dplr-lists-sel').each(function(){

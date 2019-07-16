@@ -20,7 +20,7 @@
             if( $fieldtype!='' && $fieldtype!='order' ):
 
                 ?>
-                <table class="grid">
+                <table class="grid row-highlight">
                     <thead>
                         <tr>
                             <th colspan="2">
