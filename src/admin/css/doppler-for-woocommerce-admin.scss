@@ -205,10 +205,12 @@ $content-width: 940px;
         }
       }
     }
-    tbody{
-      tr{
-        &:hover{
-          background-color: $yellow-hightlight;
+    &.row-highlight{
+      tbody{
+        tr{
+          &:hover{
+            background-color: $yellow-hightlight;
+          }
         }
       }
     }
