@@ -60,7 +60,8 @@ class Doppler_For_Woocommerce_Admin {
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 		$this->doppler_service = $doppler_service;
-		$this->connectionStatus = $this->checkConnectionStatus();
+		$this->connectionStatus = $this->check_connection_status();
+		$this->check_saved_lists();
 
 	}
 
@@ -107,7 +108,7 @@ class Doppler_For_Woocommerce_Admin {
 		wp_localize_script( $this->plugin_name, 'ObjWCStr', array( 
 			'invalidUser'	=> __( 'Ouch! Enter a valid Email.', 'doppler-for-woocommerce' ),
 			'emptyField'	=> __( 'Ouch! The Field is empty.', 'doppler-for-woocommerce'),
-		    'wrongData'		=> __( 'Ouch! There\'s something wrong with your Username or API Key. Please, try again.')							 				
+		  'wrongData'		=> __( 'Ouch! There\'s something wrong with your Username or API Key. Please, try again.')							 				
 		) );
 
 	}
@@ -350,7 +351,7 @@ class Doppler_For_Woocommerce_Admin {
 	 * If transient doesnt exists calls api with dprwoo_api_connect and saves transient to avoid more calls.
 	 * IMPORTANT: Don't forget to delete transient when pressing "disconnect" button in plugin settings.
 	 */
-	public function checkConnectionStatus(){
+	public function check_connection_status() {
 
 		$user = get_option('dplrwoo_user');
 		$key = get_option('dplrwoo_key');
@@ -393,6 +394,20 @@ class Doppler_For_Woocommerce_Admin {
 
 	}
 
+	/**
+	 * Checks if any list is saved to display a help message
+	 * to the user.
+	 */
+  public function check_saved_lists() {
+		$lists = get_option('dplr_subsribers_list');
+		if( empty($lists['buyers']) && empty($lists['contacts']) ){
+			$this->admin_notice = array( 'warning',
+			 __('Currently you have no lists selected to subscribe your WooCommerce buyers and contacts. 
+			 Go to <a href="#">List settings</a> to set up your Doppler lists, or if you want to create a new list 
+			 go to <a href="#">Manage lists</a>') 
+			);
+		}
+	}
 	/**
 	 * Get the customer's fields.
 	 */
