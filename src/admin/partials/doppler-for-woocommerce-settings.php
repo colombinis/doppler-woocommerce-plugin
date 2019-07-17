@@ -54,7 +54,7 @@
         case 'lists':
                 
             $lists = $this->get_alpha_lists();
-            $subscribers_lists = get_option('dplr_subsribers_list');
+            $subscribers_lists = get_option('dplr_subscribers_list');
             require_once('lists.php');
             
         break;

@@ -149,6 +149,35 @@
 
 		});
 
+		$("#dplrwoo-create-lists").click(function(){
+			var button = $(this);
+			var loader = button.closest('#dplrwoo-createlist-div').find('img');
+			button.closest('#dplrwoo-createlist-div').find('.error').remove();
+			button.css('display','none');
+			loader.css('display','inline-block');
+
+			$.post(ajaxurl,{action: 'dplrwoo_ajax_create_lists'}, function(response){
+				var obj = JSON.parse(response);
+				if(typeof obj.buyers.createdResourceId==="undefined"||typeof obj.contacts.createdResourceId==="undefined"){
+					var err = '';
+					if(typeof obj.buyers.response.title!=="undefined"){
+						err+=obj.buyers.response.title;
+					}
+					if(typeof obj.contacts.response.title!=="undefined" && err===''){
+						err+=obj.buyers.response.title;
+					}
+				}
+				if(err!=''){
+					button.after('<div class="error">'+err+'</div>');
+				}else{
+					window.location.reload(false); 					
+				}
+				button.css('display','inline-block');
+				loader.css('display','none');
+
+			});
+		});
+
 		$("#dplrwoo-save-list").click(function(e){
 
 			e.preventDefault();			
@@ -172,7 +201,7 @@
 						$("#dprwoo-tbl-lists tbody").prepend(html);
 					}else{
 						if(body.status == '400'){
-							alert(body.title);
+							//alert(body.title);
 						}
 					}
 					listsLoaded();
@@ -264,9 +293,9 @@
 						tr.remove();
 					}else{
 						if(obj.response.code == 0){
-							alert('No se puede eliminar lista.')
+							//alert('No se puede eliminar lista.')
 						}else{
-							alert('Error');
+							//alert('Error');
 						}
 						tr.removeClass('deleting');
 					}

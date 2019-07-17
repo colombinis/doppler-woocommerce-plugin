@@ -35,7 +35,7 @@ if( $_REQUEST['slug']==='doppler-for-woocommerce' ){
 
 	global $wpdb;
 	
-	$option_name = 'dplr_subsribers_list';
+	$option_name = 'dplr_subscribers_list';
 	delete_option($option_name);
 	delete_site_option($option_name);
 

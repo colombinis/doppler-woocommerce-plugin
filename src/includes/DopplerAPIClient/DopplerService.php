@@ -231,10 +231,6 @@ class Woo_Doppler_Service
 
       }
 
-      if($response['response']['code']>='400'){
-        throw new Exception($response['response']['code'].' - '.$response['response']['message']);
-      }
-
       if(empty($response)){
         throw new Exception('Error.');
       }
@@ -253,7 +249,7 @@ class Woo_Doppler_Service
   }
 
   function throwConnectionErr($msg) {
-      if($this->error == 0):
+    if($this->error == 0):
       ?>
       <div class="notice notice-error">
 				<p>
@@ -261,8 +257,8 @@ class Woo_Doppler_Service
 				</p>
 			</div>
       <?php
-      endif;
-      $this->error = 1;
+    endif;
+    $this->error = 1;
  }
 
 }

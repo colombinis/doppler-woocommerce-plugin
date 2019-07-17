@@ -249,8 +249,8 @@ class Doppler_For_Woocommerce_Admin {
 		}
 
 		if($_GET['tab']=='lists'){
-			if( isset($_POST['dplr_subsribers_list']) && current_user_can('manage_options') && check_admin_referer('map-lists') ){
-				update_option( 'dplr_subsribers_list', $_POST['dplr_subsribers_list'] );
+			if( isset($_POST['dplr_subscribers_list']) && current_user_can('manage_options') && check_admin_referer('map-lists') ){
+				update_option( 'dplr_subscribers_list', $_POST['dplr_subscribers_list'] );
 				$this->admin_notice = array('success', __('Subscribers lists saved succesfully', 'doppler-for-woocommerce'));
 			}
 		}
@@ -298,49 +298,60 @@ class Doppler_For_Woocommerce_Admin {
 	 * used by "connect" button in dopper-for-woocommerce-settings.php
 	 */
 	public function dplrwoo_api_connect() {
-		
 		$connected = $this->doppler_service->setCredentials(['api_key' => $_POST['key'], 'user_account' => $_POST['user']]);
 		echo ($connected)? 1:0;
 		exit();
-
 	}
 
 	public function dplrwoo_get_lists() {
-		
 		echo json_encode($this->get_lists_by_page($_POST['page']));
 		exit();
-	
 	}
 
 	public function dplrwoo_save_list() {
-
-		/**
-		 * TODO: Validar nombre de la lista
-		 * largo, mínimo, etc.
-		 */
 		if(!empty($_POST['listName'])){
-			$this->doppler_service->setCredentials($this->credentials);
-			$subscriber_resource = $this->doppler_service->getResource('lists');
-			echo $subscriber_resource->saveList( $_POST['listName'] )['body'];
+			echo $this->create_list($list_name);
 		}
 		exit();
+	}
 
+	private function create_list($list_name) {
+		$this->doppler_service->setCredentials($this->credentials);
+		$subscriber_resource = $this->doppler_service->getResource('lists');
+		return $subscriber_resource->saveList( $list_name )['body'];
 	}
 
 	public function dplrwoo_delete_list() {
-
-		if(!empty($_POST['listId'])){
-			$subscribers_lists = get_option('dplr_subsribers_list');
-			if(!array_search($_POST['listId'],$subscribers_lists)){
-				$this->doppler_service->setCredentials($this->credentials);
-				$subscriber_resource = $this->doppler_service->getResource('lists');
-				echo json_encode($subscriber_resource->deleteList( $_POST['listId'] ));
-			}else{
-				echo json_encode(array('response'=>array('code'=>'0')));
-			}
-		}
+		if(empty($_POST['listId'])) return false;
+		$subscribers_lists = get_option('dplr_subscribers_list');
+		$this->doppler_service->setCredentials($this->credentials);
+		$subscriber_resource = $this->doppler_service->getResource('lists');
+		echo json_encode($subscriber_resource->deleteList( $_POST['listId'] ));
 		exit();
+	}
 
+	/**
+	 * Create default lists
+	 */
+	public function dplrwoo_create_default_lists(){
+	    $resp = array();
+		$default_buyers_list = 'listadefect1';
+		$default_contact_list = 'listadefect2';
+		$respBuyer = json_decode($this->create_list($default_buyers_list));
+		$respContact = json_decode($this->create_list($default_contact_list));
+		$resp['buyers']['response'] = $respBuyer;
+		$resp['contacts']['response'] = $respContact;
+		//Crates both default lists or creates nothing.
+		if( !empty($respBuyer->createdResourceId) && !empty($respContact->createdResourceId) ){
+			update_option( 'dplr_subscribers_list', 
+				array( 
+					'buyers' => $respBuyer->createdResourceId, 
+					'contacts' => $respContact->createdResourceId
+				) 
+			) ;
+		}
+		echo json_encode($resp);
+		exit();
 	}
 
 	/**
@@ -400,7 +411,7 @@ class Doppler_For_Woocommerce_Admin {
 	 */
   public function check_saved_lists() {
 		
-		$lists = get_option('dplr_subsribers_list');
+		$lists = get_option('dplr_subscribers_list');
 		
 		if( empty($lists['buyers']) && empty($lists['contacts']) ){
 			$this->admin_notice = array( 'warning',
@@ -552,7 +563,7 @@ class Doppler_For_Woocommerce_Admin {
 		if( isset($_POST['register']) ){
 			
 			$fields_map = get_option('dplrwoo_mapping');
-			$list_id = get_option('dplr_subsribers_list')['contacts'];
+			$list_id = get_option('dplr_subscribers_list')['contacts'];
 			
 			if( !empty($fields_map) && !empty($list_id) ){
 
@@ -580,7 +591,7 @@ class Doppler_For_Woocommerce_Admin {
 
 		if( $new_status == "completed" ) {
 			
-			$list_id = get_option('dplr_subsribers_list')['buyers'];
+			$list_id = get_option('dplr_subscribers_list')['buyers'];
 			$order = wc_get_order( $order_id );
 			$order_data = $order->get_data();
 			$fields = $this->get_mapped_fields($order);
@@ -597,7 +608,7 @@ class Doppler_For_Woocommerce_Admin {
 	 */
 	public function dplrwoo_customer_checkout_success( $order_id ) {
 
-		$list_id = get_option('dplr_subsribers_list')['contacts'];
+		$list_id = get_option('dplr_subscribers_list')['contacts'];
 		$order = wc_get_order( $order_id );
 		$order_data = $order->get_data();
 		$fields = $this->get_mapped_fields($order);
@@ -655,12 +666,12 @@ class Doppler_For_Woocommerce_Admin {
 			'orderby'	=> 'date',
 			'order'		=> 'DESC'
 		);
-
+		
 		if($_POST['list_type'] == 'contacts'){
-			$list_id = get_option('dplr_subsribers_list')['contacts'];
+			$list_id = get_option('dplr_subscribers_list')['contacts'];
 			$registered_users = $this->get_registered_users();
 		}else if($_POST['list_type'] == 'buyers'){
-			$list_id = get_option('dplr_subsribers_list')['buyers'];
+			$list_id = get_option('dplr_subscribers_list')['buyers'];
 			$args['status'] = 'completed';
 		}
 
@@ -690,6 +701,7 @@ class Doppler_For_Woocommerce_Admin {
 		$this->doppler_service->setCredentials( $this->credentials );
 		$subscriber_resource = $this->doppler_service->getResource( 'subscribers' );
 		$resp = $subscriber_resource->importSubscribers($list_id, $subscribers);
+		
 		echo 1;
 		exit();
 
@@ -711,11 +723,11 @@ class Doppler_For_Woocommerce_Admin {
 			$this->doppler_service->setCredentials( $this->credentials );
 			$list_resource = $this->doppler_service->getResource( 'lists' );
 			
-			$c_list_id = get_option('dplr_subsribers_list')['contacts'];
+			$c_list_id = get_option('dplr_subscribers_list')['contacts'];
 			if(!empty($c_list_id)){
 				$c_count = $list_resource->getList($c_list_id)->subscribersCount;
 			}
-			$b_list_id = get_option('dplr_subsribers_list')['buyers'];
+			$b_list_id = get_option('dplr_subscribers_list')['buyers'];
 			if(!empty($b_list_id)){
 				$b_count = $list_resource->getList($b_list_id)->subscribersCount;
 			}
