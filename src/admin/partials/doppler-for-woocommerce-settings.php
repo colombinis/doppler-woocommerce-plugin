@@ -61,7 +61,7 @@
 
         case 'lists_crud':
                 
-            $lists = $this->get_alpha_lists();
+            //$lists = $this->get_alpha_lists();
             require_once('lists_crud.php');
         
         break;
@@ -69,7 +69,7 @@
         case 'fields':
 
             $wc_fields = $this->get_checkout_fields();
-            $this->doppler_service->setCredentials($this->credentials);
+            //$this->doppler_service->setCredentials($this->credentials);
             $fields_resource = $this->doppler_service->getResource('fields');
             $dplr_fields = $fields_resource->getAllFields();
             $dplr_fields = isset($dplr_fields->items) ? $dplr_fields->items : [];

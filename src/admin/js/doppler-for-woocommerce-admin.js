@@ -188,9 +188,11 @@
 					action: 'dplrwoo_ajax_save_list',
 					listName: listName
 				};
+				
 				listsLoading();
 				
 				$.post( ajaxurl, data, function( response ) {
+
 					var body = 	JSON.parse(response);
 					if(body.createdResourceId){		
 						var html ='<tr>';
@@ -200,8 +202,9 @@
 						html+='</tr>';
 						$("#dprwoo-tbl-lists tbody").prepend(html);
 					}else{
-						if(body.status == '400'){
-							//alert(body.title);
+						if(body.status >= 400){
+							//body.status
+							displayErrors(body.status,body.errorCode);
 						}
 					}
 					listsLoaded();
@@ -236,6 +239,21 @@
 		$('form input, form button').prop('disabled', false);
 		$('form input').val('');
 		$('#dplrwoo-crud').removeClass('loading');
+	}
+
+	function displayErrors(status,code){
+		var errorMsg = '';
+		var errors = {	
+			400 : { 1:'Ha ocurrido un error al validar los datos',
+					2:'Its duplicated!',
+					3:'Ha alcanzado el máximo de listas'},
+			429 : { 0:'Too many requests!! Wait a minute...'}
+		}
+		if(typeof errors[status] === 'undefined')
+			 errorMsg = 'Unexpected error';
+		else
+		   typeof errors[status][code] === 'undefined'? errorMsg='Unexpected error code' : errorMsg = errors[status][code];
+		$('.showErrorResponse').html(errorMsg);
 	}
 
 	function loadLists( page ){

@@ -23,25 +23,19 @@ class Woo_Doppler_Service
 
     if ($credentials)
       $this->setCredentials($credentials);
-
-    if(isset($config['credentials'][ 'user_account'])){
-      $usr_account = $config['credentials'][ 'user_account'] . '/';
-    }
-
-    $this->baseUrl = 'http://newapiqa.fromdoppler.net/accounts/' . $usr_account;
-
+    
     $this->resources = [
 	  'home'	=> new Doppler_Service_Home_Resource(
 	    $this,
-		array(
-		  'methods' => array(
-		  	'get' => array(
-				'route' => '',
-				'httpMethod' => 'get',
-				'parameters' => null
-			)
-		  )
-		)
+      array(
+        'methods' => array(
+            'get' => array(
+              'route' => '',
+              'httpMethod' => 'get',
+              'parameters' => null
+            )
+          )
+      )
 	  ),
       'lists'   => new Doppler_Service_Lists_Resource(
         $this,
@@ -133,11 +127,15 @@ class Woo_Doppler_Service
     ];
   }
 
-  public function setCredentials($credentials) {
-
+  /**
+   * Set credentials
+   * It wont check API connection anymore.
+   */
+  public function setCredentials( $credentials = array() ) {
     $this->config['credentials'] = array_merge($credentials, $this->config['credentials'] );
+    return true;
+    /*
     $connectionStatus = $this->connectionStatus();
-    
     switch($connectionStatus['response']['code']) {
       case 200:
         return true;
@@ -151,13 +149,12 @@ class Woo_Doppler_Service
         return false;
         break;
     }
-
-
+    */
   }
 
   public function connectionStatus() {
     $response = $this->call(array('route' => '', 'httpMethod' => 'get'));
-	   return $response;
+	  return $response;
   }
 
   function call( $method, $args=null, $body=null ) {
@@ -203,14 +200,12 @@ class Woo_Doppler_Service
     try{
 
       switch($method['httpMethod']){
-        
         case 'get':
             $response = wp_remote_get($url, array(
               'headers'=>$headers,
               'timeout' => 12
             ));
             break;
-        
         case 'post':  
             $response = wp_remote_post($url, array(
               'headers'=>$headers,
@@ -218,9 +213,7 @@ class Woo_Doppler_Service
               'body'=> json_encode($body)
             ));
             break;
-
         case 'delete':
-           
             $response = wp_remote_request($url, array(
               'method' => 'DELETE',
               'headers'=>$headers,
@@ -228,7 +221,6 @@ class Woo_Doppler_Service
               'body'=> json_encode($body)
             ));
             break;
-
       }
 
       if(empty($response)){
@@ -249,6 +241,7 @@ class Woo_Doppler_Service
   }
 
   function throwConnectionErr($msg) {
+    //Does this ever shows?
     if($this->error == 0):
       ?>
       <div class="notice notice-error">
@@ -265,11 +258,10 @@ class Woo_Doppler_Service
 
 endif;
 
-  /**
-   * These classes represent the different resources of the API.
-   */
+/**
+ * These classes represent the different resources of the API.
+ */
 
-  
 if( ! class_exists( 'Doppler_Service_Home_Resource' ) ) :
 
   class Doppler_Service_Home_Resource {
@@ -287,7 +279,7 @@ if( ! class_exists( 'Doppler_Service_Home_Resource' ) ) :
     }
 
 	public function getUserAccount(){
-    $method = $methods['get'];
+      $method = $methods['get'];
       return $this->service->call($method, array());
 	  }
   }
@@ -345,19 +337,19 @@ if( ! class_exists( 'Doppler_Service_Lists_Resource' ) ) :
 
     public function saveList( $list_name ) {
       
-      if(!empty($list_name)):
+      if(!empty($list_name)){
         $method = $this->methods['new'];
         return $this->service->call( $method, null, array('name'=>$list_name)  );
-      endif;
+      }
     
     }
 
     public function deleteList($list_id) {
       
-      if(!empty($list_id)):
+      if(!empty($list_id)){
         $method = $this->methods['delete'];
         return $this->service->call( $method, array('listId'=>$list_id) );
-      endif;
+      }
     
     }
     

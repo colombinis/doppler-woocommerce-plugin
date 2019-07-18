@@ -61,6 +61,7 @@ class Doppler_For_Woocommerce_Admin {
 		$this->version = $version;
 		$this->doppler_service = $doppler_service;
 		$this->connectionStatus = $this->check_connection_status();
+
 		$this->check_saved_lists();
 
 	}
@@ -310,13 +311,12 @@ class Doppler_For_Woocommerce_Admin {
 
 	public function dplrwoo_save_list() {
 		if(!empty($_POST['listName'])){
-			echo $this->create_list($list_name);
+			echo $this->create_list($_POST['listName']);
 		}
 		exit();
 	}
 
 	private function create_list($list_name) {
-		$this->doppler_service->setCredentials($this->credentials);
 		$subscriber_resource = $this->doppler_service->getResource('lists');
 		return $subscriber_resource->saveList( $list_name )['body'];
 	}
@@ -324,7 +324,6 @@ class Doppler_For_Woocommerce_Admin {
 	public function dplrwoo_delete_list() {
 		if(empty($_POST['listId'])) return false;
 		$subscribers_lists = get_option('dplr_subscribers_list');
-		$this->doppler_service->setCredentials($this->credentials);
 		$subscriber_resource = $this->doppler_service->getResource('lists');
 		echo json_encode($subscriber_resource->deleteList( $_POST['listId'] ));
 		exit();
@@ -335,8 +334,8 @@ class Doppler_For_Woocommerce_Admin {
 	 */
 	public function dplrwoo_create_default_lists(){
 	    $resp = array();
-		$default_buyers_list = 'listadefect1';
-		$default_contact_list = 'listadefect2';
+		$default_buyers_list = __('WooCommerce Buyers', 'doppler-for-woocommerce');
+		$default_contact_list = __('WooCommerce Contacts', 'doppler-for-woocommerce');
 		$respBuyer = json_decode($this->create_list($default_buyers_list));
 		$respContact = json_decode($this->create_list($default_contact_list));
 		$resp['buyers']['response'] = $respBuyer;
@@ -367,40 +366,28 @@ class Doppler_For_Woocommerce_Admin {
 		$user = get_option('dplrwoo_user');
 		$key = get_option('dplrwoo_key');
 
+		if( empty($user) || empty($key) ){
+			return false;
+		}
+
 		if( !empty($user) && !empty($key) ){
-			$this->credentials = array('api_key' => $key, 'user_account' => $user);
-
-			/*
-			
-			//Too complex approach?
-			//Why dont just check if user has credentials (connected)
-			//and if api is offline just show a warning but keep user as connected?
-			// (By user connected it means submenues are shown and disconnect button available in settings)
-
-			$connection_status = get_transient('_dplrwoo_connection_status');
-			
-			if( $connection_status == 1 ){
-				
-				return true;
-			
-			}else{
-				
-				$connected = $this->doppler_service->setCredentials(['api_key' => $key, 'user_account' => $user]);
-				
-				if( $connected == 1 ){
-					set_transient( '_dplrwoo_connection_status', 1, 3600 );
-					return true;
-				}
-
-				return false;
+			//TODO eliminar credentials si esto funciona.
+			//$this->credentials = array('api_key' => $key, 'user_account' => $user);
+			if(empty($this->doppler_service->config['crendentials'])){
+				$this->doppler_service->setCredentials(array('api_key' => $key, 'user_account' => $user));
 			}
-
-			*/
-
+			if( is_admin() ){ //... if we are at the backend.
+				$response =  $this->doppler_service->connectionStatus();
+				//var_dump($response);
+				//var_dump($response['response']['code']);
+				if($response['response']['code']>=400){
+					 $this->admin_notice = array('error', '<strong>Doppler of WooCommerce ERROR</strong> ' . $response['response']['message']);
+					 return false;
+				}
+			}
 			return true;
 		}
 
-		$this->credentials = null;
 		return false;
 
 	}
@@ -414,11 +401,12 @@ class Doppler_For_Woocommerce_Admin {
 		$lists = get_option('dplr_subscribers_list');
 		
 		if( empty($lists['buyers']) && empty($lists['contacts']) ){
+			/*
 			$this->admin_notice = array( 'warning',
 			 __('Currently you have no lists selected to subscribe your WooCommerce buyers and contacts. 
 			 Go to <a href="' . admin_url( 'admin.php?page=doppler_for_woocommerce_menu&tab=lists' ) . '">List settings</a> to set up your Doppler lists, or if you want to create a new list 
 			 go to <a href=' . admin_url( 'admin.php?page=doppler_for_woocommerce_menu&tab=lists_crud' ) . '>Manage lists</a>') 
-			);
+			);*/
 		}
 	
 	}
@@ -525,7 +513,7 @@ class Doppler_For_Woocommerce_Admin {
 	 */
 	public function get_alpha_lists() {
 		
-		$this->doppler_service->setCredentials($this->credentials);
+		//$this->doppler_service->setCredentials($this->credentials);
 		$list_resource = $this->doppler_service->getResource('lists');
 		$dplr_lists = $list_resource->getAllLists();
 		
@@ -545,11 +533,8 @@ class Doppler_For_Woocommerce_Admin {
 	}
 
 	public function get_lists_by_page( $page = 1 ) {
-
-		$this->doppler_service->setCredentials( $this->credentials );
 		$list_resource = $this->doppler_service->getResource( 'lists' );
 		return $list_resource->getListsByPage( $page );
-
 	}
 
 
@@ -559,7 +544,6 @@ class Doppler_For_Woocommerce_Admin {
 	 */
 	public function dplrwoo_created_customer( $customer_id, $customer_data, $customer_password ) {
 
-		//if( isset($_POST['register']) || $_POST['createaccount']==='1' ){
 		if( isset($_POST['register']) ){
 			
 			$fields_map = get_option('dplrwoo_mapping');
@@ -698,10 +682,10 @@ class Doppler_For_Woocommerce_Admin {
 			$subscribers['items'][] = array('email'=>$email, 'fields'=>$fields);
 		}
 
-		$this->doppler_service->setCredentials( $this->credentials );
+		//$this->doppler_service->setCredentials( $this->credentials );
 		$subscriber_resource = $this->doppler_service->getResource( 'subscribers' );
 		$resp = $subscriber_resource->importSubscribers($list_id, $subscribers);
-		
+		var_dump($resp);
 		echo 1;
 		exit();
 
@@ -720,7 +704,6 @@ class Doppler_For_Woocommerce_Admin {
 			$c_count = 0;
 			$b_count = 0;
 
-			$this->doppler_service->setCredentials( $this->credentials );
 			$list_resource = $this->doppler_service->getResource( 'lists' );
 			
 			$c_list_id = get_option('dplr_subscribers_list')['contacts'];
@@ -803,8 +786,6 @@ class Doppler_For_Woocommerce_Admin {
 
 			$subscriber['email'] = $email;
 			$subscriber['fields'] = $fields; 
-
-			$this->doppler_service->setCredentials($this->credentials);
 			$subscriber_resource = $this->doppler_service->getResource('subscribers');
 			$result = $subscriber_resource->addSubscriber($list_id, $subscriber);
 		

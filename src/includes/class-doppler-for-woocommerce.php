@@ -69,7 +69,7 @@ class Doppler_For_Woocommerce {
 	 * @since    1.0.0
 	 */
 	public function __construct() {
-		
+	
 		require_once(dirname( __FILE__ ) . '/DopplerAPIClient/DopplerService.php');
 		$this->doppler_service = new Woo_Doppler_Service();
 
