@@ -378,8 +378,6 @@ class Doppler_For_Woocommerce_Admin {
 			}
 			if( is_admin() ){ //... if we are at the backend.
 				$response =  $this->doppler_service->connectionStatus();
-				//var_dump($response);
-				//var_dump($response['response']['code']);
 				if($response['response']['code']>=400){
 					 $this->admin_notice = array('error', '<strong>Doppler of WooCommerce ERROR</strong> ' . $response['response']['message']);
 					 return false;
@@ -685,7 +683,6 @@ class Doppler_For_Woocommerce_Admin {
 		//$this->doppler_service->setCredentials( $this->credentials );
 		$subscriber_resource = $this->doppler_service->getResource( 'subscribers' );
 		$resp = $subscriber_resource->importSubscribers($list_id, $subscribers);
-		var_dump($resp);
 		echo 1;
 		exit();
 
