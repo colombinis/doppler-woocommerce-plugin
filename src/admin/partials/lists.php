@@ -1,5 +1,11 @@
 <div class="dplr-tab-content">
 
+    <div id="showSuccessResponse">
+    </div>
+
+    <div id="showErrorResponse">
+    </div>
+
     <?php
     
     if( empty($subscribers_lists['contact']) && empty($subscribers_lists['buyers']) ):
@@ -105,9 +111,20 @@
     </form>
 
     <hr/>
-    <?php if(!empty($subscribers_lists['contacts']) || !empty($subscribers_lists['buyers'])): ?>                     
-        <a id="btn-synch" class="small-text pointer"><?php _e('Synchronize lists', 'doppler-for-woocommerce')?></a>
+    <a id="dplrwoo-new-list" class="small-text pointer"><?php _e( 'Create new list' , 'doppler-for-woocommerce') ?></a>
+    <?php if(!empty($subscribers_lists['contacts']) || !empty($subscribers_lists['buyers'])): ?> 
+        <span> | </span>
+        <a id="dplrwoo-btn-synch" class="small-text pointer"><?php _e('Synchronize lists', 'doppler-for-woocommerce')?></a>
         <img class="doing-synch" src="<?php echo DOPPLER_FOR_WOOCOMMERCE_URL . 'admin/img/ajax-synch.gif' ?>" alt="<?php _e('Synchronizing', 'doppler-for-woocommerce')?>"/>
         <span class="synch-ok dashicons dashicons-yes text-dark-green"></span>        
     <?php endif;?>                 
+</div>
+
+<div id="dplr-dialog-confirm" class="doppler-woo-settings w-100" title="<?php _e('Create new List', 'doppler-form'); ?>">
+    <form>
+        <p>
+            <input type="text" maxlength="50" value="" placeholder="<?php _e('Enter List name','doppler-for-woocommerce')?>" class="w-100"/>
+            <img src="<?php echo DOPPLER_FOR_WOOCOMMERCE_URL?>admin/img/loading.gif" class="d-none" alt="<?php _e('Saving','doppler-for-woocommerce')?>"/>
+        </p>
+    </form>
 </div>

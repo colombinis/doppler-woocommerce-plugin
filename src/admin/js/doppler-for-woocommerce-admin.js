@@ -84,9 +84,8 @@
 		}).change(function(){
 			var prevData = $(this).data('fieldData');
 			var current = $(this).val();
-			$('#btn-synch,.synch-ok').css('display','none');
+			$('#dplrwoo-btn-synch,.synch-ok').css('display','none');
 			if(prevData.val!==''){
-				console.log(prevData);
 				$('.dplr-lists-sel').each(function(){
 					if( prevData.name !== $(this).attr('name') ){
 						$(this).append('<option value="'+prevData.val+'">'+prevData.selectedName+'</option>');
@@ -95,8 +94,6 @@
 			}
 			if(current!==''){
 				var s = $('.dplr-lists-sel').not(this);
-				//var s = $('.dplr-list');
-				console.log(s.find('option[value="'+current+'"]').val());
 				s.find('option[value="'+current+'"]').remove();
 			}
 			$(this).closest('tr').find('td span').html(
@@ -104,7 +101,7 @@
 			);
 		});
 
-		$("#btn-synch").click(function(){
+		$("#dplrwoo-btn-synch").click(function(){
 			var link = $(this);
 			var synchOk = $('.synch-ok');
 			var bc = $('#buyers-count');
@@ -129,11 +126,22 @@
 				return deferred.promise();
 			} 
 
-			synchBuyers().then(function(response){
-				synchContacts().then(function(response){
+			synchBuyers().then(function(responseBuyers){
+				var obj = JSON.parse(responseBuyers);
+				if(!obj.createdResourceId){
+					displayErrors(obj.status,obj.errorCode);
+					$('.doing-synch').css('display', 'none');
+					return false;
+				}
+				synchContacts().then(function(responseContacts){
+					var obj = JSON.parse(responseContacts);
+					if(!obj.createdResourceId){
+						displayErrors(obj.status,obj.errorCode);
+						$('.doing-synch').css('display', 'none');
+						return false;
+					}
 					$.post(ajaxurl,{action: 'dplrwoo_ajax_update_counter'}, function(response){
 						var obj = JSON.parse(response);
-						console.log(obj);
 						if(bc.html()!=''){
 							bc.html(obj.buyers);
 						}
@@ -227,6 +235,7 @@
 		}
 
 		$("#dprwoo-tbl-lists tbody").on("click","tr a",deleteList);
+		$("#dplrwoo-new-list").on("click",null,{},newList);
 
 	});
 	
@@ -243,6 +252,12 @@
 
 	function displayErrors(status,code){
 		var errorMsg = '';
+		errorMsg = generateErrorMsg(status,code);
+		$('#showErrorResponse').html(errorMsg);
+	}
+
+	function generateErrorMsg(status,code){
+		var err = '';
 		var errors = {	
 			400 : { 1:'Ha ocurrido un error al validar los datos',
 					2:'Its duplicated!',
@@ -250,10 +265,10 @@
 			429 : { 0:'Too many requests!! Wait a minute...'}
 		}
 		if(typeof errors[status] === 'undefined')
-			 errorMsg = 'Unexpected error';
+			 err = 'Unexpected error';
 		else
-		   typeof errors[status][code] === 'undefined'? errorMsg='Unexpected error code' : errorMsg = errors[status][code];
-		$('.showErrorResponse').html(errorMsg);
+		   typeof errors[status][code] === 'undefined'? err='Unexpected error code' : err = errors[status][code];
+		 return err;
 	}
 
 	function loadLists( page ){
@@ -286,6 +301,59 @@
 			}
 
 		})
+	}
+
+	function clearResponseMessages(){
+		$('#showSuccessResponse,#showErrorResponse').html('').css('display','none');
+	}
+
+	function newList(e){
+		e.preventDefault();
+		clearResponseMessages();
+		var inputField = $("#dplr-dialog-confirm").find('input[type="text"]');
+		var span = $("#dplr-dialog-confirm").find('span.text-red');
+		inputField.val('');
+		span.remove();
+		$("#dplr-dialog-confirm").dialog("option", "buttons", [{
+			text: 'New List',
+			click: function() {
+				var dialog = $(this);
+				var button = dialog.closest('.ui-dialog ').find('button');
+				var loader = dialog.find('img');
+				var listName = inputField.val();
+				var data = {
+					action: 'dplrwoo_ajax_save_list',
+					listName : listName
+				};
+				if(listName === '') return false;
+				button.attr('disabled','disabled');
+				loader.css('display','inline-block');
+				$.post( ajaxurl, data, function( response ) {
+					var obj = JSON.parse(response);
+					if(typeof obj.createdResourceId !== "undefined"){
+						$(".dplr-lists-sel").append('<option value="'+obj.createdResourceId+'">'+listName+'</option>');
+						$("#showSuccessResponse").html(ObjWCStr.listSavedOk).css('display','block');
+						button.removeAttr('disabled');
+						loader.css('display','none');
+						dialog.dialog("close");
+					}else{
+						button.removeAttr('disabled');
+						loader.css('display','none');
+						if(obj.status>=400){
+							inputField.after('<span class="text-red">'+generateErrorMsg(obj.status,obj.errorCode))+'</span>';
+						}
+					}
+				});
+			}
+		  }, 
+		  {
+			text: 'Cancel',
+			click: function() {
+			  $(this).dialog("close");
+			}
+		  }]);
+  
+		$("#dplr-dialog-confirm").dialog("open");
 	}
 
 	function deleteList(e){

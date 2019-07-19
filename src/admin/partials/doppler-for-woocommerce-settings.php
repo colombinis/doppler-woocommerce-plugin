@@ -49,6 +49,8 @@
 
     <?php
 
+    if($connected):
+
     switch($active_tab){
 
         case 'lists':
@@ -88,6 +90,14 @@
 
         break;
     }
+
+    else:
+
+        ?>
+        <div><?php echo $this->admin_notice[1]?></div>
+        <?php
+
+    endif;
 
     ?>
     

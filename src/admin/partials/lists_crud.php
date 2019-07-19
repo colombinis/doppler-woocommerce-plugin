@@ -13,7 +13,8 @@
 
     <div class="dplrwoo-loading"></div>
 
-    <div class="showErrorResponse"></div>
+    <div id="showErrorResponse"></div>
+    <div id="showSuccessResponse"></div>
 
     <table id="dprwoo-tbl-lists" class="grid widefat mt-30">
         <thead>

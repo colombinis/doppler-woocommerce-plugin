@@ -109,7 +109,8 @@ class Doppler_For_Woocommerce_Admin {
 		wp_localize_script( $this->plugin_name, 'ObjWCStr', array( 
 			'invalidUser'	=> __( 'Ouch! Enter a valid Email.', 'doppler-for-woocommerce' ),
 			'emptyField'	=> __( 'Ouch! The Field is empty.', 'doppler-for-woocommerce'),
-		  'wrongData'		=> __( 'Ouch! There\'s something wrong with your Username or API Key. Please, try again.')							 				
+			'wrongData'		=> __( 'Ouch! There\'s something wrong with your Username or API Key. Please, try again.'),
+			'listSavedOk'   => __( 'The List has been created successfuly')						 				
 		) );
 
 	}
@@ -680,10 +681,8 @@ class Doppler_For_Woocommerce_Admin {
 			$subscribers['items'][] = array('email'=>$email, 'fields'=>$fields);
 		}
 
-		//$this->doppler_service->setCredentials( $this->credentials );
 		$subscriber_resource = $this->doppler_service->getResource( 'subscribers' );
-		$resp = $subscriber_resource->importSubscribers($list_id, $subscribers);
-		echo 1;
+		echo $subscriber_resource->importSubscribers($list_id, $subscribers)['body'];
 		exit();
 
 	}
