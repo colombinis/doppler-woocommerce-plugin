@@ -109,6 +109,7 @@
 			link.css('pointer-events','none');
 			synchOk.css('opacity','0');
 			$('.doing-synch').css('display', 'inline-block');
+			$('#displayErrorMessage,#displaySuccessMessage').css('display','none');
 
 			var synchBuyers = function(){
 				var deferred = new $.Deferred();
@@ -163,6 +164,7 @@
 			button.closest('#dplrwoo-createlist-div').find('.error').remove();
 			button.css('display','none');
 			loader.css('display','inline-block');
+			$('#displayErrorMessage,#displaySuccessMessage').css('display','none');
 
 			$.post(ajaxurl,{action: 'dplrwoo_ajax_create_lists'}, function(response){
 				var obj = JSON.parse(response);
@@ -310,6 +312,7 @@
 	function newList(e){
 		e.preventDefault();
 		clearResponseMessages();
+		$('#displayErrorMessage,#displaySuccessMessage').css('display','none');
 		var inputField = $("#dplr-dialog-confirm").find('input[type="text"]');
 		var span = $("#dplr-dialog-confirm").find('span.text-red');
 		inputField.val('');

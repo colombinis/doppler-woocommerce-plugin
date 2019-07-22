@@ -1,5 +1,9 @@
 <div class="dplr-tab-content">
 
+    <?php $this->display_success_message() ?>
+
+    <?php $this->display_error_message() ?>
+
     <div id="showSuccessResponse">
     </div>
 

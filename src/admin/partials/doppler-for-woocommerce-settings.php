@@ -54,40 +54,47 @@
     switch($active_tab){
 
         case 'lists':
-                
+            if( isset($_POST['dplr_subscribers_list']) && current_user_can('manage_options') && check_admin_referer('map-lists') ){
+                update_option( 'dplr_subscribers_list', $_POST['dplr_subscribers_list'] );
+                $this->set_success_message(__('Subscribers lists saved succesfully', 'doppler-for-woocommerce'));
+            }
             $lists = $this->get_alpha_lists();
             $subscribers_lists = get_option('dplr_subscribers_list');
             require_once('lists.php');
-            
         break;
 
         case 'lists_crud':
-                
-            //$lists = $this->get_alpha_lists();
             require_once('lists_crud.php');
-        
         break;
 
         case 'fields':
-
+            if( isset($_POST['dplrwoo_mapping']) && current_user_can('manage_options') && check_admin_referer('map-fields') ){
+                update_option( 'dplrwoo_mapping', $_POST['dplrwoo_mapping'] );
+                $this->set_success_message(__('Fields mapped succesfully', 'doppler-for-woocommerce'));
+            }
             $wc_fields = $this->get_checkout_fields();
-            //$this->doppler_service->setCredentials($this->credentials);
             $fields_resource = $this->doppler_service->getResource('fields');
             $dplr_fields = $fields_resource->getAllFields();
             $dplr_fields = isset($dplr_fields->items) ? $dplr_fields->items : [];
             $maps = get_option('dplrwoo_mapping');
             require_once('mapping.php');
-
         break;
 
         case 'hub':
-            $use_hub = get_option('dplr_use_hub');
+            if( $_POST['_wpnonce'] && current_user_can('manage_options') && check_admin_referer('use-hub') ){
+				if($this->validate_tracking_code($_POST['dplr_hub_script'])):
+					update_option( 'dplr_hub_script', $_POST['dplr_hub_script']);
+					$this->set_success_message(__('On Site Tracking code saved successfully', 'doppler-for-woocommerce'));
+				else:
+                    $this->set_error_message(__('Tracking code is invalid', 'doppler-for-woocommerce'));
+				endif;
+            }
+            $dplr_hub_script = get_option('dplr_hub_script');
             require_once('hub.php');
-            break;
+        break;
 
         default:
             require_once('settings.php');
-
         break;
     }
 

@@ -1,7 +1,11 @@
 <div class="dplr-tab-content">
 
+    <?php $this->display_success_message() ?>
+
+    <?php $this->display_error_message() ?>
+
     <p>
-        Field mapping instructions
+        <?php _e('Field mapping instricutions','doppler-for-woocommerce'); ?>
     </p>
 
     <form id="dplrwoo-form-mapping" action="" method="post">
@@ -10,7 +14,6 @@
 
     <?php
 
-    //$used_fields = array_filter($maps);
     $maps? $used_fields = array_filter($maps): $used_fields = array();
 
     if(is_array($wc_fields)){

@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Doppler Service v2.0.0
+ */
+
 if( ! class_exists( 'Woo_Doppler_Service' ) ) :
 
 class Woo_Doppler_Service

@@ -48,6 +48,10 @@ class Doppler_For_Woocommerce_Admin {
 
 	private $admin_notice;
 
+	private $success_message;
+
+	private $error_message;
+
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -61,6 +65,8 @@ class Doppler_For_Woocommerce_Admin {
 		$this->version = $version;
 		$this->doppler_service = $doppler_service;
 		$this->connectionStatus = $this->check_connection_status();
+		$this->success_message = false;
+		$this->error_message = false;
 
 		$this->check_saved_lists();
 
@@ -76,20 +82,50 @@ class Doppler_For_Woocommerce_Admin {
 		return $this->version;
 	}
 
+	public function set_error_message($message) {
+		$this->error_message = $message;
+	}
+
+	public function set_success_message($message) {
+		$this->success_message = $message;
+	}
+
+	public function get_error_message() {
+		return $this->error_message;
+	}
+
+	public function get_success_message() {
+		return $this->success_message;
+	}
+
+	public function display_error_message() {
+		?>
+		<div id="displayErrorMessage">
+			<?php echo $this->get_error_message(); ?>
+		</div>
+		<?php
+	}
+
+	public function display_success_message() {
+		?>
+		<div id="displaySuccessMessage">
+			<?php echo $this->get_success_message(); ?>
+		</div>
+		<?php
+	}
+
 	/**
 	 * Register the stylesheets for the admin area.
 	 *
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
-
 		wp_enqueue_style( 
 			$this->plugin_name, 
 			plugin_dir_url( __FILE__ ) . 'css/doppler-for-woocommerce-admin.css', 
 			array(), 
 			$this->version, 'all' 
 		);
-
 	}
 
 	/**
@@ -98,28 +134,24 @@ class Doppler_For_Woocommerce_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-
 		wp_enqueue_script( 
 				$this->plugin_name, 
 				plugin_dir_url( __FILE__ ) . 'js/doppler-for-woocommerce-admin.js', 
 				array( 'jquery' ), 
 				$this->version, false 
 		);
-
 		wp_localize_script( $this->plugin_name, 'ObjWCStr', array( 
 			'invalidUser'	=> __( 'Ouch! Enter a valid Email.', 'doppler-for-woocommerce' ),
 			'emptyField'	=> __( 'Ouch! The Field is empty.', 'doppler-for-woocommerce'),
 			'wrongData'		=> __( 'Ouch! There\'s something wrong with your Username or API Key. Please, try again.'),
 			'listSavedOk'   => __( 'The List has been created successfuly')						 				
 		) );
-
 	}
 
 	/**
 	 * Registers the admin menu
 	 */
 	public function dplrwoo_init_menu() {
-
 		add_menu_page(
 			__('Doppler for WooCommerce', 'doppler-for-woocommerce'),
 			__('Doppler for WooCommerce', 'doppler-for-woocommerce'),
@@ -128,69 +160,26 @@ class Doppler_For_Woocommerce_Admin {
 			array($this, "dplrwoo_admin_page"),
 			plugin_dir_url( __FILE__ ) . 'img/icon-doppler-menu.png'
 		);
-	
 	}
-
-	/*
-	public function dplrwoo_init_submenues(){
-
-		if( $this->connectionStatus === true ){
-
-			add_submenu_page(
-				'doppler_for_woocommerce_menu',
-				__('Settings', 'doppler-for-woocommerce'),
-				__('Settings', 'doppler-for-woocommerce'),
-				'manage_options',
-				'doppler_for_woocommerce_menu',
-				array($this, 'dplrwoo_admin_page'));
-	
-			add_submenu_page(
-				'doppler_for_woocommerce_menu',
-				__('View lists', 'doppler-for-woocommerce'),
-				__('View lists', 'doppler-for-woocommerce'),
-				'manage_options',
-				'doppler_for_woocommerce_menu_lists',
-				array($this, 'dplrwoo_lists_page'));
-	
-			add_submenu_page(
-				'doppler_for_woocommerce_menu',
-				__('Fields mapping', 'doppler-for-woocommerce'),
-				__('Fields mapping', 'doppler-for-woocommerce'),
-				'manage_options',
-				'doppler_for_woocommerce_menu_mapping',
-				array($this, 'dplrwoo_mapping_page'));
-
-		}
-
-	}
-	*/
 
 	/**
-	 * Shows the admin settings screen
+	 * Display the admin settings screen
 	 */
 	public function dplrwoo_admin_page() {
-		
 		include('partials/doppler-for-woocommerce-settings.php');
-
 	}
 
 	/**
-	 * Shows the Fields Mapping screen
+	 * Display the Fields Mapping screen
 	 */
 	public function dplrwoo_mapping_page() {
-
 		$fields = $this->get_checkout_fields();
-
 	}
-
 
 	/**
 	 * Register the plugin settings and fields for doppler_for_woocommerce_menu.
 	 */
 	public function dplrwoo_settings_init() {
-
-		// Add the section to doppler_for_woocommerce_menu settings so we can add our
-		// fields to it
 
 		if( !isset($_GET['tab']) || $_GET['tab']=='settings' ){
 
@@ -201,18 +190,8 @@ class Doppler_For_Woocommerce_Admin {
 				'doppler_for_woocommerce_menu'
 			);
 
-			// register a new field in the "dplrwoo_setting_section" section, inside the "doppler_for_woocommerce_menu" page
-			//@id: Slug-name to identify the field. Used in the 'id' attribute of tags.
-			//@title: Formatted title of the field. Shown as the label for the field during output.
-			//@callback: Function that fills the field with the desired form inputs. The function should echo its output.
-			//@page: The slug-name of the settings page on which to show the section (general, reading, writing, ...).
-			//@section: The slug-name of the section of the settings page in which to show the box. Default value: 'default'
-			//@args: Extra arguments used when outputting the field.
-			//	@label_for: When supplied, the setting title will be wrapped in a <label> element, its for attribute populated with this value.
-			// 	@class: CSS Class to be added to the <tr> element when the field is output.
 			add_settings_field(
-				'dplrwoo_user', // as of WP 4.6 this value is used only internally
-				// use $args' label_for to populate the id inside the callback
+				'dplrwoo_user', 
 				__( 'User Email', 'doppler-for-woocommerce' ),
 				array($this,'display_user_field'),
 				'doppler_for_woocommerce_menu',
@@ -220,13 +199,11 @@ class Doppler_For_Woocommerce_Admin {
 				[
 				'label_for' => 'dplrwoo_user',
 				'class' => 'dplrwoo_user_row',
-				//'wporg_custom_data' => 'custom',
 				]
 			);
 
 			add_settings_field(
-				'dplrwoo_key', // as of WP 4.6 this value is used only internally
-				// use $args' label_for to populate the id inside the callback
+				'dplrwoo_key',
 				__( 'API Key', 'doppler-for-woocommerce' ),
 				array($this,'display_key_field'),
 				'doppler_for_woocommerce_menu',
@@ -234,34 +211,12 @@ class Doppler_For_Woocommerce_Admin {
 				[
 				'label_for' => 'dplrwoo_key',
 				'class' => 'dplrwoo_key_row',
-				//'wporg_custom_data' => 'custom',
 				]
 			);
 
 			register_setting( 'doppler_for_woocommerce_menu', 'dplrwoo_user' );
 			register_setting( 'doppler_for_woocommerce_menu', 'dplrwoo_key' );
 
-		}
-		
-		if($_GET['tab']=='fields'){
-			if( isset($_POST['dplrwoo_mapping']) && current_user_can('manage_options') && check_admin_referer('map-fields') ){
-				update_option( 'dplrwoo_mapping', $_POST['dplrwoo_mapping'] );
-				$this->admin_notice = array('success', __('Fields mapped succesfully', 'doppler-for-woocommerce'));
-			}
-		}
-
-		if($_GET['tab']=='lists'){
-			if( isset($_POST['dplr_subscribers_list']) && current_user_can('manage_options') && check_admin_referer('map-lists') ){
-				update_option( 'dplr_subscribers_list', $_POST['dplr_subscribers_list'] );
-				$this->admin_notice = array('success', __('Subscribers lists saved succesfully', 'doppler-for-woocommerce'));
-			}
-		}
-
-		if($_GET['tab']=='hub'){
-			if( $_POST['_wpnonce'] && current_user_can('manage_options') && check_admin_referer('use-hub') ){
-				update_option( 'dplr_use_hub', isset($_POST['dplr_use_hub'])? 1:0 );
-				$this->admin_notice = array('success', __('Datahub setting saved successfully', 'doppler-for-woocommerce'));
-			}
 		}
 
 	}
@@ -334,14 +289,13 @@ class Doppler_For_Woocommerce_Admin {
 	 * Create default lists
 	 */
 	public function dplrwoo_create_default_lists(){
-	    $resp = array();
+		$resp = array();
 		$default_buyers_list = __('WooCommerce Buyers', 'doppler-for-woocommerce');
 		$default_contact_list = __('WooCommerce Contacts', 'doppler-for-woocommerce');
 		$respBuyer = json_decode($this->create_list($default_buyers_list));
 		$respContact = json_decode($this->create_list($default_contact_list));
 		$resp['buyers']['response'] = $respBuyer;
 		$resp['contacts']['response'] = $respContact;
-		//Crates both default lists or creates nothing.
 		if( !empty($respBuyer->createdResourceId) && !empty($respContact->createdResourceId) ){
 			update_option( 'dplr_subscribers_list', 
 				array( 
@@ -356,11 +310,6 @@ class Doppler_For_Woocommerce_Admin {
 
 	/**
 	 * Check connection status.
-	 * If user and key are not stored returns false.
-	 * If user and key are stored checks if transient exists.
-	 * If transient exits congrats you are connected.
-	 * If transient doesnt exists calls api with dprwoo_api_connect and saves transient to avoid more calls.
-	 * IMPORTANT: Don't forget to delete transient when pressing "disconnect" button in plugin settings.
 	 */
 	public function check_connection_status() {
 
@@ -372,8 +321,6 @@ class Doppler_For_Woocommerce_Admin {
 		}
 
 		if( !empty($user) && !empty($key) ){
-			//TODO eliminar credentials si esto funciona.
-			//$this->credentials = array('api_key' => $key, 'user_account' => $user);
 			if(empty($this->doppler_service->config['crendentials'])){
 				$this->doppler_service->setCredentials(array('api_key' => $key, 'user_account' => $user));
 			}
@@ -392,38 +339,15 @@ class Doppler_For_Woocommerce_Admin {
 	}
 
 	/**
-	 * Checks if any list is saved to display a help message
-	 * to the user.
-	 */
-  public function check_saved_lists() {
-		
-		$lists = get_option('dplr_subscribers_list');
-		
-		if( empty($lists['buyers']) && empty($lists['contacts']) ){
-			/*
-			$this->admin_notice = array( 'warning',
-			 __('Currently you have no lists selected to subscribe your WooCommerce buyers and contacts. 
-			 Go to <a href="' . admin_url( 'admin.php?page=doppler_for_woocommerce_menu&tab=lists' ) . '">List settings</a> to set up your Doppler lists, or if you want to create a new list 
-			 go to <a href=' . admin_url( 'admin.php?page=doppler_for_woocommerce_menu&tab=lists_crud' ) . '>Manage lists</a>') 
-			);*/
-		}
-	
-	}
-
-	/**
 	 * Get the customer's fields.
 	 */
 	public function get_checkout_fields() {
-
 		if ( ! class_exists( 'WC_Session' ) ) {
 			include_once( WP_PLUGIN_DIR . '/woocommerce/includes/abstracts/abstract-wc-session.php' );
 		}
-
 		WC()->session = new WC_Session_Handler;
 		WC()->customer = new WC_Customer;
-
 		return WC()->checkout->checkout_fields;
-
 	}
 
 	/**
@@ -511,11 +435,8 @@ class Doppler_For_Woocommerce_Admin {
 	 * Get lists
 	 */
 	public function get_alpha_lists() {
-		
-		//$this->doppler_service->setCredentials($this->credentials);
 		$list_resource = $this->doppler_service->getResource('lists');
 		$dplr_lists = $list_resource->getAllLists();
-		
 		if(is_array($dplr_lists)){
 			foreach($dplr_lists as $k=>$v){
 			  if(is_array($v)):
@@ -526,9 +447,7 @@ class Doppler_For_Woocommerce_Admin {
 			}
 			$dplr_lists_arr = $dplr_lists_aux;
 		}
-		
-		return $dplr_lists_arr;
-	
+		return $dplr_lists_arr;	
 	}
 
 	public function get_lists_by_page( $page = 1 ) {
@@ -542,28 +461,19 @@ class Doppler_For_Woocommerce_Admin {
 	 * en la lista de contactos.
 	 */
 	public function dplrwoo_created_customer( $customer_id, $customer_data, $customer_password ) {
-
 		if( isset($_POST['register']) ){
-			
 			$fields_map = get_option('dplrwoo_mapping');
 			$list_id = get_option('dplr_subscribers_list')['contacts'];
-			
 			if( !empty($fields_map) && !empty($list_id) ){
-
 				$fields = array();
-				
 				foreach($fields_map as $k=>$v){
 					if($v!=''){
 						$fields[] = array('name'=>$v, 'value'=>$_POST[$k]);
 					}
 				}
-			
 				$this->subscribe_customer($list_id, $customer_data['user_email'], $fields);
-			
 			}
-
 		}
-
 	}
 	
 	/**
@@ -571,17 +481,13 @@ class Doppler_For_Woocommerce_Admin {
 	 * cuando una orden pasa a estado "completo".
 	 */
 	public function dplrwoo_order_completed( $order_id, $old_status, $new_status, $instance ) {
-
 		if( $new_status == "completed" ) {
-			
 			$list_id = get_option('dplr_subscribers_list')['buyers'];
 			$order = wc_get_order( $order_id );
 			$order_data = $order->get_data();
 			$fields = $this->get_mapped_fields($order);
 			$this->subscribe_customer($list_id, $order_data['billing']['email'], $fields);
-
 		}
-
 	}
 
 	/**
@@ -590,13 +496,11 @@ class Doppler_For_Woocommerce_Admin {
 	 * Sólo para WC > 3.0
 	 */
 	public function dplrwoo_customer_checkout_success( $order_id ) {
-
 		$list_id = get_option('dplr_subscribers_list')['contacts'];
 		$order = wc_get_order( $order_id );
 		$order_data = $order->get_data();
 		$fields = $this->get_mapped_fields($order);
 		$this->subscribe_customer($list_id, $order_data['billing']['email'], $fields);
-
 	}
 
 	/**
@@ -607,11 +511,9 @@ class Doppler_For_Woocommerce_Admin {
 	 * 
 	 */
 	private function get_registered_users() {
-
 		$users = get_users( array('role'=>'Customer') );
 		$fields_map = get_option('dplrwoo_mapping');
 		$registered_users = array();
-		
 		if(!empty($users)){
 			foreach($users as $k=>$user){
 				$meta_fields = get_user_meta($user->ID);
@@ -626,9 +528,7 @@ class Doppler_For_Woocommerce_Admin {
 				$registered_users[$email] = $fields;
 			}
 		}
-
 		return $registered_users;
-	
 	}
 
 	/**
@@ -696,12 +596,9 @@ class Doppler_For_Woocommerce_Admin {
 		*
 		*/
 	public function update_subscribers_count() {
-			
 			$c_count = 0;
 			$b_count = 0;
-
 			$list_resource = $this->doppler_service->getResource( 'lists' );
-			
 			$c_list_id = get_option('dplr_subscribers_list')['contacts'];
 			if(!empty($c_list_id)){
 				$c_count = $list_resource->getList($c_list_id)->subscribersCount;
@@ -710,9 +607,12 @@ class Doppler_For_Woocommerce_Admin {
 			if(!empty($b_list_id)){
 				$b_count = $list_resource->getList($b_list_id)->subscribersCount;
 			}
-
 			echo json_encode(array('contacts'=>$c_count, 'buyers'=>$b_count));
 			exit();
+	}
+
+	public function validate_tracking_code($code){
+		return preg_match("/(<|%3C)script[\s\S]*?(>|%3E)[\s\S]*?(<|%3C)(\/|%2F)script[\s\S]*?(>|%3E)/",$code);
 	}
 
 	/**
@@ -721,10 +621,8 @@ class Doppler_For_Woocommerce_Admin {
 	 * where class is success, warning, etc.
 	 */
 	public function show_admin_notice() {
-		
 		$class = $this->admin_notice[0];
 		$text = $this->admin_notice[1];
-		
 		if( !empty($class) && !empty($class) ){
 			?>
 				<div class="notice notice-<?php echo $class?> is-dismissible">
@@ -732,21 +630,16 @@ class Doppler_For_Woocommerce_Admin {
 				</div>
 			<?php
 		}
-	
 	}
 
 	/**
 	 * Get the mapped fields of a given order.
 	 */
 	private function get_mapped_fields( $order ) {
-		
 		$order_data = $order->get_data();
 		$fields = array();
-
 		if(!empty($order_data)){
-			
 			$fields_map = get_option('dplrwoo_mapping');
-			
 			//Map default fields.
 			foreach($order_data as $key=>$fieldgroup){
 				if( $key === 'shipping' || $key === 'billing' ){	
@@ -758,7 +651,6 @@ class Doppler_For_Woocommerce_Admin {
 					}
 				}
 			}
-
 			//Map custom fields
 			if(!empty($fields_map)){
 				foreach($fields_map as $wc_field=>$dplr_field){
@@ -767,26 +659,20 @@ class Doppler_For_Woocommerce_Admin {
 					}
 				}
 			}
-			
 			return $fields;
 		}
-
 	}
 
 	/**
 	 * Send email and fields to a Doppler List
 	 */
 	private function subscribe_customer( $list_id, $email, $fields ){
-						
 		if( !empty($list_id) && !empty($email) ){
-
 			$subscriber['email'] = $email;
 			$subscriber['fields'] = $fields; 
 			$subscriber_resource = $this->doppler_service->getResource('subscribers');
 			$result = $subscriber_resource->addSubscriber($list_id, $subscriber);
-		
 		}
-				
 	}
 
 }

@@ -165,15 +165,9 @@ class Doppler_For_Woocommerce {
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
-		//Adds Doppler for WooCommerce main menu.
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'dplrwoo_init_menu' );
-		//Adds Doppler for WooCommerce submenues.
-		//$this->loader->add_action( 'admin_menu', $plugin_admin, 'dplrwoo_init_submenues' );
-		//Adds settings options for plugin config.
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'dplrwoo_settings_init' );
-		//Ajax function to connect to api from settings menu
 		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_connect', $plugin_admin, 'dplrwoo_api_connect' );
-		//Ajax function to get lists
 		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_get_lists', $plugin_admin, 'dplrwoo_get_lists' );
 		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_save_list', $plugin_admin, 'dplrwoo_save_list' );
 		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_delete_list', $plugin_admin, 'dplrwoo_delete_list' );
@@ -181,18 +175,8 @@ class Doppler_For_Woocommerce {
 		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_update_counter', $plugin_admin, 'update_subscribers_count');
 		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_create_lists' , $plugin_admin, 'dplrwoo_create_default_lists' );
 		$this->loader->add_action( 'woocommerce_created_customer', $plugin_admin, 'dplrwoo_created_customer', 10, 3);
-		//Se ejecuta después de crear un customer. Podría acá guardar todos los campos de checkout!!
-		//$this->loader->add_action( 'woocommerce_checkout_update_user_meta', $plugin_admin, 'dplrwoo_after_created_customer');
-		/**
-		 * Cambio: Contacto es alguien que hizo una compra, cualquiera que haya confirmado el checkout sin 
-		 * importar si luego la compra avanzó y se completó. No tendremos en cuenta por ahora una lista 
-		 * que contemple sólo los registrados ya que es opcional y puede o no existir el registro de usuarios en una tienda.
-		 * Entonces, luego de hacer el checkout, guardamos en la nueva lista Contactos.
-		 */
 		$this->loader->add_action( 'woocommerce_thankyou', $plugin_admin, 'dplrwoo_customer_checkout_success' );
 		$this->loader->add_action( 'woocommerce_order_status_changed', $plugin_admin, 'dplrwoo_order_completed', 10, 4 );
-		
-		//Shows admin notices if $adminNotice parameter is not empty in admin class
 		$this->loader->add_action( 'admin_notices', $plugin_admin, 'show_admin_notice' );
 		
 	}
@@ -211,8 +195,8 @@ class Doppler_For_Woocommerce {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-		$this->loader->add_action( 'script_loader_tag', $plugin_public, 'dplrwoo_script_loader_tag' , 10, 2);
-
+		$this->loader->add_action( 'wp_head', $plugin_public, 'add_tracking_script' );
+		
 	}
 
 	/**

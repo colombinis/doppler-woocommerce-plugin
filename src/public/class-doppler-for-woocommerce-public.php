@@ -56,65 +56,27 @@ class Doppler_For_Woocommerce_Public {
 
 	/**
 	 * Register the stylesheets for the public-facing side of the site.
-	 *
+	 * TODO: remove if not necessary.
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Doppler_For_Woocommerce_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Doppler_For_Woocommerce_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/doppler-for-woocommerce-public.css', array(), $this->version, 'all' );
-
 	}
 
 	/**
 	 * Register the JavaScript for the public-facing side of the site.
-	 *
+	 * TODO: remove if not necessary.
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Doppler_For_Woocommerce_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Doppler_For_Woocommerce_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/doppler-for-woocommerce-public.js', array( 'jquery' ), $this->version, false );
-		if(get_option('dplr_use_hub') === '1'){
-			wp_enqueue_script( 'hub-fromdoppler', '//hub.fromdoppler.com/public/dhtrack.js', array(), false, false );
-		}
 	}
 
-	/**
-	 * Add async tag to hub script
-	 */
-	public function dplrwoo_script_loader_tag($tag, $handle) {
-		if ($handle === 'hub-fromdoppler') {
-			if (false === stripos($tag, 'async')) {
-				$tag = str_replace(' src', ' async="async" src', $tag);	
-			}
-			if (false === stripos($tag, 'defer')) {
-				$tag = str_replace('<script ', '<script defer ', $tag);	
-			}
+	public function add_tracking_script() {
+		$script = get_option('dplr_hub_script');
+		if(!empty($script)){
+			echo stripslashes($script);
 		}
-		return $tag;
 	}
 
 }

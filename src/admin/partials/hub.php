@@ -1,5 +1,8 @@
 <div class="dplr-tab-content">
 
+    <?php $this->display_success_message() ?>
+    <?php $this->display_error_message() ?>
+
     <form id="dplrwoo-form-hub" action="" method="post">
 
         <?php wp_nonce_field( 'use-hub' );?>
@@ -8,11 +11,12 @@
             <?php _e('Some text explaining what Datahub script does','doppler-for-woocommerce') ?>
         </p>
         <p>
-            <input type="checkbox" value="1" <?php if($use_hub == '1') echo 'checked' ?> name="dplr_use_hub"/> <?php _e('Enable on-site tracking script.','doppler-for-woocommerce') ?>
+            <textarea name="dplr_hub_script" class="w-100" rows="3" placeholder="<?php _e('Paste tracking code here.','doppler-for-woocommerce')?>"><?php echo stripslashes($dplr_hub_script) ?></textarea>
         </p>
         <button id="dplrwoo-hub-btn" class="dplrwoo-button">
             <?php _e('Save', 'doppler-for-woocommerce') ?>
         </button>
+
     </form>
 
 </div>
