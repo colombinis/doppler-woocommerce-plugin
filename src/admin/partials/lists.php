@@ -17,14 +17,9 @@
         ?>
         <p id="dplrwoo-createlist-div">
             <?php
-            _e('Currently you don\'t have any list selected to work with Doppler, if you want we can 
-            create a buyers and a contacts lists for you.', 'doppler-for-woocommerce');
+            _e('You currently don\'t have Doppler Lists selected. Do you want to create a List to send your Contacts to and another to send to your buyers?', 'doppler-for-woocommerce');
             ?>
-            <br/>
-            <?php
-            _e('Do you want us to create the lists?', 'doppler-for-woocommerce');
-            ?>
-            <button id="dplrwoo-create-lists"><?php _e('Yes, please', 'doppler-for-woocommerce')?></button>
+            <a id="dplrwoo-create-lists"><?php _e('Create Doppler Lists', 'doppler-for-woocommerce')?></a>
             <img src="<?php echo DOPPLER_FOR_WOOCOMMERCE_URL?>admin/img/loading.gif" class="d-none"/>
         </p>
         <?php
@@ -115,7 +110,7 @@
     </form>
 
     <hr/>
-    <a id="dplrwoo-new-list" class="small-text pointer"><?php _e( 'Create new list' , 'doppler-for-woocommerce') ?></a>
+    <a id="dplrwoo-new-list" class="small-text pointer"><?php _e( 'Create List' , 'doppler-for-woocommerce') ?></a>
     <?php if(!empty($subscribers_lists['contacts']) || !empty($subscribers_lists['buyers'])): ?> 
         <span> | </span>
         <a id="dplrwoo-btn-synch" class="small-text pointer"><?php _e('Synchronize lists', 'doppler-for-woocommerce')?></a>
@@ -124,10 +119,10 @@
     <?php endif;?>                 
 </div>
 
-<div id="dplr-dialog-confirm" class="doppler-woo-settings w-100" title="<?php _e('Create new List', 'doppler-form'); ?>">
+<div id="dplr-dialog-confirm" class="doppler-woo-settings w-100" title="<?php _e('Create a Doppler List', 'doppler-form'); ?>">
     <form>
         <p>
-            <input type="text" maxlength="50" value="" placeholder="<?php _e('Enter List name','doppler-for-woocommerce')?>" class="w-100"/>
+            <input type="text" maxlength="50" value="" placeholder="<?php _e('Write the List name','doppler-for-woocommerce')?>" class="w-100"/>
             <img src="<?php echo DOPPLER_FOR_WOOCOMMERCE_URL?>admin/img/loading.gif" class="d-none" alt="<?php _e('Saving','doppler-for-woocommerce')?>"/>
         </p>
     </form>

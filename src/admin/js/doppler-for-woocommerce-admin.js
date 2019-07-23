@@ -261,10 +261,10 @@
 	function generateErrorMsg(status,code){
 		var err = '';
 		var errors = {	
-			400 : { 1:'Ha ocurrido un error al validar los datos',
-					2:'Its duplicated!',
-					3:'Ha alcanzado el máximo de listas'},
-			429 : { 0:'Too many requests!! Wait a minute...'}
+			400 : { 1: ObjWCStr.validationError,
+					2: ObjWCStr.duplicatedName,
+					3: ObjWCStr.maxListsReached},
+			429 : { 0: ObjWCStr.tooManyConn}
 		}
 		if(typeof errors[status] === 'undefined')
 			 err = 'Unexpected error';
