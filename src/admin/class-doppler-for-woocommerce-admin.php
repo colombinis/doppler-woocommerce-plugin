@@ -97,19 +97,23 @@ class Doppler_For_Woocommerce_Admin {
 	}
 
 	public function display_error_message() {
+		if($this->get_error_message()!=''):
 		?>
-		<div id="displayErrorMessage">
-			<?php echo $this->get_error_message(); ?>
+		<div id="displayErrorMessage" class="messages-container blocker">
+			<p><?php echo $this->get_error_message(); ?></p>
 		</div>
 		<?php
+		endif;
 	}
 
 	public function display_success_message() {
+		if($this->get_success_message()!=''):
 		?>
-		<div id="displaySuccessMessage">
-			<?php echo $this->get_success_message(); ?>
+		<div id="displaySuccessMessage" class="messages-container info">
+			<p><?php echo $this->get_success_message(); ?></p>
 		</div>
 		<?php
+		endif;
 	}
 
 	/**
@@ -139,29 +143,44 @@ class Doppler_For_Woocommerce_Admin {
 				$this->version, false 
 		);
 		wp_localize_script( $this->plugin_name, 'ObjWCStr', array( 
-			'invalidUser'		=> __( 'Ouch! Enter a valid Email.', 'doppler-for-woocommerce' ),
-			'emptyField'		=> __( 'Ouch! The Field is empty.', 'doppler-for-woocommerce'),
-			'wrongData'			=> __( 'Ouch! There\'s something wrong with your Username or API Key. Please, try again.', 'doppler-for-woocommerce'),
-			'listSavedOk'   	=> __( 'The List has been created correctly.', 'doppler-for-woocommerce'),
-			'maxListsReached' 	=> __( 'Ouch! You\'ve reached the maximum number of Lists created.', 'doppler-for-woocommerce'),
-			'duplicatedName'	=> __( 'Ouch! You\'ve already used this name for another List.', 'doppler-for-woocommerce'),	
-			'tooManyConn'		=> __( 'Ouch! You\'ve made several actions in a short period of time. Please wait a few minutes before making another one.', 'doppler-for-woocommerce'),
-			'validationError'	=> __( 'Ouch! List name is invalid. Please choose another name.', 'doppler-for-woocommerce')
+			  'invalidUser'		=> __( 'Ouch! Enter a valid Email.', 'doppler-for-woocommerce' ),
+			  'emptyField'		=> __( 'Ouch! The Field is empty.', 'doppler-for-woocommerce'),
+			  'wrongData'			=> __( 'Ouch! There\'s something wrong with your Username or API Key. Please, try again.', 'doppler-for-woocommerce'),
+			  'listSavedOk'   	=> __( 'The List has been created correctly.', 'doppler-for-woocommerce'),
+			  'maxListsReached' 	=> __( 'Ouch! You\'ve reached the maximum number of Lists created.', 'doppler-for-woocommerce'),
+			  'duplicatedName'	=> __( 'Ouch! You\'ve already used this name for another List.', 'doppler-for-woocommerce'),	
+			  'tooManyConn'		=> __( 'Ouch! You\'ve made several actions in a short period of time. Please wait a few minutes before making another one.', 'doppler-for-woocommerce'),
+			  'validationError'	=> __( 'Ouch! List name is invalid. Please choose another name.', 'doppler-for-woocommerce')
 		));
+	}
+
+	public function dplrwoo_check_parent() {
+		if ( is_admin() && current_user_can( 'activate_plugins' ) &&  !is_plugin_active( 'doppler-form/doppler-form.php' ) ) {
+			$this->admin_notice = array( 'error', __('Sorry, but <strong>Doppler for WooCommerce</strong> requires the <strong><a href="https://wordpress.org/plugins/doppler-form/">Doppler Forms plugin</a></strong> to be installed and active.', 'doppler-form') );
+	
+			deactivate_plugins( DOPPLER_FOR_WOOCOMMERCE_PLUGIN ); 
+	
+			if ( isset( $_GET['activate'] ) ) {
+				unset( $_GET['activate'] );
+			}
+		}
 	}
 
 	/**
 	 * Registers the admin menu
 	 */
+	
 	public function dplrwoo_init_menu() {
-		add_menu_page(
+
+		add_submenu_page(
+			'doppler_forms_menu',
 			__('Doppler for WooCommerce', 'doppler-for-woocommerce'),
 			__('Doppler for WooCommerce', 'doppler-for-woocommerce'),
 			'manage_options',
-			'doppler_for_woocommerce_menu',
-			array($this, "dplrwoo_admin_page"),
-			plugin_dir_url( __FILE__ ) . 'img/icon-doppler-menu.png'
+			'doppler_woocommerce_menu',
+			array($this, 'dplrwoo_admin_page')
 		);
+
 	}
 
 	/**
@@ -181,6 +200,7 @@ class Doppler_For_Woocommerce_Admin {
 	/**
 	 * Register the plugin settings and fields for doppler_for_woocommerce_menu.
 	 */
+	/*
 	public function dplrwoo_settings_init() {
 
 		if( !isset($_GET['tab']) || $_GET['tab']=='settings' ){
@@ -222,40 +242,45 @@ class Doppler_For_Woocommerce_Admin {
 		}
 
 	}
+	*/
 
 	/**
 	 * Shows user field.
 	 */
+	/*
 	function display_user_field( $args ) {
 		$option = get_option( 'dplrwoo_user' );
 		?>
 			<input type="email" value="<?php echo $option ?>" name="dplrwoo_user" />
 		<?php
-	}
+	}*/
 
 	/**
 	 * Shows API Key field
 	 */
+	/*
 	function display_key_field( $args ) {
 		$option = get_option( 'dplrwoo_key' );
 		?>
 			<input type="text" value="<?php echo $option ?>" name="dplrwoo_key" maxlength="32" required/>
 		<?php
-	}
+	}*/
 
 	/**
 	 * Example for section text.
 	 */
+	/*
 	function eg_setting_section_callback_function( $args ) {
 		?>
 			<p id="<?php echo esc_attr( $args['id'] ); ?>"><?php esc_html_e( 'Example text', 'doppler-for-woocommerce' ); ?></p>
 		<?php
-	}
+	}*/
 
 	/**
 	 * Handles ajax connection with API
 	 * used by "connect" button in dopper-for-woocommerce-settings.php
 	 */
+	/*
 	public function dplrwoo_api_connect() {
 		$connected = $this->doppler_service->setCredentials(['api_key' => $_POST['key'], 'user_account' => $_POST['user']]);
 		echo ($connected)? 1:0;
@@ -266,6 +291,8 @@ class Doppler_For_Woocommerce_Admin {
 		echo json_encode($this->get_lists_by_page($_POST['page']));
 		exit();
 	}
+
+	*/
 
 	public function dplrwoo_save_list() {
 		if(!empty($_POST['listName'])){
@@ -279,13 +306,14 @@ class Doppler_For_Woocommerce_Admin {
 		return $subscriber_resource->saveList( $list_name )['body'];
 	}
 
+	/*
 	public function dplrwoo_delete_list() {
 		if(empty($_POST['listId'])) return false;
 		$subscribers_lists = get_option('dplr_subscribers_list');
 		$subscriber_resource = $this->doppler_service->getResource('lists');
 		echo json_encode($subscriber_resource->deleteList( $_POST['listId'] ));
 		exit();
-	}
+	}*/
 
 	/**
 	 * Create default lists
@@ -313,14 +341,19 @@ class Doppler_For_Woocommerce_Admin {
 	/**
 	 * Check connection status.
 	 */
+	/**
+	 * Check connection status.
+	 */
 	public function check_connection_status() {
 
-		$user = get_option('dplrwoo_user');
-		$key = get_option('dplrwoo_key');
-
-		if( empty($user) || empty($key) ){
+		$options = get_option('dplr_settings');
+		
+		if( empty($options) ){
 			return false;
 		}
+
+		$user = $options['dplr_option_useraccount'];
+		$key = $options['dplr_option_apikey'];
 
 		if( !empty($user) && !empty($key) ){
 			if(empty($this->doppler_service->config['crendentials'])){
@@ -328,8 +361,8 @@ class Doppler_For_Woocommerce_Admin {
 			}
 			if( is_admin() ){ //... if we are at the backend.
 				$response =  $this->doppler_service->connectionStatus();
-				if($response['response']['code']>=400){
-					 $this->admin_notice = array('error', '<strong>Doppler of WooCommerce ERROR</strong> ' . $response['response']['message']);
+				if( is_array($response) && $response['response']['code']>=400 ){
+					 $this->admin_notice = array('error', '<strong>Doppler API Connection error.</strong> ' . $response['response']['message']);
 					 return false;
 				}
 			}
@@ -339,7 +372,6 @@ class Doppler_For_Woocommerce_Admin {
 		return false;
 
 	}
-
 	/**
 	 * Get the customer's fields.
 	 */
@@ -436,6 +468,7 @@ class Doppler_For_Woocommerce_Admin {
 	/**
 	 * Get lists
 	 */
+	
 	public function get_alpha_lists() {
 		$list_resource = $this->doppler_service->getResource('lists');
 		$dplr_lists = $list_resource->getAllLists();
@@ -451,12 +484,13 @@ class Doppler_For_Woocommerce_Admin {
 		}
 		return $dplr_lists_arr;	
 	}
-
+	
+	/*
 	public function get_lists_by_page( $page = 1 ) {
 		$list_resource = $this->doppler_service->getResource( 'lists' );
 		return $list_resource->getListsByPage( $page );
 	}
-
+	*/
 
 	/**
 	 * Al registrarse se guarda el usuario
@@ -622,6 +656,7 @@ class Doppler_For_Woocommerce_Admin {
 	 * set $this->admin_notice = array( $class, $text), 
 	 * where class is success, warning, etc.
 	 */
+	
 	public function show_admin_notice() {
 		$class = $this->admin_notice[0];
 		$text = $this->admin_notice[1];
@@ -633,6 +668,7 @@ class Doppler_For_Woocommerce_Admin {
 			<?php
 		}
 	}
+	
 
 	/**
 	 * Get the mapped fields of a given order.

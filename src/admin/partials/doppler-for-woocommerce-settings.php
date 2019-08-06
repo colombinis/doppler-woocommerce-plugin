@@ -24,24 +24,24 @@
  if( isset($_GET['tab']) ) {
     $active_tab = $_GET['tab'];
  }else{
-    $active_tab = 'settings';
+    $active_tab = 'lists';
  } 
 
  $connected = $this->connectionStatus;
 
  ?>
 
-<div class="wrap doppler-woo-settings">
+<div class="wrap dplr_settings">
+
+    <img src="<?php echo DOPPLER_PLUGINS_PATH?>doppler-form/admin/img/doppler.png" alt="Doppler logo"/>
 
     <h2 class="main-title"><?php _e('Doppler for WooCommerce', 'doppler-for-woocommerce')?> <?php echo $this->get_version()?></h2> 
 
     <h2 class="nav-tab-wrapper">
-        <a href="?page=doppler_for_woocommerce_menu&tab=settings" class="nav-tab <?php echo $active_tab == 'settings' ? 'nav-tab-active' : ''; ?>"><?php _e('Settings', 'doppler-for-woocommerce')?></a>
         <?php if ($connected) :?>
-            <a href="?page=doppler_for_woocommerce_menu&tab=fields" class="nav-tab <?php echo $active_tab == 'fields' ? 'nav-tab-active' : ''; ?>"><?php _e('Fields Mapping', 'doppler-for-woocommerce')?></a>
-            <a href="?page=doppler_for_woocommerce_menu&tab=lists" class="nav-tab <?php echo $active_tab == 'lists' ? 'nav-tab-active' : ''; ?>"><?php _e('Lists to synchronize', 'doppler-for-woocommerce')?></a>
-            <a href="?page=doppler_for_woocommerce_menu&tab=lists_crud" class="nav-tab <?php echo $active_tab == 'lists_crud' ? 'nav-tab-active' : ''; ?>"><?php _e('Lists Managment', 'doppler-for-woocommerce')?></a>
-            <a href="?page=doppler_for_woocommerce_menu&tab=hub" class="nav-tab <?php echo $active_tab == 'hub' ? 'nav-tab-active' : ''; ?>"><?php _e('On-Site Tracking', 'doppler-for-woocommerce')?></a>
+            <a href="?page=doppler_woocommerce_menu&tab=fields" class="nav-tab <?php echo $active_tab == 'fields' ? 'nav-tab-active' : ''; ?>"><?php _e('Fields Mapping', 'doppler-for-woocommerce')?></a>
+            <a href="?page=doppler_woocommerce_menu&tab=lists" class="nav-tab <?php echo $active_tab == 'lists' ? 'nav-tab-active' : ''; ?>"><?php _e('Lists to synchronize', 'doppler-for-woocommerce')?></a>
+            <a href="?page=doppler_woocommerce_menu&tab=hub" class="nav-tab <?php echo $active_tab == 'hub' ? 'nav-tab-active' : ''; ?>"><?php _e('On-Site Tracking', 'doppler-for-woocommerce')?></a>
         <?php endif; ?>
     </h2>
 
@@ -52,20 +52,6 @@
     if($connected):
 
     switch($active_tab){
-
-        case 'lists':
-            if( isset($_POST['dplr_subscribers_list']) && current_user_can('manage_options') && check_admin_referer('map-lists') ){
-                update_option( 'dplr_subscribers_list', $_POST['dplr_subscribers_list'] );
-                $this->set_success_message(__('Subscribers lists saved succesfully', 'doppler-for-woocommerce'));
-            }
-            $lists = $this->get_alpha_lists();
-            $subscribers_lists = get_option('dplr_subscribers_list');
-            require_once('lists.php');
-        break;
-
-        case 'lists_crud':
-            require_once('lists_crud.php');
-        break;
 
         case 'fields':
             if( isset($_POST['dplrwoo_mapping']) && current_user_can('manage_options') && check_admin_referer('map-fields') ){
@@ -94,7 +80,13 @@
         break;
 
         default:
-            require_once('settings.php');
+            if( isset($_POST['dplr_subscribers_list']) && current_user_can('manage_options') && check_admin_referer('map-lists') ){
+                update_option( 'dplr_subscribers_list', $_POST['dplr_subscribers_list'] );
+                $this->set_success_message(__('Subscribers lists saved succesfully', 'doppler-for-woocommerce'));
+            }
+            $lists = $this->get_alpha_lists();
+            $subscribers_lists = get_option('dplr_subscribers_list');
+            require_once('lists.php');
         break;
     }
 
@@ -103,7 +95,6 @@
         ?>
         <div><?php echo $this->admin_notice[1]?></div>
         <?php
-
     endif;
 
     ?>

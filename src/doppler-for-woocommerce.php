@@ -36,7 +36,9 @@ if ( ! defined( 'WPINC' ) ) {
  * Rename this for your plugin and update it as you release new versions.
  */
 define( 'DOPPLER_FOR_WOOCOMMERCE_VERSION', '1.0.0' );
-define('DOPPLER_FOR_WOOCOMMERCE_URL', plugin_dir_url(__FILE__));
+define( 'DOPPLER_FOR_WOOCOMMERCE_URL', plugin_dir_url(__FILE__));
+define( 'DOPPLER_FOR_WOOCOMMERCE_PLUGIN', plugin_basename( __FILE__ ));
+define( 'DOPPLER_PLUGINS_PATH', plugin_dir_path(__DIR__));
 
 /**
  * The code that runs during plugin activation.

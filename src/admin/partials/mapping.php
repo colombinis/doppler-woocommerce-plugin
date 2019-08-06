@@ -21,13 +21,13 @@
 
         foreach($wc_fields as $fieldtype=>$arr){
 
-            if( $fieldtype!='' && $fieldtype!='order' ):
+            if( $fieldtype!='' && $fieldtype!='order' && (count($arr)>0) ):
 
                 ?>
-                <table class="grid row-highlight">
+                <table class="grid panel w-100 mw-8">
                     <thead>
-                        <tr>
-                            <th colspan="2">
+                        <tr class="panel-header">
+                            <th colspan="2" class="text-white semi-bold">
                                 <?php
                                 switch($fieldtype){
                                     case 'billing':
@@ -97,7 +97,7 @@
 
     </table>
 
-    <button id="dplrwoo-mapping-btn" class="dplrwoo-button">
+    <button id="dplrwoo-mapping-btn" class="dp-button button-medium primary-green">
         <?php _e('Save', 'doppler-for-woocommerce') ?>
     </button>
 

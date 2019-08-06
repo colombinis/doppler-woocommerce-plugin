@@ -2,48 +2,6 @@
 	'use strict';
 
 	$(function() {
-
-		easyValidator.init({
-			invalid_email_message:ObjWCStr.invalidUser,
-			empty_field_message:ObjWCStr.emptyField,
-			event: 'keyup',
-		});
-
-		$('#dplrwoo-form-connect').submit(function(e){
-
-			e.preventDefault();
-
-			var f = $(this);
-			var button = f.children('button');
-			var userfield = $('input[name="dplrwoo_user"]');
-			var keyfield = $('input[name="dplrwoo_key"]');
-
-			var data = {
-				action: 'dplrwoo_ajax_connect',
-				user: userfield.val(),
-				key: keyfield.val()
-			}
-
-			if(!easyValidator.isValidForm()){
-				return false;
-			}
-
-			button.attr('disabled','disabled');
-
-			$.post( ajaxurl, data, function( response ) {		
-				if(response == 0){
-					$("#dplrwoo-messages").html('Mensaje de datos incorrectos');
-					button.removeAttr('disabled');				
-				}else if(response == 1){
-					var fields =  f.serialize();
-					$.post( 'options.php', fields, function(obj){
-						window.location.reload(false); 					
-					});
-				}
-			})
-		
-		}); 
-
 		$('.dplrwoo-mapping-fields').focus(function(){
 			$(this).data('fieldData', {'val':$(this).val(),
 				'type':$('option:selected', this).attr('data-type'),
@@ -71,10 +29,6 @@
 			}
 
 		});
-
-		if($("#dprwoo-tbl-lists").length>0){
-			loadLists(1);
-		}
 
 		$(".dplr-lists-sel").focus(function(){
 			$(this).data('fieldData', {'val':$(this).val(),
@@ -158,12 +112,14 @@
 
 		});
 
+		/**
+		 * Create default lists
+		 */
 		$("#dplrwoo-create-lists").click(function(){
 			var button = $(this);
-			var loader = button.closest('#dplrwoo-createlist-div').find('img');
 			button.closest('#dplrwoo-createlist-div').find('.error').remove();
-			button.css('display','none');
-			loader.css('display','inline-block');
+			button.addClass('button--loading').css('pointer-events','none');
+			$('.notice').remove();
 			$('#displayErrorMessage,#displaySuccessMessage').css('display','none');
 
 			$.post(ajaxurl,{action: 'dplrwoo_ajax_create_lists'}, function(response){
@@ -178,16 +134,17 @@
 					}
 				}
 				if(err!=''){
-					button.after('<div class="error">'+err+'</div>');
+					button.after('<div class="notice notice-error">'+err+'</div>');
 				}else{
 					window.location.reload(false); 					
 				}
-				button.css('display','inline-block');
-				loader.css('display','none');
+
+				button.removeClass('button--loading').css('pointer-events','initial');
 
 			});
 		});
 
+		/*
 		$("#dplrwoo-save-list").click(function(e){
 
 			e.preventDefault();			
@@ -223,6 +180,7 @@
 			}
 
 		});
+		*/
 		
 		if($('#dplr-dialog-confirm').length>0){
 			
@@ -236,26 +194,15 @@
 		
 		}
 
-		$("#dprwoo-tbl-lists tbody").on("click","tr a",deleteList);
+		//$("#dprwoo-tbl-lists tbody").on("click","tr a",deleteList);
 		$("#dplrwoo-new-list").on("click",null,{},newList);
 
 	});
-	
-	function listsLoading(){
-		$('form input, form button').prop('disabled', true);
-		$('#dplrwoo-crud').addClass('loading');
-	}
-
-	function listsLoaded(){
-		$('form input, form button').prop('disabled', false);
-		$('form input').val('');
-		$('#dplrwoo-crud').removeClass('loading');
-	}
 
 	function displayErrors(status,code){
 		var errorMsg = '';
 		errorMsg = generateErrorMsg(status,code);
-		$('#showErrorResponse').html(errorMsg);
+		$('#showErrorResponse').css('display','block').html('<p>'+errorMsg+'</p>');
 	}
 
 	function generateErrorMsg(status,code){
@@ -271,38 +218,6 @@
 		else
 		   typeof errors[status][code] === 'undefined'? err='Unexpected error code' : err = errors[status][code];
 		 return err;
-	}
-
-	function loadLists( page ){
-
-		var data = {
-			action: 'dplrwoo_ajax_get_lists',
-			page: page
-		};
-		
-		listsLoading();
-
-		$("#dprwoo-tbl-lists tbody tr").remove();
-
-		$.post( ajaxurl, data, function( response ) {
-			if(response.length>0){
-				var obj = JSON.parse(response);
-				var html = '';
-				for (const key in obj) {
-					var value = obj[key];
-					html += '<tr>';
-					html += '<td>'+value.listId+'</td>';
-					html += '<td><strong>'+value.name+'</strong></td>';
-					html += '<td>'+value.subscribersCount+'</td>';
-					html += '<td><a href="#" class="text-dark-red" data-list-id="'+value.listId+'">Delete</a></td>'
-					html += '</tr>';
-				}
-				$("#dprwoo-tbl-lists tbody").prepend(html);
-				$("#dprwoo-tbl-lists").attr('data-page','1');
-				listsLoaded();
-			}
-
-		})
 	}
 
 	function clearResponseMessages(){
@@ -335,7 +250,7 @@
 					var obj = JSON.parse(response);
 					if(typeof obj.createdResourceId !== "undefined"){
 						$(".dplr-lists-sel").append('<option value="'+obj.createdResourceId+'">'+listName+'</option>');
-						$("#showSuccessResponse").html(ObjWCStr.listSavedOk).css('display','block');
+						$("#showSuccessResponse").html('<p>'+ObjWCStr.listSavedOk+'</p>').css('display','block');
 						button.removeAttr('disabled');
 						loader.css('display','none');
 						dialog.dialog("close");
@@ -359,49 +274,6 @@
 		$("#dplr-dialog-confirm").dialog("open");
 	}
 
-	function deleteList(e){
-
-		e.preventDefault();
-
-		var a = $(this);
-		var tr = a.closest('tr');
-		var listId = a.attr('data-list-id');
-		var data = {
-			action: 'dplrwoo_ajax_delete_list',
-			listId : listId
-		};
-		
-		$("#dplr-dialog-confirm").dialog("option", "buttons", [{
-			text: 'Delete',
-			click: function() {
-				$(this).dialog("close");
-				tr.addClass('deleting');
-				$.post( ajaxurl, data, function( response ) {
-					var obj = JSON.parse(response);
-					if(obj.response.code == 200){
-						tr.remove();
-					}else{
-						if(obj.response.code == 0){
-							//alert('No se puede eliminar lista.')
-						}else{
-							//alert('Error');
-						}
-						tr.removeClass('deleting');
-					}
-				});
-			}
-		  }, 
-		  {
-			text: 'Cancel',
-			click: function() {
-			  $(this).dialog("close");
-			}
-		  }]);
-  
-		  $("#dplr-dialog-confirm").dialog("open");
-
-	}
-
 	function checkFieldType(dplrType, wcType){
 
 		var types = {
@@ -420,84 +292,6 @@
 		}
 
 		return false;
-	}
-
-	var easyValidator = {
-		strInvalidEmail: 'Email is invalid',
-		strEmptyField: 'Field is empty',
-		event: 'blur',
-		emailRegex: /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/,
-		init: function(data){
-			easyValidator.config = {
-				form: $('form[easy-validate]'),
-			}
-			easyValidator.config.form.attr('novalidate','novalidate');
-			if(typeof data !== "undefined"){
-				if(typeof data.invalid_email_message !== "undefined"){
-					this.strInvalidEmail = data.invalid_email_message;
-				}
-				if(typeof data.empty_field_message !== "undefined"){
-					this.strEmptyField = data.empty_field_message;
-				}
-				if(typeof data.event !== "undefined"){
-					if( $.inArray(data.event,['keyup','blur']) === -1 ){
-						console.log('Invalid event attribute, use keyup or blur');
-						return false;
-					}
-					easyValidator.event = data.event;
-				}
-			}
-			var emailFields = easyValidator.config.form.find('input[type="email"]');
-			var emptyFields = easyValidator.config.form.find('input[required]');
-			var fields = easyValidator.config.form.find('input[required],input[type="email"]');
-			fields.on('focus',this.clearError);
-			emptyFields.on(easyValidator.event,this.validateEmpty);
-			emailFields.on(easyValidator.event,this.validateEmail);
-		},
-		isValidForm: function(){
-			easyValidator.config.form.find('.ev-error').remove();
-			var fields = easyValidator.config.form.find('input');
-			$.each(fields,function(){
-				easyValidator.validateField($(this));
-			})
-			if(easyValidator.config.form.find('.ev-error').length>0){
-				return false;
-			}
-			return true;
-		},
-		validateField: function(field){
-			if(field.attr("type") === 'email'){
-				easyValidator.validateEmailField(field);
-			}
-			if(field.attr("required") !== null){
-				easyValidator.validateEmptyField(field);
-			} 
-		},
-		validateEmptyField: function(e){
-			if(e.val()==""){	
-				e.after('<span class="ev-error">'+easyValidator.strEmptyField+'</span>');
-				return false;
-			}
-		},
-		validateEmailField: function(e){
-			if( !easyValidator.emailRegex.test(e.val()) && e.val()!==''){
-				e.after('<span class="ev-error">'+easyValidator.strInvalidEmail+'</span>');
-				return false;
-			}
-		},
-		validateEmail: function(){
-			var element = $(this);
-			element.next('.ev-error').remove();
-			easyValidator.validateEmailField(element);
-		},
-		validateEmpty: function(){
-			var element = $(this);
-			element.next('.ev-error').remove();
-			easyValidator.validateEmptyField($(element));
-		},
-		clearError: function(){
-			$(this).next('.ev-error').remove();
-		}
 	}
 
 })( jQuery );

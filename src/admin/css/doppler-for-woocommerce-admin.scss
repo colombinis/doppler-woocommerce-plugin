@@ -2,25 +2,11 @@
 * Admin styles for Doppler for WooCommerce
 */
 
-@import url(fonts.css);
+//@import url(fonts.css);
 
 /**
 * Variables
 */
-
-$main-text-color: #333;
-$red: #b80d0d;
-$text-green: #33AC72;
-$text-dark-green: #027B44;
-$bggreen: #33AD73;
-$dark-red: darkred;
-$doppler-grey: #94917f;
-$doppler-grey-bg: #cac7be;
-$yellow-hightlight:#ffc;
-$grey: #666;
-$main-font-size: 15px;
-$small-font-size: 13px;
-$content-width: 940px;
 
 /**
 * Mixins
@@ -34,17 +20,9 @@ $content-width: 940px;
 }
 
 /**
-* Menu
-*/
-
-#toplevel_page_doppler_for_woocommerce_menu a .dashicons-before img {
-    width: 20px;
-}
-
-/**
 * Settings
 */
-
+/*
 .doppler-woo-settings{
 
   font-family: "Proxima Nova Rg", arial;

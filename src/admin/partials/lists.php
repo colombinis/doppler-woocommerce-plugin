@@ -4,10 +4,10 @@
 
     <?php $this->display_error_message() ?>
 
-    <div id="showSuccessResponse">
+    <div id="showSuccessResponse" class="messages-container info">
     </div>
 
-    <div id="showErrorResponse">
+    <div id="showErrorResponse" class="messages-container blocker">
     </div>
 
     <?php
@@ -19,9 +19,10 @@
             <?php
             _e('You currently don\'t have Doppler Lists selected. Do you want to create a List to send your Contacts to and another to send to your buyers?', 'doppler-for-woocommerce');
             ?>
-            <a id="dplrwoo-create-lists"><?php _e('Create Doppler Lists', 'doppler-for-woocommerce')?></a>
-            <img src="<?php echo DOPPLER_FOR_WOOCOMMERCE_URL?>admin/img/loading.gif" class="d-none"/>
         </p>
+        
+        <button id="dplrwoo-create-lists" class="dp-button button-small primary-green"><?php _e('Create Doppler Lists', 'doppler-for-woocommerce')?></button>
+        
         <?php
 
     endif;
@@ -32,13 +33,15 @@
 
         <?php wp_nonce_field( 'map-lists' );?>
 
-        <table class="grid">
-            <tbody>
-                <tr>
-                    <th colspan="2"></th>
-                    <th class="text-right td-sm"><?php _e('Subscriptors', 'doppler-for-woocommerce')?></th>
-                    <th></th>
+        <table class="grid panel w-100" cellspacing="0">
+            <thead>
+                <tr class="panel-header">
+                    <th class="text-white semi-bold"><?php _e('Type', 'doppler-for-woocommerce') ?></th>
+                    <th class="text-white semi-bold"><?php _e('List Name', 'doppler-for-woocommerce') ?></th>
+                    <th class="text-white semi-bold"><?php _e('Subscriptors', 'doppler-for-woocommerce')?></th>
                 </tr>
+            </thead>
+            <tbody class="panel-body">
                 <tr>
                     <th>
                         <?php _e('Buyers', 'doppler-for-woocommerce')?>
@@ -63,10 +66,8 @@
                             ?>
                         </select>
                     </td>
-                    <td class="text-right td-sm">
+                    <td class="text-center td-sm">
                         <span id="buyers-count"><?php echo $scount?></span>
-                    </td>
-                    <td>
                     </td>
                 </tr>
                 <?php $scount='' ?>
@@ -94,32 +95,30 @@
                             ?>
                         </select>
                     </td>
-                    <td class="text-right td-sm">
+                    <td class="text-center td-sm">
                         <span id="contacts-count"><?php echo $scount?></span>
-                    </td>
-                    <td>
                     </td>
                 </tr>
             </tbody>
         </table>
 
-        <button id="dplrwoo-lists-btn" class="dplrwoo-button">
+        <button id="dplrwoo-lists-btn" class="dp-button button-medium primary-green">
             <?php _e('Save', 'doppler-for-woocommerce') ?>
         </button>
 
     </form>
 
     <hr/>
-    <a id="dplrwoo-new-list" class="small-text pointer"><?php _e( 'Create List' , 'doppler-for-woocommerce') ?></a>
+    <a id="dplrwoo-new-list" class="small-text pointer green-link"><?php _e( 'Create List' , 'doppler-for-woocommerce') ?></a>
     <?php if(!empty($subscribers_lists['contacts']) || !empty($subscribers_lists['buyers'])): ?> 
         <span> | </span>
-        <a id="dplrwoo-btn-synch" class="small-text pointer"><?php _e('Synchronize lists', 'doppler-for-woocommerce')?></a>
-        <img class="doing-synch" src="<?php echo DOPPLER_FOR_WOOCOMMERCE_URL . 'admin/img/ajax-synch.gif' ?>" alt="<?php _e('Synchronizing', 'doppler-for-woocommerce')?>"/>
-        <span class="synch-ok dashicons dashicons-yes text-dark-green"></span>        
+        <a id="dplrwoo-btn-synch" class="small-text pointer green-link"><?php _e('Synchronize lists', 'doppler-for-woocommerce')?></a>
+        <img class="doing-synch d-none" src="<?php echo DOPPLER_FOR_WOOCOMMERCE_URL . 'admin/img/ajax-synch.gif' ?>" alt="<?php _e('Synchronizing', 'doppler-for-woocommerce')?>"/>
+        <span class="synch-ok dashicons dashicons-yes text-dark-green opacity-0"></span>        
     <?php endif;?>                 
 </div>
 
-<div id="dplr-dialog-confirm" class="doppler-woo-settings w-100" title="<?php _e('Create a Doppler List', 'doppler-form'); ?>">
+<div id="dplr-dialog-confirm" class="dplr_settings" title="<?php _e('Create a Doppler List', 'doppler-form'); ?>">
     <form>
         <p>
             <input type="text" maxlength="50" value="" placeholder="<?php _e('Write the List name','doppler-for-woocommerce')?>" class="w-100"/>
