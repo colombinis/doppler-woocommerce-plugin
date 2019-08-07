@@ -168,7 +168,7 @@ class Doppler_For_Woocommerce {
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 		$this->loader->add_action( 'dplr_add_extension_submenu', $plugin_admin, 'dplrwoo_init_menu' );
-		$this->loader->add_action( 'admin_init', $plugin_admin, 'dplrwoo_settings_init' );
+		//$this->loader->add_action( 'admin_init', $plugin_admin, 'dplrwoo_settings_init' );
 		//$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_connect', $plugin_admin, 'dplrwoo_api_connect' );
 		//$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_get_lists', $plugin_admin, 'dplrwoo_get_lists' );
 		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_save_list', $plugin_admin, 'dplrwoo_save_list' );
