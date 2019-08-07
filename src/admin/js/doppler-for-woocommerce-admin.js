@@ -119,7 +119,7 @@
 			var button = $(this);
 			button.closest('#dplrwoo-createlist-div').find('.error').remove();
 			button.addClass('button--loading').css('pointer-events','none');
-			$('.notice').remove();
+			clearResponseMessages();
 			$('#displayErrorMessage,#displaySuccessMessage').css('display','none');
 
 			$.post(ajaxurl,{action: 'dplrwoo_ajax_create_lists'}, function(response){
@@ -127,20 +127,17 @@
 				if(typeof obj.buyers.createdResourceId==="undefined"||typeof obj.contacts.createdResourceId==="undefined"){
 					var err = '';
 					if(typeof obj.buyers.response.title!=="undefined"){
-						err+=obj.buyers.response.title;
+						//err+=obj.buyers.response.title;
+						displayErrors(obj.buyers.response.status,obj.buyers.response.errorCode);
 					}
 					if(typeof obj.contacts.response.title!=="undefined" && err===''){
-						err+=obj.buyers.response.title;
+						//err+=obj.buyers.response.title;
+						displayErrors(obj.contacts.response.status,obj.contacts.response.errorCode);
 					}
-				}
-				if(err!=''){
-					button.after('<div class="notice notice-error">'+err+'</div>');
-				}else{
-					window.location.reload(false); 					
-				}
-
-				button.removeClass('button--loading').css('pointer-events','initial');
-
+					button.removeClass('button--loading').css('pointer-events','initial');
+					return false;
+				}	
+				window.location.reload(false);				
 			});
 		});
 
@@ -202,7 +199,7 @@
 	function displayErrors(status,code){
 		var errorMsg = '';
 		errorMsg = generateErrorMsg(status,code);
-		$('#showErrorResponse').css('display','block').html('<p>'+errorMsg+'</p>');
+		$('#showErrorResponse').css('display','flex').html('<p>'+errorMsg+'</p>');
 	}
 
 	function generateErrorMsg(status,code){
