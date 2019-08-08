@@ -110,7 +110,16 @@
 
     <hr/>
     <a id="dplrwoo-new-list" class="small-text pointer green-link"><?php _e( 'Create List' , 'doppler-for-woocommerce') ?></a>
-    <?php if(!empty($subscribers_lists['contacts']) || !empty($subscribers_lists['buyers'])): ?> 
+    <?php 
+        $args = array(
+			'limit'		=> -1,
+			'orderby'	=> 'date',
+			'order'		=> 'DESC'
+		);
+        $orders = wc_get_orders($args);
+        $contacts = $this->get_registered_users();
+    ?>
+    <?php if( (!empty($orders) ||  !empty($contacts)) && (!empty($subscribers_lists['contacts']) || !empty($subscribers_lists['buyers'])) ): ?> 
         <span> | </span>
         <a id="dplrwoo-btn-synch" class="small-text pointer green-link"><?php _e('Synchronize lists', 'doppler-for-woocommerce')?></a>
         <img class="doing-synch d-none" src="<?php echo DOPPLER_FOR_WOOCOMMERCE_URL . 'admin/img/ajax-synch.gif' ?>" alt="<?php _e('Synchronizing', 'doppler-for-woocommerce')?>"/>

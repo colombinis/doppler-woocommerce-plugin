@@ -55,6 +55,22 @@
 			);
 		});
 
+		var synchBuyers = function(){
+			var deferred = new $.Deferred();
+			$.post( ajaxurl, {action:'dplrwoo_ajax_synch',list_type: 'buyers'}, function( response ){
+				deferred.resolve(response);
+			})
+			return deferred.promise();
+		}
+		
+		var synchContacts = function(){
+			var deferred = new $.Deferred();
+			$.post(ajaxurl, {action: 'dplrwoo_ajax_synch', list_type: 'contacts'}, function(response){
+				deferred.resolve(response);
+			});
+			return deferred.promise();
+		}
+
 		$("#dplrwoo-btn-synch").click(function(){
 			var link = $(this);
 			var synchOk = $('.synch-ok');
@@ -63,40 +79,31 @@
 			link.css('pointer-events','none');
 			synchOk.css('opacity','0');
 			$('.doing-synch').css('display', 'inline-block');
-			$('#displayErrorMessage,#displaySuccessMessage').css('display','none');
-
-			var synchBuyers = function(){
-				var deferred = new $.Deferred();
-				$.post( ajaxurl, {action:'dplrwoo_ajax_synch',list_type: 'buyers'}, function( response ){
-					deferred.resolve(response);
-				})
-				return deferred.promise();
-			}
-			
-			var synchContacts = function(){
-				var deferred = new $.Deferred();
-				$.post(ajaxurl, {action: 'dplrwoo_ajax_synch', list_type: 'contacts'}, function(response){
-					deferred.resolve(response);
-				});
-				return deferred.promise();
-			} 
+			$('#displayErrorMessage,#displaySuccessMessage').css('display','none'); 
 
 			synchBuyers().then(function(responseBuyers){
 				var obj = JSON.parse(responseBuyers);
 				if(!obj.createdResourceId){
-					displayErrors(obj.status,obj.errorCode);
+					if(obj!=0){
+						displayErrors(obj.status,obj.errorCode);
+					}
 					$('.doing-synch').css('display', 'none');
+					link.css('pointer-events','initial');
 					return false;
 				}
 				synchContacts().then(function(responseContacts){
 					var obj = JSON.parse(responseContacts);
 					if(!obj.createdResourceId){
-						displayErrors(obj.status,obj.errorCode);
+						if(obj!=0){
+							displayErrors(obj.status,obj.errorCode);
+						}
 						$('.doing-synch').css('display', 'none');
+						link.css('pointer-events','initial');
 						return false;
 					}
 					$.post(ajaxurl,{action: 'dplrwoo_ajax_update_counter'}, function(response){
 						var obj = JSON.parse(response);
+						console.log(obj);
 						if(bc.html()!=''){
 							bc.html(obj.buyers);
 						}

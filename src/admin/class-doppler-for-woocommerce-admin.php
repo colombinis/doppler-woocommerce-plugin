@@ -611,7 +611,10 @@ class Doppler_For_Woocommerce_Admin {
 		$subscribers['items'] =  array();
 		$subscribers['fields'] =  array();
 
-		if(empty($users)) return false;
+		if(empty($users)){
+			echo '0';
+			exit();
+		};
 
 		foreach($users as $email=>$fields){
 			$subscribers['items'][] = array('email'=>$email, 'fields'=>$fields);
