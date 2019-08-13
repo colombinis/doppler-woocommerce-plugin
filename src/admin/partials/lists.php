@@ -4,10 +4,10 @@
 
     <?php $this->display_error_message() ?>
 
-    <div id="showSuccessResponse" class="messages-container info">
+    <div id="showSuccessResponse" class="messages-container info d-none">
     </div>
 
-    <div id="showErrorResponse" class="messages-container blocker">
+    <div id="showErrorResponse" class="messages-container blocker d-none">
     </div>
 
     <?php
@@ -47,7 +47,7 @@
                         <?php _e('Buyers', 'doppler-for-woocommerce')?>
                     </th>
                     <td>
-                        <select name="dplr_subscribers_list[buyers]" class="dplr-lists-sel">
+                        <select name="dplr_subscribers_list[buyers]" class="dplrwoo-lists-sel">
                             <option value=""></option>
                             <?php 
                             if(!empty($lists)){
@@ -76,7 +76,7 @@
                         <?php _e('Contacts', 'doppler-for-woocommerce')?>
                     </th>
                     <td>
-                        <select name="dplr_subscribers_list[contacts]" class="dplr-lists-sel">
+                        <select name="dplr_subscribers_list[contacts]" class="dplrwoo-lists-sel">
                             <option value=""></option>
                             <?php 
                                 if(!empty($lists)){

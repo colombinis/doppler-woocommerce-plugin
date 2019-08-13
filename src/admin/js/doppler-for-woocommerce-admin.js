@@ -30,7 +30,7 @@
 
 		});
 
-		$(".dplr-lists-sel").focus(function(){
+		$(".dplrwoo-lists-sel").focus(function(){
 			$(this).data('fieldData', {'val':$(this).val(),
 				'name':$(this).attr('name'),
 				'selectedName':$(this).children("option:selected").text()
@@ -40,14 +40,14 @@
 			var current = $(this).val();
 			$('#dplrwoo-btn-synch,.synch-ok').css('display','none');
 			if(prevData.val!==''){
-				$('.dplr-lists-sel').each(function(){
+				$('.dplrwoo-lists-sel').each(function(){
 					if( prevData.name !== $(this).attr('name') ){
 						$(this).append('<option value="'+prevData.val+'">'+prevData.selectedName+'</option>');
 					}
 				});
 			}
 			if(current!==''){
-				var s = $('.dplr-lists-sel').not(this);
+				var s = $('.dplrwoo-lists-sel').not(this);
 				s.find('option[value="'+current+'"]').remove();
 			}
 			$(this).closest('tr').find('td span').html(
@@ -85,7 +85,7 @@
 				var obj = JSON.parse(responseBuyers);
 				if(!obj.createdResourceId){
 					if(obj!=0){
-						displayErrors(obj.status,obj.errorCode);
+						displayErrors(obj);
 					}
 					$('.doing-synch').css('display', 'none');
 					link.css('pointer-events','initial');
@@ -95,7 +95,7 @@
 					var obj = JSON.parse(responseContacts);
 					if(!obj.createdResourceId){
 						if(obj!=0){
-							displayErrors(obj.status,obj.errorCode);
+							displayErrors(obj);
 						}
 						$('.doing-synch').css('display', 'none');
 						link.css('pointer-events','initial');
@@ -135,11 +135,11 @@
 					var err = '';
 					if(typeof obj.buyers.response.title!=="undefined"){
 						//err+=obj.buyers.response.title;
-						displayErrors(obj.buyers.response.status,obj.buyers.response.errorCode);
+						displayErrors(obj.buyers.response);
 					}
 					if(typeof obj.contacts.response.title!=="undefined" && err===''){
 						//err+=obj.buyers.response.title;
-						displayErrors(obj.contacts.response.status,obj.contacts.response.errorCode);
+						displayErrors(obj.contacts.response);
 					}
 					button.removeClass('button--loading').css('pointer-events','initial');
 					return false;
@@ -185,7 +185,7 @@
 
 		});
 		*/
-		
+		/*
 		if($('#dplr-dialog-confirm').length>0){
 			
 			$("#dplr-dialog-confirm").dialog({
@@ -196,13 +196,14 @@
 				modal: true
 			});
 		
-		}
+		}*/
 
 		//$("#dprwoo-tbl-lists tbody").on("click","tr a",deleteList);
 		$("#dplrwoo-new-list").on("click",null,{},newList);
 
 	});
 
+	/*
 	function displayErrors(status,code){
 		var errorMsg = '';
 		errorMsg = generateErrorMsg(status,code);
@@ -227,20 +228,21 @@
 	function clearResponseMessages(){
 		$('#showSuccessResponse,#showErrorResponse').html('').css('display','none');
 	}
+	*/
 
 	function newList(e){
+		console.log('new list popup');
 		e.preventDefault();
 		clearResponseMessages();
 		$('#displayErrorMessage,#displaySuccessMessage').css('display','none');
-		var inputField = $("#dplr-dialog-confirm").find('input[type="text"]');
-		var span = $("#dplr-dialog-confirm").find('span.text-red');
-		inputField.val('');
-		span.remove();
+		var inputField = $("#dplr-dialog-confirm").find('input[type="text"]').val('');
+		$("#dplr-dialog-confirm").find('.text-red').remove();
 		$("#dplr-dialog-confirm").dialog("option", "buttons", [{
 			text: 'New List',
 			click: function() {
 				var dialog = $(this);
 				var button = dialog.closest('.ui-dialog ').find('button');
+				dialog.closest('.ui-dialog').find('.text-red').remove();
 				var loader = dialog.find('img');
 				var listName = inputField.val();
 				var data = {
@@ -253,8 +255,8 @@
 				$.post( ajaxurl, data, function( response ) {
 					var obj = JSON.parse(response);
 					if(typeof obj.createdResourceId !== "undefined"){
-						$(".dplr-lists-sel").append('<option value="'+obj.createdResourceId+'">'+listName+'</option>');
-						$("#showSuccessResponse").html('<p>'+ObjWCStr.listSavedOk+'</p>').css('display','block');
+						$(".dplrwoo-lists-sel").append('<option value="'+obj.createdResourceId+'">'+listName+'</option>');
+						$("#showSuccessResponse").html('<p>'+ObjWCStr.listSavedOk+'</p>').css('display','flex');
 						button.removeAttr('disabled');
 						loader.css('display','none');
 						dialog.dialog("close");

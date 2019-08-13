@@ -139,7 +139,7 @@ class Doppler_For_Woocommerce_Admin {
 		wp_enqueue_script( 
 				$this->plugin_name, 
 				plugin_dir_url( __FILE__ ) . 'js/doppler-for-woocommerce-admin.js', 
-				array( 'jquery' ), 
+				array( 'jquery', 'Doppler' ), 
 				$this->version, false 
 		);
 		wp_localize_script( $this->plugin_name, 'ObjWCStr', array( 
