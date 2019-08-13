@@ -33,7 +33,7 @@
 
 <div class="wrap dplr_settings">
 
-    <a href="<?php _e('https://www.fromdoppler.com/en/?utm_source=landing&utm_medium=integracion&utm_campaign=wordpress', 'doppler-form')?>" target="_blank" class="dplr-logo-header"><img src="<?php echo DOPPLER_PLUGINS_URL?>/admin/img/doppler.png" alt="Doppler logo"/></a>
+    <a href="<?php _e('https://www.fromdoppler.com/en/?utm_source=landing&utm_medium=integracion&utm_campaign=wordpress', 'doppler-form')?>" target="_blank" class="dplr-logo-header"><img src="<?php echo DOPPLER_PLUGINS_URL?>/admin/img/logo-doppler.svg" alt="Doppler logo"/></a>
 
     <h2 class="main-title"><?php _e('Doppler for WooCommerce', 'doppler-for-woocommerce')?> <?php echo $this->get_version()?></h2> 
 
