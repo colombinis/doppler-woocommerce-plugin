@@ -145,12 +145,14 @@ class Doppler_For_Woocommerce_Admin {
 		wp_localize_script( $this->plugin_name, 'ObjWCStr', array( 
 			  'invalidUser'		=> __( 'Ouch! Enter a valid Email.', 'doppler-for-woocommerce' ),
 			  'emptyField'		=> __( 'Ouch! The Field is empty.', 'doppler-for-woocommerce'),
-			  'wrongData'			=> __( 'Ouch! There\'s something wrong with your Username or API Key. Please, try again.', 'doppler-for-woocommerce'),
+			  'wrongData'		=> __( 'Ouch! There\'s something wrong with your Username or API Key. Please, try again.', 'doppler-for-woocommerce'),
 			  'listSavedOk'   	=> __( 'The List has been created correctly.', 'doppler-for-woocommerce'),
-			  'maxListsReached' 	=> __( 'Ouch! You\'ve reached the maximum number of Lists created.', 'doppler-for-woocommerce'),
+			  'maxListsReached' => __( 'Ouch! You\'ve reached the maximum number of Lists created.', 'doppler-for-woocommerce'),
 			  'duplicatedName'	=> __( 'Ouch! You\'ve already used this name for another List.', 'doppler-for-woocommerce'),	
 			  'tooManyConn'		=> __( 'Ouch! You\'ve made several actions in a short period of time. Please wait a few minutes before making another one.', 'doppler-for-woocommerce'),
-			  'validationError'	=> __( 'Ouch! List name is invalid. Please choose another name.', 'doppler-for-woocommerce')
+			  'validationError'	=> __( 'Ouch! List name is invalid. Please choose another name.', 'doppler-for-woocommerce'),
+			  'Save'            => __( 'Save', 'doppler-for-woocommerce'),
+			  'Cancel'          => __( 'Cancel', 'doppler-for-woocommerce')
 		));
 	}
 

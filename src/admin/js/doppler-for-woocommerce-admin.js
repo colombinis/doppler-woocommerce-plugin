@@ -1,3 +1,12 @@
+(function($) {
+    $.fn.onEnter = function(func) {
+        this.bind('keypress', function(e) {
+            if (e.keyCode == 13) func.apply(this, [e]);    
+        });               
+        return this; 
+     };
+})(jQuery);
+
 (function( $ ) {
 	'use strict';
 
@@ -147,138 +156,67 @@
 				window.location.reload(false);				
 			});
 		});
-
-		/*
-		$("#dplrwoo-save-list").click(function(e){
-
-			e.preventDefault();			
-			var listName = $(this).closest('form').find('input[type="text"]').val();
-
-			if(listName!==''){
-				var data = {
-					action: 'dplrwoo_ajax_save_list',
-					listName: listName
-				};
-				
-				listsLoading();
-				
-				$.post( ajaxurl, data, function( response ) {
-
-					var body = 	JSON.parse(response);
-					if(body.createdResourceId){		
-						var html ='<tr>';
-						html+='<td>'+body.createdResourceId+'</td><td><strong>'+listName+'</strong></td>';
-						html+='<td>0</td>';
-						html+='<td><a href="#" class="text-dark-red" data-list-id="'+body.createdResourceId+'">Delete</a></td>'
-						html+='</tr>';
-						$("#dprwoo-tbl-lists tbody").prepend(html);
-					}else{
-						if(body.status >= 400){
-							//body.status
-							displayErrors(body.status,body.errorCode);
-						}
-					}
-					listsLoaded();
-				});
-			
-			}
-
-		});
-		*/
-		/*
-		if($('#dplr-dialog-confirm').length>0){
-			
-			$("#dplr-dialog-confirm").dialog({
-				autoOpen: false,
-				resizable: false,
-				height: "auto",
-				width: 400,
-				modal: true
-			});
 		
-		}*/
+		var dialog = $("#dplr-dialog-confirm").dialog({close:function(){
+			$(this).find('input[type=text]').val('');
+			$(this).find(".text-red").remove();
+		}});
 
-		//$("#dprwoo-tbl-lists tbody").on("click","tr a",deleteList);
-		$("#dplrwoo-new-list").on("click",null,{},newList);
+		dialog.dialog("option","buttons",[
+			{ text: ObjWCStr.Save, click: saveList },
+			{ text: ObjWCStr.Cancel, click: function(){
+				dialog.dialog('close');
+			}}
+		]);
+		
+		$("#dplrwoo-new-list").click(function(){
+			clearResponseMessages();
+			$('#displayErrorMessage,#displaySuccessMessage').css('display','none');
+			dialog.dialog("open");
+		});
+		
+		$("#dplr-dialog-confirm input[type=text]").onEnter(function(e){
+			e.preventDefault();
+			if($(this).val()!=''){
+				$("#dplr-dialog-confirm").find(".text-red").remove();
+				saveList();
+			}
+			return false;
+		});
+
+		function saveList(){
+			var dialog = $("#dplr-dialog-confirm");
+			var inputField = dialog.find('input[type="text"]');
+			var button = dialog.closest('.ui-dialog ').find('button');
+			var loader = dialog.find('img');
+			var listName = inputField.val();
+			if(listName=='') return false;
+			
+			button.attr('disabled','disabled');
+			loader.css('display','inline-block');
+			var data = {
+				action: 'dplrwoo_ajax_save_list',
+				listName : listName
+			};
+			$.post( ajaxurl, data, function( response ) {
+				var obj = JSON.parse(response);
+				if(typeof obj.createdResourceId !== "undefined"){
+					$(".dplrwoo-lists-sel").append('<option value="'+obj.createdResourceId+'" data-subscriptors="0">'+listName+'</option>');
+					$("#showSuccessResponse").html('<p>'+ObjWCStr.listSavedOk+'</p>').css('display','flex');
+					button.removeAttr('disabled');
+					loader.css('display','none');
+					dialog.dialog("close");
+				}else{
+					button.removeAttr('disabled');
+					loader.css('display','none');
+					if(obj.status>=400){
+						inputField.after('<span class="text-red">'+generateErrorMsg(obj.status,obj.errorCode))+'</span>';
+					}
+				}
+			});
+		}
 
 	});
-
-	/*
-	function displayErrors(status,code){
-		var errorMsg = '';
-		errorMsg = generateErrorMsg(status,code);
-		$('#showErrorResponse').css('display','flex').html('<p>'+errorMsg+'</p>');
-	}
-
-	function generateErrorMsg(status,code){
-		var err = '';
-		var errors = {	
-			400 : { 1: ObjWCStr.validationError,
-					2: ObjWCStr.duplicatedName,
-					3: ObjWCStr.maxListsReached},
-			429 : { 0: ObjWCStr.tooManyConn}
-		}
-		if(typeof errors[status] === 'undefined')
-			 err = 'Unexpected error';
-		else
-		   typeof errors[status][code] === 'undefined'? err='Unexpected error code' : err = errors[status][code];
-		 return err;
-	}
-
-	function clearResponseMessages(){
-		$('#showSuccessResponse,#showErrorResponse').html('').css('display','none');
-	}
-	*/
-
-	function newList(e){
-		console.log('new list popup');
-		e.preventDefault();
-		clearResponseMessages();
-		$('#displayErrorMessage,#displaySuccessMessage').css('display','none');
-		var inputField = $("#dplr-dialog-confirm").find('input[type="text"]').val('');
-		$("#dplr-dialog-confirm").find('.text-red').remove();
-		$("#dplr-dialog-confirm").dialog("option", "buttons", [{
-			text: 'New List',
-			click: function() {
-				var dialog = $(this);
-				var button = dialog.closest('.ui-dialog ').find('button');
-				dialog.closest('.ui-dialog').find('.text-red').remove();
-				var loader = dialog.find('img');
-				var listName = inputField.val();
-				var data = {
-					action: 'dplrwoo_ajax_save_list',
-					listName : listName
-				};
-				if(listName === '') return false;
-				button.attr('disabled','disabled');
-				loader.css('display','inline-block');
-				$.post( ajaxurl, data, function( response ) {
-					var obj = JSON.parse(response);
-					if(typeof obj.createdResourceId !== "undefined"){
-						$(".dplrwoo-lists-sel").append('<option value="'+obj.createdResourceId+'" data-subscriptors="0">'+listName+'</option>');
-						$("#showSuccessResponse").html('<p>'+ObjWCStr.listSavedOk+'</p>').css('display','flex');
-						button.removeAttr('disabled');
-						loader.css('display','none');
-						dialog.dialog("close");
-					}else{
-						button.removeAttr('disabled');
-						loader.css('display','none');
-						if(obj.status>=400){
-							inputField.after('<span class="text-red">'+generateErrorMsg(obj.status,obj.errorCode))+'</span>';
-						}
-					}
-				});
-			}
-		  }, 
-		  {
-			text: 'Cancel',
-			click: function() {
-			  $(this).dialog("close");
-			}
-		  }]);
-  
-		$("#dplr-dialog-confirm").dialog("open");
-	}
 
 	function checkFieldType(dplrType, wcType){
 

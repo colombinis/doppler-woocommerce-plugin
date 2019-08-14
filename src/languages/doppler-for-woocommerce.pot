@@ -8,7 +8,7 @@ msgstr ""
 "Blank WordPress Pot "
 "v1.0.0\n"
 "POT-Creation-Date: "
-"2019-07-23 11:26-0300\n"
+"2019-08-14 14:58-0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Your "
 "Name <you@example.com>\n"
@@ -51,18 +51,18 @@ msgstr ""
 "X-Poedit-"
 "SearchPath-0: .\n"
 
-#: admin/class-doppler-for-woocommerce-admin.php:142
+#: admin/class-doppler-for-woocommerce-admin.php:146
 msgid ""
 "Ouch! Enter a valid "
 "Email."
 msgstr ""
 
-#: admin/class-doppler-for-woocommerce-admin.php:143
+#: admin/class-doppler-for-woocommerce-admin.php:147
 msgid ""
 "Ouch! The Field is empty."
 msgstr ""
 
-#: admin/class-doppler-for-woocommerce-admin.php:144
+#: admin/class-doppler-for-woocommerce-admin.php:148
 msgid ""
 "Ouch! There's something "
 "wrong with your Username "
@@ -70,27 +70,27 @@ msgid ""
 "again."
 msgstr ""
 
-#: admin/class-doppler-for-woocommerce-admin.php:145
+#: admin/class-doppler-for-woocommerce-admin.php:149
 msgid ""
 "The List has been "
 "created correctly."
 msgstr ""
 
-#: admin/class-doppler-for-woocommerce-admin.php:146
+#: admin/class-doppler-for-woocommerce-admin.php:150
 msgid ""
 "Ouch! You've reached the "
 "maximum number of Lists "
 "created."
 msgstr ""
 
-#: admin/class-doppler-for-woocommerce-admin.php:147
+#: admin/class-doppler-for-woocommerce-admin.php:151
 msgid ""
 "Ouch! You've already "
 "used this name for "
 "another List."
 msgstr ""
 
-#: admin/class-doppler-for-woocommerce-admin.php:148
+#: admin/class-doppler-for-woocommerce-admin.php:152
 msgid ""
 "Ouch! You've made "
 "several actions in a "
@@ -100,47 +100,58 @@ msgid ""
 "another one."
 msgstr ""
 
-#: admin/class-doppler-for-woocommerce-admin.php:149
+#: admin/class-doppler-for-woocommerce-admin.php:153
 msgid ""
 "Ouch! List name is "
 "invalid. Please choose "
 "another name."
 msgstr ""
 
-#: admin/class-doppler-for-woocommerce-admin.php:158
-#: admin/class-doppler-for-woocommerce-admin.php:159
-#: admin/partials/doppler-for-woocommerce-settings.php:36
+#: admin/class-doppler-for-woocommerce-admin.php:154
+#: admin/partials/hub.php:17
+#: admin/partials/lists.php:106
+#: admin/partials/mapping.php:105
+msgid "Save"
+msgstr ""
+
+#: admin/class-doppler-for-woocommerce-admin.php:155
+msgid "Cancel"
+msgstr ""
+
+#: admin/class-doppler-for-woocommerce-admin.php:161
+msgid ""
+"Sorry, but "
+"<strong>Doppler for "
+"WooCommerce</strong> "
+"requires the <strong><a "
+"href=\"https://wordpress."
+"org/plugins/doppler-form/"
+"\">Doppler Forms plugin</"
+"a></strong> to be "
+"installed and active."
+msgstr ""
+
+#: admin/class-doppler-for-woocommerce-admin.php:179
+#: admin/class-doppler-for-woocommerce-admin.php:180
+#: admin/partials/doppler-for-woocommerce-settings.php:38
 msgid ""
 "Doppler for WooCommerce"
 msgstr ""
 
-#: admin/class-doppler-for-woocommerce-admin.php:197
-msgid "User Email"
-msgstr ""
-
-#: admin/class-doppler-for-woocommerce-admin.php:209
-msgid "API Key"
-msgstr ""
-
-#: admin/class-doppler-for-woocommerce-admin.php:251
-msgid "Example text"
-msgstr ""
-
-#: admin/class-doppler-for-woocommerce-admin.php:295
+#: admin/class-doppler-for-woocommerce-admin.php:325
 msgid "WooCommerce Buyers"
 msgstr ""
 
-#: admin/class-doppler-for-woocommerce-admin.php:296
+#: admin/class-doppler-for-woocommerce-admin.php:326
 msgid ""
 "WooCommerce Contacts"
 msgstr ""
 
-#: admin/partials/doppler-for-woocommerce-settings.php:39
-msgid "Settings"
-msgstr ""
-
-#: admin/partials/doppler-for-woocommerce-settings.php:41
-msgid "Fields Mapping"
+#: admin/partials/doppler-for-woocommerce-settings.php:36
+msgid ""
+"https://www.fromdoppler."
+"com/en/?"
+"utm_source=landing&utm_medium=integracion&utm_campaign=wordpress"
 msgstr ""
 
 #: admin/partials/doppler-for-woocommerce-settings.php:42
@@ -149,7 +160,7 @@ msgid ""
 msgstr ""
 
 #: admin/partials/doppler-for-woocommerce-settings.php:43
-msgid "Lists Managment"
+msgid "Fields Mapping"
 msgstr ""
 
 #: admin/partials/doppler-for-woocommerce-settings.php:44
@@ -158,27 +169,27 @@ msgstr ""
 
 #: admin/partials/doppler-for-woocommerce-settings.php:59
 msgid ""
-"Subscribers lists saved "
-"succesfully"
-msgstr ""
-
-#: admin/partials/doppler-for-woocommerce-settings.php:73
-msgid ""
 "Fields mapped succesfully"
 msgstr ""
 
-#: admin/partials/doppler-for-woocommerce-settings.php:87
+#: admin/partials/doppler-for-woocommerce-settings.php:73
 msgid ""
 "On Site Tracking code "
 "saved successfully"
 msgstr ""
 
-#: admin/partials/doppler-for-woocommerce-settings.php:89
+#: admin/partials/doppler-for-woocommerce-settings.php:75
 msgid ""
 "Tracking code is invalid"
 msgstr ""
 
-#: admin/partials/hub.php:11
+#: admin/partials/doppler-for-woocommerce-settings.php:85
+msgid ""
+"Subscribers lists saved "
+"succesfully"
+msgstr ""
+
+#: admin/partials/hub.php:7
 msgid ""
 "Some text explaining "
 "what Datahub script does"
@@ -187,12 +198,6 @@ msgstr ""
 #: admin/partials/hub.php:14
 msgid ""
 "Paste tracking code here."
-msgstr ""
-
-#: admin/partials/hub.php:17
-#: admin/partials/lists.php:107
-#: admin/partials/mapping.php:101
-msgid "Save"
 msgstr ""
 
 #: admin/partials/lists.php:20
@@ -205,73 +210,54 @@ msgid ""
 "to send to your buyers?"
 msgstr ""
 
-#: admin/partials/lists.php:22
+#: admin/partials/lists.php:24
 msgid ""
 "Create Doppler Lists"
 msgstr ""
 
 #: admin/partials/lists.php:39
+msgid "Type"
+msgstr ""
+
+#: admin/partials/lists.php:40
+msgid "List Name"
+msgstr ""
+
+#: admin/partials/lists.php:41
 msgid "Subscriptors"
 msgstr ""
 
-#: admin/partials/lists.php:44
+#: admin/partials/lists.php:47
 msgid "Buyers"
 msgstr ""
 
-#: admin/partials/lists.php:75
+#: admin/partials/lists.php:76
 msgid "Contacts"
 msgstr ""
 
-#: admin/partials/lists.php:113
-#: admin/partials/lists_crud.php:9
+#: admin/partials/lists.php:112
 msgid "Create List"
 msgstr ""
 
-#: admin/partials/lists.php:116
+#: admin/partials/lists.php:124
 msgid "Synchronize lists"
 msgstr ""
 
-#: admin/partials/lists.php:117
+#: admin/partials/lists.php:125
 msgid "Synchronizing"
 msgstr ""
 
-#: admin/partials/lists.php:122
-#: admin/partials/lists_crud.php:5
+#: admin/partials/lists.php:130
 msgid ""
 "Create a Doppler List"
 msgstr ""
 
-#: admin/partials/lists.php:125
-#: admin/partials/lists_crud.php:6
+#: admin/partials/lists.php:133
 msgid "Write the List name"
 msgstr ""
 
-#: admin/partials/lists.php:126
+#: admin/partials/lists.php:134
 msgid "Saving"
-msgstr ""
-
-#: admin/partials/lists_crud.php:22
-msgid "List ID"
-msgstr ""
-
-#: admin/partials/lists_crud.php:23
-msgid "Name"
-msgstr ""
-
-#: admin/partials/lists_crud.php:24
-msgid "Subscribers"
-msgstr ""
-
-#: admin/partials/lists_crud.php:34
-msgid ""
-"Are you sure you want to "
-"delete the List? "
-msgstr ""
-
-#: admin/partials/lists_crud.php:35
-msgid ""
-"It'll be deleted and "
-"can't be recovered."
 msgstr ""
 
 #: admin/partials/mapping.php:8
@@ -282,9 +268,9 @@ msgid ""
 "To do this, select the "
 "Doppler Field equivalent "
 "to each of the "
-"WooCommerce Fields. Need "
-"to create Custom Fields "
-"in Doppler?"
+"WooCommerce Fields. <br/"
+">Need to create Custom "
+"Fields in Doppler?"
 msgstr ""
 
 #: admin/partials/mapping.php:9
@@ -311,6 +297,14 @@ msgstr ""
 msgid "Account fields"
 msgstr ""
 
+#: admin/partials/mapping.php:50
+msgid "WooCommerce Fields"
+msgstr ""
+
+#: admin/partials/mapping.php:51
+msgid "Doppler Fields"
+msgstr ""
+
 #: admin/partials/settings.php:22
 msgid "Connect"
 msgstr ""
@@ -325,12 +319,12 @@ msgstr ""
 msgid "Disconnect"
 msgstr ""
 
-#: doppler-for-woocommerce.php:54
+#: doppler-for-woocommerce.php:61
 msgid ""
 "This plugin requires "
 msgstr ""
 
-#: doppler-for-woocommerce.php:54
+#: doppler-for-woocommerce.php:61
 msgid ""
 " plugin to be active."
 msgstr ""
