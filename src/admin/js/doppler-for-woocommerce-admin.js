@@ -255,7 +255,7 @@
 				$.post( ajaxurl, data, function( response ) {
 					var obj = JSON.parse(response);
 					if(typeof obj.createdResourceId !== "undefined"){
-						$(".dplrwoo-lists-sel").append('<option value="'+obj.createdResourceId+'">'+listName+'</option>');
+						$(".dplrwoo-lists-sel").append('<option value="'+obj.createdResourceId+'" data-subscriptors="0">'+listName+'</option>');
 						$("#showSuccessResponse").html('<p>'+ObjWCStr.listSavedOk+'</p>').css('display','flex');
 						button.removeAttr('disabled');
 						loader.css('display','none');

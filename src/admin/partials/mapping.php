@@ -4,9 +4,9 @@
 
     <?php $this->display_error_message() ?>
 
-    <p>
-        <?php _e('Send the information of your Contacts in WooCommerce to Doppler. To do this, select the Doppler Field equivalent to each of the WooCommerce Fields. Need to create Custom Fields in Doppler?','doppler-for-woocommerce'); ?>
-        <a href="<?php _e('https://help.fromdoppler.com/en/how-to-create-a-customized-field?utm_source=landing&utm_medium=integracion&utm_campaign=woocommerce', 'doppler-for-woocommerce')?>"><?php _e('Learn how', 'doppler-for-woocommerce')?></a>.
+    <p class="size-medium">
+        <?php _e('Send the information of your Contacts in WooCommerce to Doppler. To do this, select the Doppler Field equivalent to each of the WooCommerce Fields. <br/>Need to create Custom Fields in Doppler?','doppler-for-woocommerce'); ?>
+        <a href="<?php _e('https://help.fromdoppler.com/en/how-to-create-a-customized-field?utm_source=landing&utm_medium=integracion&utm_campaign=woocommerce', 'doppler-for-woocommerce')?>" class="green-link"><?php _e('Learn how', 'doppler-for-woocommerce')?></a>.
     </p>
 
     <form id="dplrwoo-form-mapping" action="" method="post">
@@ -45,6 +45,10 @@
                                 }
                                 ?>
                             </th>
+                        </tr>
+                        <tr>
+                                <th class="text-left pt-1 pb-1"><?php _e('WooCommerce Fields','doppler-for-woocommerce') ?></th>
+                                <th class="text-left pt-1 pb-1"><?php _e('Doppler Fields', 'doppler-for-woocommerce') ?></th>
                         </tr>
                     </thead>
                     <tbody>
