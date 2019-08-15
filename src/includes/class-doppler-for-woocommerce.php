@@ -129,7 +129,7 @@ class Doppler_For_Woocommerce {
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
-		//require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-doppler-for-woocommerce-public.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-doppler-for-woocommerce-public.php';
 
 
 		$this->loader = new Doppler_For_Woocommerce_Loader();
