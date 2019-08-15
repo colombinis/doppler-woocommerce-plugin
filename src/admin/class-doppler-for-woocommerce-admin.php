@@ -44,13 +44,14 @@ class Doppler_For_Woocommerce_Admin {
 
 	private $connectionStatus;
 
-	private $credentials;
-
 	private $admin_notice;
 
 	private $success_message;
 
 	private $error_message;
+
+	private $required_doppler_version;
+
 
 	/**
 	 * Initialize the class and set its properties.
@@ -67,6 +68,7 @@ class Doppler_For_Woocommerce_Admin {
 		$this->connectionStatus = $this->check_connection_status();
 		$this->success_message = false;
 		$this->error_message = false;
+		$this->required_doppler_version = '2.1.0';
 
 	}
 
@@ -94,6 +96,10 @@ class Doppler_For_Woocommerce_Admin {
 
 	public function get_success_message() {
 		return $this->success_message;
+	}
+
+	public function get_required_doppler_version(){
+		return $this->required_doppler_version;
 	}
 
 	public function display_error_message() {
@@ -157,32 +163,44 @@ class Doppler_For_Woocommerce_Admin {
 	}
 
 	public function dplrwoo_check_parent() {
-		if ( is_admin() && current_user_can( 'activate_plugins' ) &&  !is_plugin_active( 'doppler-form/doppler-form.php' ) ) {
+		if ( !is_plugin_active( 'doppler-form/doppler-form.php' ) )  {
 			$this->admin_notice = array( 'error', __('Sorry, but <strong>Doppler for WooCommerce</strong> requires the <strong><a href="https://wordpress.org/plugins/doppler-form/">Doppler Forms plugin</a></strong> to be installed and active.', 'doppler-form') );
-	
-			deactivate_plugins( DOPPLER_FOR_WOOCOMMERCE_PLUGIN ); 
-	
-			if ( isset( $_GET['activate'] ) ) {
-				unset( $_GET['activate'] );
-			}
+			$this->deactivate();
+		}else if( version_compare( get_option('dplr_version'), '2.1.0', '<' ) ){
+			$this->admin_notice = array( 'error', __('Sorry, but <strong>Doppler for WooCommerce</strong> requires Doppler Forms v2.1.0 or greater to be active. Please <a href="'.admin_url().'plugins.php">upgrade</a> Doppler Forms.', 'doppler-form') );
+			$this->deactivate();
 		}
+	}
+
+	private function deactivate(){
+		deactivate_plugins( DOPPLER_FOR_WOOCOMMERCE_PLUGIN ); 
+		if ( isset( $_GET['activate'] ) ) {
+			unset( $_GET['activate'] );
+		}
+	}
+
+	private function is_plugin_allowed() {
+		$version = get_option('dplr_version');
+		if( class_exists('DPLR_Doppler') && class_exists('WooCommerce') && version_compare($version, $this->get_required_doppler_version(), '>=') ){
+			return true;
+	    }
+		return false;
 	}
 
 	/**
 	 * Registers the admin menu
 	 */
-	
 	public function dplrwoo_init_menu() {
-
-		add_submenu_page(
-			'doppler_forms_menu',
-			__('Doppler for WooCommerce', 'doppler-for-woocommerce'),
-			__('Doppler for WooCommerce', 'doppler-for-woocommerce'),
-			'manage_options',
-			'doppler_woocommerce_menu',
-			array($this, 'dplrwoo_admin_page')
-		);
-
+		if($this->is_plugin_allowed()):
+			add_submenu_page(
+				'doppler_forms_menu',
+				__('Doppler for WooCommerce', 'doppler-for-woocommerce'),
+				__('Doppler for WooCommerce', 'doppler-for-woocommerce'),
+				'manage_options',
+				'doppler_woocommerce_menu',
+				array($this, 'dplrwoo_admin_page')
+			);
+		endif;
 	}
 
 	/**
@@ -661,7 +679,6 @@ class Doppler_For_Woocommerce_Admin {
 	 * set $this->admin_notice = array( $class, $text), 
 	 * where class is success, warning, etc.
 	 */
-	
 	public function show_admin_notice() {
 		$class = $this->admin_notice[0];
 		$text = $this->admin_notice[1];
