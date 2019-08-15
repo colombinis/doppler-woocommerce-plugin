@@ -1,3 +1,9 @@
+<?php
+if ( ! current_user_can( 'manage_options' ) ) {
+    return;
+}
+?>
+
 <div class="dplr-tab-content">
 
     <?php $this->display_success_message() ?>

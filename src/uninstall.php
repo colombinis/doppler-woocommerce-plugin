@@ -31,7 +31,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 }
 
 // Remove all plugin options and plugin tables from database.
-if( $_REQUEST['slug']==='doppler-for-woocommerce' ){
+if( $_REQUEST['slug'] === 'doppler-for-woocommerce' ){
 
 	global $wpdb;
 	
@@ -44,14 +44,6 @@ if( $_REQUEST['slug']==='doppler-for-woocommerce' ){
 	delete_site_option($option_name);
 
 	$option_name = 'dplr_use_hub';
-	delete_option($option_name);
-	delete_site_option($option_name);
-
-	$option_name = 'dplrwoo_user';
-	delete_option($option_name);
-	delete_site_option($option_name);
-
-	$option_name = 'dplrwoo_key';
 	delete_option($option_name);
 	delete_site_option($option_name);
 

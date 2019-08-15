@@ -54,7 +54,7 @@
     switch($active_tab){
 
         case 'fields':
-            if( isset($_POST['dplrwoo_mapping']) && current_user_can('manage_options') && check_admin_referer('map-fields') ){
+            if( is_array($_POST['dplrwoo_mapping']) && current_user_can('manage_options') && check_admin_referer('map-fields') ){
                 update_option( 'dplrwoo_mapping', $_POST['dplrwoo_mapping'] );
                 $this->set_success_message(__('Fields mapped succesfully', 'doppler-for-woocommerce'));
             }
@@ -80,7 +80,7 @@
         break;
 
         default:
-            if( isset($_POST['dplr_subscribers_list']) && current_user_can('manage_options') && check_admin_referer('map-lists') ){
+            if( is_array($_POST['dplr_subscribers_list']) && current_user_can('manage_options') && check_admin_referer('map-lists') ){
                 update_option( 'dplr_subscribers_list', $_POST['dplr_subscribers_list'] );
                 $this->set_success_message(__('Subscribers lists saved succesfully', 'doppler-for-woocommerce'));
             }

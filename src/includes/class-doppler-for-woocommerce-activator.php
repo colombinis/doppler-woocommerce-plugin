@@ -1,5 +1,7 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 /**
  * Fired during plugin activation
  *
@@ -31,7 +33,7 @@ class Doppler_For_Woocommerce_Activator {
 	 * @since    1.0.0
 	 */
 	public static function activate() {
-
+		
 		update_option('dplrwoo_version', DOPPLER_FOR_WOOCOMMERCE_VERSION);
 
 	}

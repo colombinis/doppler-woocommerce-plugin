@@ -1,5 +1,7 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 /**
  * The admin-specific functionality of the plugin.
  *
@@ -217,123 +219,17 @@ class Doppler_For_Woocommerce_Admin {
 		$fields = $this->get_checkout_fields();
 	}
 
-	/**
-	 * Register the plugin settings and fields for doppler_for_woocommerce_menu.
-	 */
-	/*
-	public function dplrwoo_settings_init() {
-
-		if( !isset($_GET['tab']) || $_GET['tab']=='settings' ){
-
-			add_settings_section(
-				'dplrwoo_setting_section',
-				'Example settings section in reading',
-				array($this,'eg_setting_section_callback_function'),
-				'doppler_for_woocommerce_menu'
-			);
-
-			add_settings_field(
-				'dplrwoo_user', 
-				__( 'User Email', 'doppler-for-woocommerce' ),
-				array($this,'display_user_field'),
-				'doppler_for_woocommerce_menu',
-				'dplrwoo_setting_section',
-				[
-				'label_for' => 'dplrwoo_user',
-				'class' => 'dplrwoo_user_row',
-				]
-			);
-
-			add_settings_field(
-				'dplrwoo_key',
-				__( 'API Key', 'doppler-for-woocommerce' ),
-				array($this,'display_key_field'),
-				'doppler_for_woocommerce_menu',
-				'dplrwoo_setting_section',
-				[
-				'label_for' => 'dplrwoo_key',
-				'class' => 'dplrwoo_key_row',
-				]
-			);
-
-			register_setting( 'doppler_for_woocommerce_menu', 'dplrwoo_user' );
-			register_setting( 'doppler_for_woocommerce_menu', 'dplrwoo_key' );
-
-		}
-
-	}
-	*/
-
-	/**
-	 * Shows user field.
-	 */
-	/*
-	function display_user_field( $args ) {
-		$option = get_option( 'dplrwoo_user' );
-		?>
-			<input type="email" value="<?php echo $option ?>" name="dplrwoo_user" />
-		<?php
-	}*/
-
-	/**
-	 * Shows API Key field
-	 */
-	/*
-	function display_key_field( $args ) {
-		$option = get_option( 'dplrwoo_key' );
-		?>
-			<input type="text" value="<?php echo $option ?>" name="dplrwoo_key" maxlength="32" required/>
-		<?php
-	}*/
-
-	/**
-	 * Example for section text.
-	 */
-	/*
-	function eg_setting_section_callback_function( $args ) {
-		?>
-			<p id="<?php echo esc_attr( $args['id'] ); ?>"><?php esc_html_e( 'Example text', 'doppler-for-woocommerce' ); ?></p>
-		<?php
-	}*/
-
-	/**
-	 * Handles ajax connection with API
-	 * used by "connect" button in dopper-for-woocommerce-settings.php
-	 */
-	/*
-	public function dplrwoo_api_connect() {
-		$connected = $this->doppler_service->setCredentials(['api_key' => $_POST['key'], 'user_account' => $_POST['user']]);
-		echo ($connected)? 1:0;
-		exit();
-	}
-
-	public function dplrwoo_get_lists() {
-		echo json_encode($this->get_lists_by_page($_POST['page']));
-		exit();
-	}
-
-	*/
-
 	public function dplrwoo_save_list() {
 		if(!empty($_POST['listName'])){
 			echo $this->create_list($_POST['listName']);
 		}
-		exit();
+		wp_die();
 	}
 
 	private function create_list($list_name) {
 		$subscriber_resource = $this->doppler_service->getResource('lists');
 		return $subscriber_resource->saveList( $list_name )['body'];
 	}
-
-	/*
-	public function dplrwoo_delete_list() {
-		if(empty($_POST['listId'])) return false;
-		$subscribers_lists = get_option('dplr_subscribers_list');
-		$subscriber_resource = $this->doppler_service->getResource('lists');
-		echo json_encode($subscriber_resource->deleteList( $_POST['listId'] ));
-		exit();
-	}*/
 
 	/**
 	 * Create default lists
@@ -355,7 +251,7 @@ class Doppler_For_Woocommerce_Admin {
 			) ;
 		}
 		echo json_encode($resp);
-		exit();
+		wp_die();
 	}
 
 	/**
@@ -633,7 +529,7 @@ class Doppler_For_Woocommerce_Admin {
 
 		if(empty($users)){
 			echo '0';
-			exit();
+			wp_die();
 		};
 
 		foreach($users as $email=>$fields){
@@ -642,7 +538,7 @@ class Doppler_For_Woocommerce_Admin {
 
 		$subscriber_resource = $this->doppler_service->getResource( 'subscribers' );
 		echo $subscriber_resource->importSubscribers($list_id, $subscribers)['body'];
-		exit();
+		wp_die();
 
 	}
 
@@ -655,23 +551,23 @@ class Doppler_For_Woocommerce_Admin {
 		*
 		*/
 	public function update_subscribers_count() {
-			$c_count = 0;
-			$b_count = 0;
-			$list_resource = $this->doppler_service->getResource( 'lists' );
-			$c_list_id = get_option('dplr_subscribers_list')['contacts'];
-			if(!empty($c_list_id)){
-				$c_count = $list_resource->getList($c_list_id)->subscribersCount;
-			}
-			$b_list_id = get_option('dplr_subscribers_list')['buyers'];
-			if(!empty($b_list_id)){
-				$b_count = $list_resource->getList($b_list_id)->subscribersCount;
-			}
-			echo json_encode(array('contacts'=>$c_count, 'buyers'=>$b_count));
-			exit();
+		$c_count = 0;
+		$b_count = 0;
+		$list_resource = $this->doppler_service->getResource( 'lists' );
+		$c_list_id = get_option('dplr_subscribers_list')['contacts'];
+		if(!empty($c_list_id)){
+			$c_count = $list_resource->getList($c_list_id)->subscribersCount;
+		}
+		$b_list_id = get_option('dplr_subscribers_list')['buyers'];
+		if(!empty($b_list_id)){
+			$b_count = $list_resource->getList($b_list_id)->subscribersCount;
+		}
+		echo json_encode(array('contacts'=>$c_count, 'buyers'=>$b_count));
+		wp_die();
 	}
 
 	public function validate_tracking_code($code){
-		return preg_match("/(<|%3C)script[\s\S]*?(>|%3E)[\s\S]*?(<|%3C)(\/|%2F)script[\s\S]*?(>|%3E)/",$code);
+		return preg_match("/(<|%3C)script[\s\S]*?(>|%3E)[\s\S]*?(<|%3C)(\/|%2F)script[\s\S]*?(>|%3E)/", $code);
 	}
 
 	/**
