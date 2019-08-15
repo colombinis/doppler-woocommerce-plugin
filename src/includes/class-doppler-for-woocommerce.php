@@ -86,7 +86,6 @@ class Doppler_For_Woocommerce {
 		$this->load_dependencies();
 		$this->set_locale();
 		$this->define_admin_hooks();
-		//$this->define_public_hooks();
 
 	}
 
@@ -166,15 +165,11 @@ class Doppler_For_Woocommerce {
 
 		$plugin_admin = new Doppler_For_Woocommerce_Admin( $this->get_plugin_name(), $this->get_version(), $this->doppler_service );
 		
-		$this->loader->add_action( 'admin_init', $plugin_admin, 'dplrwoo_check_parent');
+		$this->loader->add_action( 'admin_init', $plugin_admin, 'dplrwoo_check_parent' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 		$this->loader->add_action( 'dplr_add_extension_submenu', $plugin_admin, 'dplrwoo_init_menu' );
-		//$this->loader->add_action( 'admin_init', $plugin_admin, 'dplrwoo_settings_init' );
-		//$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_connect', $plugin_admin, 'dplrwoo_api_connect' );
-		//$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_get_lists', $plugin_admin, 'dplrwoo_get_lists' );
 		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_save_list', $plugin_admin, 'dplrwoo_save_list' );
-		//$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_delete_list', $plugin_admin, 'dplrwoo_delete_list' );
 		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_synch', $plugin_admin, 'dplrwoo_synch' );
 		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_update_counter', $plugin_admin, 'update_subscribers_count');
 		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_create_lists' , $plugin_admin, 'dplrwoo_create_default_lists' );
@@ -184,25 +179,6 @@ class Doppler_For_Woocommerce {
 		$this->loader->add_action( 'admin_notices', $plugin_admin, 'show_admin_notice' );
 		
 	}
-
-	/**
-	 * Register all of the hooks related to the public-facing functionality
-	 * of the plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 */
-	/*
-	private function define_public_hooks() {
-
-		$plugin_public = new Doppler_For_Woocommerce_Public( $this->get_plugin_name(), $this->get_version() );
-
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-		$this->loader->add_action( 'wp_head', $plugin_public, 'add_tracking_script' );
-		
-	}*/
 
 	/**
 	 * Run the loader to execute all of the hooks with WordPress.

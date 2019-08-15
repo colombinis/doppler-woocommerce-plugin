@@ -257,9 +257,6 @@ class Doppler_For_Woocommerce_Admin {
 	/**
 	 * Check connection status.
 	 */
-	/**
-	 * Check connection status.
-	 */
 	public function check_connection_status() {
 
 		$options = get_option('dplr_settings');
@@ -384,7 +381,6 @@ class Doppler_For_Woocommerce_Admin {
 	/**
 	 * Get lists
 	 */
-	
 	public function get_alpha_lists() {
 		$list_resource = $this->doppler_service->getResource('lists');
 		$dplr_lists = $list_resource->getAllLists();
@@ -400,13 +396,6 @@ class Doppler_For_Woocommerce_Admin {
 		}
 		return $dplr_lists_arr;	
 	}
-	
-	/*
-	public function get_lists_by_page( $page = 1 ) {
-		$list_resource = $this->doppler_service->getResource( 'lists' );
-		return $list_resource->getListsByPage( $page );
-	}
-	*/
 
 	/**
 	 * Al registrarse se guarda el usuario
@@ -543,13 +532,13 @@ class Doppler_For_Woocommerce_Admin {
 	}
 
 	/**
-		* Update Subscribers count
-		*
-		* After synchronizing update 
-		* the subscribers counter
-		* next to the lists selector.
-		*
-		*/
+	* Update Subscribers count
+	*
+	* After synchronizing update 
+	* the subscribers counter
+	* next to the lists selector.
+	*
+	*/
 	public function update_subscribers_count() {
 		$c_count = 0;
 		$b_count = 0;

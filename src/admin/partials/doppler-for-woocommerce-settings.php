@@ -67,14 +67,16 @@
         break;
 
         case 'hub':
-            if( $_POST['_wpnonce'] && current_user_can('manage_options') && check_admin_referer('use-hub') ){
-				if($this->validate_tracking_code($_POST['dplr_hub_script'])):
-					update_option( 'dplr_hub_script', $_POST['dplr_hub_script']);
-					$this->set_success_message(__('On Site Tracking code saved successfully', 'doppler-for-woocommerce'));
-				else:
-                    $this->set_error_message(__('Tracking code is invalid', 'doppler-for-woocommerce'));
-				endif;
-            }
+            if(isset($_POST['dplr_hub_script'])):
+                if( current_user_can('manage_options') && check_admin_referer('use-hub') ){
+                    if( $_POST['dplr_hub_script']==='' || $this->validate_tracking_code($_POST['dplr_hub_script'])):
+                        update_option( 'dplr_hub_script', $_POST['dplr_hub_script']);
+                        $this->set_success_message(__('On Site Tracking code saved successfully', 'doppler-for-woocommerce'));
+                    else:
+                        $this->set_error_message(__('Tracking code is invalid', 'doppler-for-woocommerce'));
+                    endif;
+                }
+            endif;
             $dplr_hub_script = get_option('dplr_hub_script');
             require_once('hub.php');
         break;
