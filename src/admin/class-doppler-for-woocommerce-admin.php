@@ -160,7 +160,9 @@ class Doppler_For_Woocommerce_Admin {
 			  'tooManyConn'		=> __( 'Ouch! You\'ve made several actions in a short period of time. Please wait a few minutes before making another one.', 'doppler-for-woocommerce'),
 			  'validationError'	=> __( 'Ouch! List name is invalid. Please choose another name.', 'doppler-for-woocommerce'),
 			  'Save'            => __( 'Save', 'doppler-for-woocommerce'),
-			  'Cancel'          => __( 'Cancel', 'doppler-for-woocommerce')
+			  'Cancel'          => __( 'Cancel', 'doppler-for-woocommerce'),
+			  'listsSyncError'  => __( 'Ouch! The Lists couldn\'t be synchronized.', 'doppler-for-woocommerce'),
+			  'listsSyncOk'  	=> __( 'The Lists has been synchronized correctly.', 'doppler-for-woocommerce'),
 		));
 	}
 
@@ -516,7 +518,7 @@ class Doppler_For_Woocommerce_Admin {
 		$subscribers['items'] =  array();
 		$subscribers['fields'] =  array();
 
-		if(empty($users)){
+		if(empty($users) || empty($list_id)){
 			echo '0';
 			wp_die();
 		};
@@ -524,7 +526,7 @@ class Doppler_For_Woocommerce_Admin {
 		foreach($users as $email=>$fields){
 			$subscribers['items'][] = array('email'=>$email, 'fields'=>$fields);
 		}
-
+	
 		$subscriber_resource = $this->doppler_service->getResource( 'subscribers' );
 		echo $subscriber_resource->importSubscribers($list_id, $subscribers)['body'];
 		wp_die();

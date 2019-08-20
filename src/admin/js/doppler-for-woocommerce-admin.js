@@ -85,6 +85,8 @@
 			var synchOk = $('.synch-ok');
 			var bc = $('#buyers-count');
 			var cc = $('#contacts-count');
+			var syncBuyersOk = false;
+			var syncContactsOk = false;
 			link.css('pointer-events','none');
 			synchOk.css('opacity','0');
 			$('.doing-synch').css('display', 'inline-block');
@@ -92,32 +94,24 @@
 
 			synchBuyers().then(function(responseBuyers){
 				var obj = JSON.parse(responseBuyers);
-				if(!obj.createdResourceId){
-					if(obj!=0){
-						displayErrors(obj);
-					}
-					$('.doing-synch').css('display', 'none');
-					link.css('pointer-events','initial');
-					return false;
-				}
+				(!obj.createdResourceId)? syncBuyersOk = false : syncBuyersOk = true;
 				synchContacts().then(function(responseContacts){
 					var obj = JSON.parse(responseContacts);
 					if(!obj.createdResourceId){
-						if(obj!=0){
-							displayErrors(obj);
-						}
-						$('.doing-synch').css('display', 'none');
-						link.css('pointer-events','initial');
-						return false;
+						(!obj.createdResourceId)? syncContactsOk = false : syncContactsOk = true;
 					}
 					$.post(ajaxurl,{action: 'dplrwoo_ajax_update_counter'}, function(response){
 						var obj = JSON.parse(response);
-						console.log(obj);
 						if(bc.html()!=''){
 							bc.html(obj.buyers);
 						}
 						if(cc.html()!=''){
 							cc.html(obj.contacts);
+						}
+						if(!syncBuyersOk && !syncContactsOk){
+							$("#showErrorResponse").html('<p>'+ObjWCStr.listsSyncError+'</p>').css('display','flex');
+						}else{
+							$("#showSuccessResponse").html('<p>'+ObjWCStr.listsSyncOk+'</p>').css('display','flex');
 						}
 						link.css('pointer-events','initial');
 						$('.doing-synch').css('display', 'none');
