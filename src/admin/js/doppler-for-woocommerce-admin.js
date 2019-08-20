@@ -140,8 +140,11 @@
 
 			$.post(ajaxurl,{action: 'dplrwoo_ajax_create_lists'}, function(response){
 				var obj = JSON.parse(response);
-				if(typeof obj.buyers.createdResourceId==="undefined"||typeof obj.contacts.createdResourceId==="undefined"){
+				console.log(obj.buyers);
+				console.log(obj.contacts);
+				if(typeof obj.buyers.response.createdResourceId==="undefined"||typeof obj.contacts.response.createdResourceId==="undefined"){
 					var err = '';
+					console.log('showing Erros');
 					if(typeof obj.buyers.response.title!=="undefined"){
 						//err+=obj.buyers.response.title;
 						displayErrors(obj.buyers.response);
@@ -153,6 +156,7 @@
 					button.removeClass('button--loading').css('pointer-events','initial');
 					return false;
 				}	
+				console.log('should reload');
 				window.location.reload(false);				
 			});
 		});

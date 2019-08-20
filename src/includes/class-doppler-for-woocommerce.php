@@ -72,7 +72,7 @@ class Doppler_For_Woocommerce {
 	 */
 	public function __construct() {
 	
-		require_once( DOPPLER_PLUGINS_PATH . 'doppler-form\\includes\\DopplerApiClient\\DopplerService.php' );
+		require_once( DOPPLER_PLUGINS_PATH . 'doppler-form/includes/DopplerAPIClient/DopplerService.php' );
 		$this->doppler_service = new Doppler_Service();
 
 		if ( defined( 'DOPPLER_FOR_WOOCOMMERCE_VERSION' ) ) {
