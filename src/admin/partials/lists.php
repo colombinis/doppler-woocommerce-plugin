@@ -63,7 +63,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
                                     <option value="<?php echo $k?>" 
                                         <?php if($subscribers_lists['buyers']==$k){ echo 'selected'; $scount = $v['subscribersCount']; } ?>
                                         data-subscriptors="<?php echo $v['subscribersCount']?>">
-                                        <?php echo $v['name']?>
+                                        <?php echo esc_html($v['name'])?>
                                     </option>
                                     <?php
                                     endif;
@@ -91,8 +91,8 @@ if ( ! current_user_can( 'manage_options' ) ) {
                                         ?>
                                         <option value="<?php echo $k?>" 
                                             <?php if($subscribers_lists['contacts']==$k){ echo 'selected'; $scount = $v['subscribersCount']; }?>
-                                            data-subscriptors="<?php echo $v['subscribersCount']?>">
-                                            <?php echo $v['name']?>
+                                            data-subscriptors="<?php echo esc_attr($v['subscribersCount'])?>">
+                                            <?php echo esc_html($v['name']) ?>
                                         </option>
                                         <?php
                                         endif;
