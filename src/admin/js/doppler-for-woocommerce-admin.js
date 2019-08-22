@@ -97,9 +97,7 @@
 				(!obj.createdResourceId)? syncBuyersOk = false : syncBuyersOk = true;
 				synchContacts().then(function(responseContacts){
 					var obj = JSON.parse(responseContacts);
-					if(!obj.createdResourceId){
-						(!obj.createdResourceId)? syncContactsOk = false : syncContactsOk = true;
-					}
+					(!obj.createdResourceId)? syncContactsOk = false : syncContactsOk = true;
 					$.post(ajaxurl,{action: 'dplrwoo_ajax_update_counter'}, function(response){
 						var obj = JSON.parse(response);
 						if(bc.html()!=''){
@@ -108,6 +106,8 @@
 						if(cc.html()!=''){
 							cc.html(obj.contacts);
 						}
+						console.log(syncBuyersOk);
+						console.log(syncContactsOk);
 						if(!syncBuyersOk && !syncContactsOk){
 							$("#showErrorResponse").html('<p>'+ObjWCStr.listsSyncError+'</p>').css('display','flex');
 						}else{
