@@ -31,24 +31,20 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 }
 
 // Remove all plugin options and plugin tables from database.
-if( $_REQUEST['slug'] === 'doppler-for-woocommerce' ){
+if( $_REQUEST['plugin'] === ( plugin_basename( __DIR__ ) . '/doppler-for-woocommerce.php' ) ){
 
-	global $wpdb;
+	$options = array(
+		'dplr_subscribers_list',
+		'dplrwoo_mapping',
+		'dplrwoo_use_hub',
+		'dplrwoo_version',
+	);
 	
-	$option_name = 'dplr_subscribers_list';
+	array_map('uninstall_options', $options);
+
+}
+
+function uninstall_options($option_name){
 	delete_option($option_name);
 	delete_site_option($option_name);
-
-	$option_name = 'dplrwoo_mapping';
-	delete_option($option_name);
-	delete_site_option($option_name);
-
-	$option_name = 'dplr_use_hub';
-	delete_option($option_name);
-	delete_site_option($option_name);
-
-	$option_name = 'dplrwoo_version';
-	delete_option($option_name);
-	delete_site_option($option_name);
-
 }
