@@ -41,9 +41,6 @@ define( 'DOPPLER_FOR_WOOCOMMERCE_PLUGIN', plugin_basename( __FILE__ ));
 if(!defined( 'DOPPLER_PLUGINS_PATH' )):
 	define( 'DOPPLER_PLUGINS_PATH', plugin_dir_path(__DIR__));
 endif;
-if(!defined( 'DOPPLER_PLUGINS_URL' )):
-	define( 'DOPPLER_PLUGINS_URL', plugins_url().'/doppler-form');
-endif;
 
 /**
  * The code that runs during plugin activation.
