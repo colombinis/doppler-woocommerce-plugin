@@ -222,8 +222,8 @@ class Doppler_For_Woocommerce_Admin {
 	}
 
 	public function dplrwoo_save_list() {
-		if(!empty($_POST['listName'])){
-			echo $this->create_list($_POST['listName']);
+		if( !empty($_POST['listName']) && ( strlen($_POST['listName']) < 100) ){
+			echo $this->create_list(sanitize_text_field($_POST['listName']));
 		}
 		wp_die();
 	}
@@ -268,7 +268,7 @@ class Doppler_For_Woocommerce_Admin {
 		}
 
 		$user = $options['dplr_option_useraccount'];
-		$key = $options['dplr_option_apikey'];
+		$key  = $options['dplr_option_apikey'];
 
 		if( !empty($user) && !empty($key) ){
 			if(empty($this->doppler_service->config['crendentials'])){
@@ -404,14 +404,16 @@ class Doppler_For_Woocommerce_Admin {
 	 * en la lista de contactos.
 	 */
 	public function dplrwoo_created_customer( $customer_id, $customer_data, $customer_password ) {
-		if( isset($_POST['register']) ){
+		if( wp_verify_nonce( $_POST['woocommerce-register-nonce'], 'woocommerce-register' ) ){
 			$fields_map = get_option('dplrwoo_mapping');
 			$list_id = get_option('dplr_subscribers_list')['contacts'];
-			if( !empty($fields_map) && !empty($list_id) ){
+			if( !empty($list_id) ){
 				$fields = array();
-				foreach($fields_map as $k=>$v){
-					if($v!=''){
-						$fields[] = array('name'=>$v, 'value'=>$_POST[$k]);
+				if(!empty($fields_map)){
+					foreach($fields_map as $k=>$v){
+						if($v!=''){
+							$fields[] = array('name'=>$v, 'value'=>sanitize_text_field($_POST[$k]) );
+						}
 					}
 				}
 				$this->subscribe_customer($list_id, $customer_data['user_email'], $fields);
@@ -461,14 +463,24 @@ class Doppler_For_Woocommerce_Admin {
 			foreach($users as $k=>$user){
 				$meta_fields = get_user_meta($user->ID);
 				$fields = array();
-				foreach($fields_map as $k=>$v){
-					if($v!=''){
-						$value = array_shift(array_values($meta_fields[$k]));
-						$fields[] = array('name'=>$v, 'value'=>$value);
+				if(!empty($fields_map)){
+					foreach($fields_map as $k=>$v){
+						if($v!=''){
+							if(isset($meta_fields[$k])){
+								$aux = array_values($meta_fields[$k]);
+								$value = sanitize_text_field(array_shift($aux));
+							}else{
+								$value = '';
+							}
+							$fields[] = array('name'=>$v, 'value'=>$value);
+						}
 					}
 				}
-				$email = array_shift(array_values($meta_fields['billing_email']));
-				$registered_users[$email] = $fields;
+				if(isset($meta_fields['billing_email']) && !empty($meta_fields['billing_email'])){
+					$aux = array_values($meta_fields['billing_email']);
+					$email = array_shift($aux);
+					$registered_users[$email] = $fields;
+				}
 			}
 		}
 		return $registered_users;
@@ -493,10 +505,10 @@ class Doppler_For_Woocommerce_Admin {
 			'order'		=> 'DESC'
 		);
 		
-		if($_POST['list_type'] == 'contacts'){
+		if($_POST['list_type'] === 'contacts'){
 			$list_id = get_option('dplr_subscribers_list')['contacts'];
 			$registered_users = $this->get_registered_users();
-		}else if($_POST['list_type'] == 'buyers'){
+		}else if($_POST['list_type'] === 'buyers'){
 			$list_id = get_option('dplr_subscribers_list')['buyers'];
 			$args['status'] = 'completed';
 		}
@@ -505,11 +517,11 @@ class Doppler_For_Woocommerce_Admin {
 
 		if(!empty($orders)){
 			foreach($orders as $k=>$order){
-				$orders_by_email[$order->data['billing']['email']] = $this->get_mapped_fields($order);
+				$orders_by_email[$order->get_data()['billing']['email']] = $this->get_mapped_fields($order);
 			}
 		}
 
-		if($_POST['list_type'] == 'contacts'){
+		if($_POST['list_type'] === 'contacts'){
 			$users = array_merge($registered_users,$orders_by_email);
 		}else{
 			$users = $orders_by_email;
@@ -569,7 +581,7 @@ class Doppler_For_Woocommerce_Admin {
 	public function show_admin_notice() {
 		$class = $this->admin_notice[0];
 		$text = $this->admin_notice[1];
-		if( !empty($class) && !empty($class) ){
+		if( !empty($class) && !empty($text) ){
 			?>
 				<div class="notice notice-<?php echo $class?> is-dismissible">
 					<p><?php echo $text ?></p>
@@ -620,6 +632,26 @@ class Doppler_For_Woocommerce_Admin {
 			$subscriber_resource = $this->doppler_service->getResource('subscribers');
 			$result = $subscriber_resource->addSubscriber($list_id, $subscriber);
 		}
+	}
+
+	/**
+	 * Validate subscribers lists
+	 */
+	private function validate_subscribers_list( $list) {
+		return is_array($list) && array_key_exists('buyers',$list) && array_key_exists('contacts',$list);
+	}
+
+	/**
+	 * Sanitize list array
+	 */
+	private function sanitize_subscribers_list( $list ) {
+		return array_filter($list,'is_numeric');
+	}
+
+	private function sanitize_text_array( $list ) {
+		return array_map(function($item){
+			return sanitize_text_field($item);
+		},$list);
 	}
 
 }
