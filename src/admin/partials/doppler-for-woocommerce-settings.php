@@ -33,7 +33,7 @@
 
 <div class="wrap dplr_settings">
 
-    <a href="<?php _e('https://www.fromdoppler.com/en/?utm_source=landing&utm_medium=integracion&utm_campaign=wordpress', 'doppler-form')?>" target="_blank" class="dplr-logo-header"><img src="<?php echo DOPPLER_PLUGINS_URL?>/admin/img/logo-doppler.svg" alt="Doppler logo"/></a>
+    <a href="<?php _e('https://www.fromdoppler.com/en/?utm_source=landing&utm_medium=integracion&utm_campaign=wordpress', 'doppler-form')?>" target="_blank" class="dplr-logo-header"><img src="<?php echo DOPPLER_FOR_WOOCOMMERCE_URL?>admin/img/logo-doppler.svg" alt="Doppler logo"/></a>
 
     <h2 class="main-title"><?php _e('Doppler for WooCommerce', 'doppler-for-woocommerce')?> <?php echo $this->get_version()?></h2> 
 
@@ -54,8 +54,8 @@
     switch($active_tab){
 
         case 'fields':
-            if( is_array($_POST['dplrwoo_mapping']) && current_user_can('manage_options') && check_admin_referer('map-fields') ){
-                update_option( 'dplrwoo_mapping', $_POST['dplrwoo_mapping'] );
+            if( isset($_POST['dplrwoo_mapping']) && is_array($_POST['dplrwoo_mapping']) && current_user_can('manage_options') && check_admin_referer('map-fields') ){
+                update_option( 'dplrwoo_mapping', $this->sanitize_text_array($_POST['dplrwoo_mapping']) );
                 $this->set_success_message(__('Fields mapped succesfully', 'doppler-for-woocommerce'));
             }
             $wc_fields = $this->get_checkout_fields();
@@ -69,7 +69,7 @@
         case 'hub':
             if(isset($_POST['dplr_hub_script'])):
                 if( current_user_can('manage_options') && check_admin_referer('use-hub') ){
-                    if( $_POST['dplr_hub_script']==='' || $this->validate_tracking_code($_POST['dplr_hub_script'])):
+                    if( $_POST['dplr_hub_script'] === '' || $this->validate_tracking_code($_POST['dplr_hub_script'])):
                         update_option( 'dplr_hub_script', $_POST['dplr_hub_script']);
                         $this->set_success_message(__('On Site Tracking code saved successfully', 'doppler-for-woocommerce'));
                     else:
@@ -82,8 +82,8 @@
         break;
 
         default:
-            if( is_array($_POST['dplr_subscribers_list']) && current_user_can('manage_options') && check_admin_referer('map-lists') ){
-                update_option( 'dplr_subscribers_list', $_POST['dplr_subscribers_list'] );
+            if( isset($_POST['dplr_subscribers_list']) && $this->validate_subscribers_list($_POST['dplr_subscribers_list']) && current_user_can('manage_options') && check_admin_referer('map-lists') ){
+                update_option( 'dplr_subscribers_list', $this->sanitize_subscribers_list($_POST['dplr_subscribers_list']) );
                 $this->set_success_message(__('Subscribers lists saved succesfully', 'doppler-for-woocommerce'));
             }
             $lists = $this->get_alpha_lists();
