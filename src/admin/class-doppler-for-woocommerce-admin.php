@@ -163,6 +163,8 @@ class Doppler_For_Woocommerce_Admin {
 			  'Cancel'          => __( 'Cancel', 'doppler-for-woocommerce'),
 			  'listsSyncError'  => __( 'Ouch! The Lists couldn\'t be synchronized.', 'doppler-for-woocommerce'),
 			  'listsSyncOk'  	=> __( 'The Lists has been synchronized correctly.', 'doppler-for-woocommerce'),
+			  'Synchronizing'   => __( 'Wait a minute. We\'re synchronizing your Customers with the selecteed Doppler List...', 'doppler-for-woocommerce' ),
+			  'selectAList'		=> __( 'Select the list you want to populate.', 'doppler-for-woocommerce')	
 		));
 	}
 
@@ -504,12 +506,12 @@ class Doppler_For_Woocommerce_Admin {
 			'orderby'	=> 'date',
 			'order'		=> 'DESC'
 		);
+
+		$list_id = intval($_POST['list_id']);
 		
 		if($_POST['list_type'] === 'contacts'){
-			$list_id = get_option('dplr_subscribers_list')['contacts'];
 			$registered_users = $this->get_registered_users();
 		}else if($_POST['list_type'] === 'buyers'){
-			$list_id = get_option('dplr_subscribers_list')['buyers'];
 			$args['status'] = 'completed';
 		}
 
@@ -543,6 +545,13 @@ class Doppler_For_Woocommerce_Admin {
 		echo $subscriber_resource->importSubscribers($list_id, $subscribers)['body'];
 		wp_die();
 
+	}
+
+	public function dplrwoo_clear_buyers_list(){
+		update_option( 'dplr_subscribers_list', array('buyers','') );
+		update_option( 'dplr_subscribers_list', array('contacts','') );
+		echo '1';
+		wp_die();
 	}
 
 	/**

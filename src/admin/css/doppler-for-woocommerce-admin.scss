@@ -2,21 +2,17 @@
 * Admin styles for Doppler for WooCommerce
 */
 
-//@import url(fonts.css);
-
-/**
-* Variables
-*/
-
-/**
-* Mixins
-*/
-@mixin transition($args...) {
-  -webkit-transition: $args;
-  -moz-transition: $args;
-  -ms-transition: $args;
-  -o-transition: $args;
-  transition: $args;
+.dplr_settings{
+  .dplr-tab-content{
+      #dplrwoo-form-list{
+        max-width: 600px;
+      }
+      #dplrwoo-form-list-new{
+        input[type="text"]{
+          width:200px;
+        }
+      }
+  }
 }
 
 /**
