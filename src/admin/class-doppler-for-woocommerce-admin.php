@@ -163,7 +163,7 @@ class Doppler_For_Woocommerce_Admin {
 			  'Cancel'          => __( 'Cancel', 'doppler-for-woocommerce'),
 			  'listsSyncError'  => __( 'Ouch! The Lists couldn\'t be synchronized.', 'doppler-for-woocommerce'),
 			  'listsSyncOk'  	=> __( 'The Lists has been synchronized correctly.', 'doppler-for-woocommerce'),
-			  'Synchronizing'   => __( 'Wait a minute. We\'re synchronizing your Customers with the selecteed Doppler List...', 'doppler-for-woocommerce' ),
+			  'Synchronizing'   => __( 'Wait a minute. We\'re synchronizing your Customers with the selected Doppler List...', 'doppler-for-woocommerce' ),
 			  'selectAList'		=> __( 'Select the list you want to populate.', 'doppler-for-woocommerce')	
 		));
 	}
@@ -392,6 +392,7 @@ class Doppler_For_Woocommerce_Admin {
 			foreach($dplr_lists as $k=>$v){
 			  if(is_array($v)):
 				foreach($v as $i=>$j){
+				  $cont++;
 				  $dplr_lists_aux[$j->listId] = array('name'=>trim($j->name), 'subscribersCount'=>$j->subscribersCount);
 				}
 			  endif;
