@@ -193,7 +193,6 @@
 			button.closest('#dplrwoo-createlist-div').find('.error').remove();
 			button.addClass('button--loading').css('pointer-events','none');
 			clearResponseMessages();
-			$('#displayErrorMessage,#displaySuccessMessage').css('display','none');
 
 			$.post(ajaxurl,{action: 'dplrwoo_ajax_create_lists'}, function(response){
 				var obj = JSON.parse(response);
