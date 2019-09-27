@@ -54,6 +54,8 @@ class Doppler_For_Woocommerce_Admin {
 
 	private $required_doppler_version;
 
+	private $origin;
+
 
 	/**
 	 * Initialize the class and set its properties.
@@ -71,6 +73,7 @@ class Doppler_For_Woocommerce_Admin {
 		$this->success_message = false;
 		$this->error_message = false;
 		$this->required_doppler_version = '2.1.0';
+		$this->origin = $this->set_origin();
 
 	}
 
@@ -102,6 +105,10 @@ class Doppler_For_Woocommerce_Admin {
 
 	public function get_required_doppler_version(){
 		return $this->required_doppler_version;
+	}
+
+	public function set_origin(){
+		$this->doppler_sevice->set_origin('WooCommerce');
 	}
 
 	public function display_error_message() {
