@@ -268,27 +268,24 @@ class Doppler_For_Woocommerce_Admin {
 	/**
 	 * Check connection status.
 	 */
+	/**
+	 * Check connection status. Doesnt check against 
+	 * API anymore to reduce requests.
+	 */
 	public function check_connection_status() {
 
 		$options = get_option('dplr_settings');
-		
-		if( empty($options) ){
+
+		if ( ! is_admin() ||  empty($options) ) {
 			return false;
 		}
 
-		$user = $options['dplr_option_useraccount'];
-		$key  = $options['dplr_option_apikey'];
+		isset($options['dplr_option_useraccount'])? $user = $options['dplr_option_useraccount'] : '';
+		isset($options['dplr_option_apikey'])? 		$key = $options['dplr_option_apikey'] : '';
 
 		if( !empty($user) && !empty($key) ){
 			if(empty($this->doppler_service->config['crendentials'])){
 				$this->doppler_service->setCredentials(array('api_key' => $key, 'user_account' => $user));
-			}
-			if( is_admin() ){ //... if we are at the backend.
-				$response =  $this->doppler_service->connectionStatus();
-				if( is_array($response) && $response['response']['code']>=400 ){
-					 $this->admin_notice = array('error', '<strong>Doppler API Connection error.</strong> ' . $response['response']['message']);
-					 return false;
-				}
 			}
 			return true;
 		}
@@ -296,6 +293,7 @@ class Doppler_For_Woocommerce_Admin {
 		return false;
 
 	}
+	
 	/**
 	 * Get the customer's fields.
 	 */
