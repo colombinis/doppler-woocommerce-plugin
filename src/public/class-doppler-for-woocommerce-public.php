@@ -75,7 +75,7 @@ class Doppler_For_Woocommerce_Public {
 	public function add_tracking_script() {
 		$script = get_option('dplr_hub_script');
 		if(!empty($script)){
-			echo stripslashes($script);
+			echo stripslashes(html_entity_decode($script));
 		}
 	}
 

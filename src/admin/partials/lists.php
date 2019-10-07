@@ -59,7 +59,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
                 <?php 
                 if(!empty($lists)){
                     foreach($lists as $k=>$v){
-                        if( $subscribers_lists['contacts'] != $k ):
+                        if( !empty( $subscribers_lists['contacts']) && $subscribers_lists['contacts'] != $k ):
                         ?>
                         <option value="<?php echo esc_attr($k)?>" 
                             <?php if(!empty($subscribers_lists['buyers']) && $subscribers_lists['buyers']==$k){ echo 'selected'; $scount = $v['subscribersCount']; } ?>
@@ -83,7 +83,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
                 <?php 
                     if(!empty($lists)){
                         foreach($lists as $k=>$v){
-                            if( $subscribers_lists['buyers'] != $k ):
+                            if( !empty($subscribers_lists['buyers']) && $subscribers_lists['buyers'] != $k ):
                             ?>
                             <option value="<?php echo $k?>" 
                                 <?php if(!empty($subscribers_lists['contacts']) && $subscribers_lists['contacts']==$k){ echo 'selected'; $scount = $v['subscribersCount']; }?>

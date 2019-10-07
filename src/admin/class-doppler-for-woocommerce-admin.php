@@ -108,7 +108,7 @@ class Doppler_For_Woocommerce_Admin {
 	}
 
 	public function set_origin(){
-		$this->doppler_sevice->set_origin('WooCommerce');
+		$this->doppler_service->set_origin('WooCommerce');
 	}
 
 	public function display_error_message() {
@@ -293,7 +293,7 @@ class Doppler_For_Woocommerce_Admin {
 		return false;
 
 	}
-	
+
 	/**
 	 * Get the customer's fields.
 	 */
@@ -397,7 +397,6 @@ class Doppler_For_Woocommerce_Admin {
 			foreach($dplr_lists as $k=>$v){
 			  if(is_array($v)):
 				foreach($v as $i=>$j){
-				  $cont++;
 				  $dplr_lists_aux[$j->listId] = array('name'=>trim($j->name), 'subscribersCount'=>$j->subscribersCount);
 				}
 			  endif;
@@ -586,6 +585,12 @@ class Doppler_For_Woocommerce_Admin {
 
 	public function validate_tracking_code($code){
 		return preg_match("/(<|%3C)script[\s\S]*?(>|%3E)[\s\S]*?(<|%3C)(\/|%2F)script[\s\S]*?(>|%3E)/", $code);
+	}
+
+	public function sanitize_tracking_code($code){
+		//Is valid to save empty value in this case.
+		if($code === '') return $code;
+		return sanitize_text_field(htmlentities(trim($code)));
 	}
 
 	/**

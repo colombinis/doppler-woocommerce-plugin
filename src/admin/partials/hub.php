@@ -17,7 +17,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 
         <?php wp_nonce_field( 'use-hub' );?>
         <p>
-            <textarea name="dplr_hub_script" class="w-100" rows="3" placeholder="<?php _e('Paste tracking code here.','doppler-for-woocommerce')?>"><?php echo stripslashes($dplr_hub_script) ?></textarea>
+            <textarea name="dplr_hub_script" class="w-100" rows="3" placeholder="<?php _e('Paste tracking code here.','doppler-for-woocommerce')?>"><?php echo stripslashes(html_entity_decode($dplr_hub_script)) ?></textarea>
         </p>
         <button id="dplrwoo-hub-btn" class="dp-button button-medium primary-green">
             <?php _e('Save', 'doppler-for-woocommerce') ?>
