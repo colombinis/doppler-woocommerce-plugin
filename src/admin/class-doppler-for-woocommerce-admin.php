@@ -69,12 +69,11 @@ class Doppler_For_Woocommerce_Admin {
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 		$this->doppler_service = $doppler_service;
-		$this->connectionStatus = $this->check_connection_status();
 		$this->success_message = false;
 		$this->error_message = false;
 		$this->required_doppler_version = '2.1.0';
 		$this->origin = $this->set_origin();
-
+		$this->set_credentials();
 	}
 
 	/**
@@ -201,6 +200,22 @@ class Doppler_For_Woocommerce_Admin {
 	}
 
 	/**
+	 * Set the credentials to doppler service
+	 * before running api calls.
+	 */
+	private function set_credentials(){
+		$options = get_option('dplr_settings');
+		if ( empty($options) ) {
+			return;
+		}
+		$this->doppler_service->setCredentials(array(	
+			'api_key' => $options['dplr_option_apikey'], 
+			'user_account' => $options['dplr_option_useraccount'])
+		);
+	}
+
+
+	/**
 	 * Registers the admin menu
 	 */
 	public function dplrwoo_init_menu() {
@@ -239,6 +254,7 @@ class Doppler_For_Woocommerce_Admin {
 
 	private function create_list($list_name) {
 		$subscriber_resource = $this->doppler_service->getResource('lists');
+		$this->set_origin();
 		return $subscriber_resource->saveList( $list_name )['body'];
 	}
 
@@ -272,6 +288,7 @@ class Doppler_For_Woocommerce_Admin {
 	 * Check connection status. Doesnt check against 
 	 * API anymore to reduce requests.
 	 */
+	/*
 	public function check_connection_status() {
 
 		$options = get_option('dplr_settings');
@@ -292,7 +309,7 @@ class Doppler_For_Woocommerce_Admin {
 
 		return false;
 
-	}
+	}*/
 
 	/**
 	 * Get the customer's fields.
@@ -339,7 +356,7 @@ class Doppler_For_Woocommerce_Admin {
 					return false;
 				break;
 			case 'country':
-					if($dplr_field_type === 'country'){
+					if( $dplr_field_type === 'country' || $dplr_field_type === 'string' ){
 						return true;
 					}
 					return false;
@@ -392,6 +409,7 @@ class Doppler_For_Woocommerce_Admin {
 	 */
 	public function get_alpha_lists() {
 		$list_resource = $this->doppler_service->getResource('lists');
+		$this->set_origin();
 		$dplr_lists = $list_resource->getAllLists();
 		if(is_array($dplr_lists)){
 			foreach($dplr_lists as $k=>$v){
@@ -547,6 +565,7 @@ class Doppler_For_Woocommerce_Admin {
 		}
 	
 		$subscriber_resource = $this->doppler_service->getResource( 'subscribers' );
+		$this->set_origin();
 		echo $subscriber_resource->importSubscribers($list_id, $subscribers)['body'];
 		wp_die();
 
@@ -650,6 +669,8 @@ class Doppler_For_Woocommerce_Admin {
 			$subscriber['email'] = $email;
 			$subscriber['fields'] = $fields; 
 			$subscriber_resource = $this->doppler_service->getResource('subscribers');
+			$this->set_credentials();
+			$this->set_origin();
 			$result = $subscriber_resource->addSubscriber($list_id, $subscriber);
 		}
 	}
