@@ -27,7 +27,7 @@
 				$('.dplrwoo-mapping-fields').each(function(){
 					if( checkFieldType(prevData.type,
 						$(this).attr('data-type')) && (prevData.name !== $(this).attr('name')) ){
-						$(this).append('<option value="'+prevData.val+'">'+prevData.val+'</option>');
+							$(this).append('<option value="'+prevData.val+'">'+prevData.val+'</option>');
 					}
 				});
 			}
@@ -284,10 +284,10 @@
 	function checkFieldType(dplrType, wcType){
 
 		var types = {
-			'string': ['string','state'],
+			'string': ['string','state','country'],
 			'gender': ['radio'],
 			'email' : ['email'],
-			'country':['country'],
+			'country':['country','string'],
 			'phone' : ['tel'],
 			'number': ['number'],
 			'date'  : ['date','datetime','datetime-local'],
