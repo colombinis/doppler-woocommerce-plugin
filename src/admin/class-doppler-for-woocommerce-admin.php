@@ -282,36 +282,6 @@ class Doppler_For_Woocommerce_Admin {
 	}
 
 	/**
-	 * Check connection status.
-	 */
-	/**
-	 * Check connection status. Doesnt check against 
-	 * API anymore to reduce requests.
-	 */
-	/*
-	public function check_connection_status() {
-
-		$options = get_option('dplr_settings');
-
-		if ( ! is_admin() ||  empty($options) ) {
-			return false;
-		}
-
-		isset($options['dplr_option_useraccount'])? $user = $options['dplr_option_useraccount'] : '';
-		isset($options['dplr_option_apikey'])? 		$key = $options['dplr_option_apikey'] : '';
-
-		if( !empty($user) && !empty($key) ){
-			if(empty($this->doppler_service->config['crendentials'])){
-				$this->doppler_service->setCredentials(array('api_key' => $key, 'user_account' => $user));
-			}
-			return true;
-		}
-
-		return false;
-
-	}*/
-
-	/**
 	 * Get the customer's fields.
 	 */
 	public function get_checkout_fields() {
@@ -665,6 +635,10 @@ class Doppler_For_Woocommerce_Admin {
 					foreach($fieldgroup as $fieldname=>$v){
 						$f = $key.'_'.$fieldname;
 						if( isset($fields_map[$f]) && $fields_map[$f] != '' ){
+							if( $f === 'billing_country' || $f === 'shipping_country' ){
+								//If is mapped doppler field is string translate this to the full country name.
+								if ($fields_map[$f] != 'COUNTRY') $v = $this->get_country_from_code($v);
+							}
 							$fields[] = array('name'=>$fields_map[$f], 'value'=>$v);
 						}
 					}
@@ -714,6 +688,13 @@ class Doppler_For_Woocommerce_Admin {
 		return array_map(function($item){
 			return sanitize_text_field($item);
 		},$list);
+	}
+
+	private function get_country_from_code( $code ) {
+		if(!class_exists('WC_Countries')) return $code;
+		$c = new WC_Countries();
+		$countries = $c->get_countries();
+		return !empty($countries[$code])? $countries[$code] : $code;
 	}
 
 }
