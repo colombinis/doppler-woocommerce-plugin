@@ -27,8 +27,6 @@
     $active_tab = 'lists';
  } 
 
- $connected = $this->connectionStatus;
-
  ?>
 
 <div class="wrap dplr_settings">
@@ -38,18 +36,14 @@
     <h2 class="main-title"><?php _e('Doppler for WooCommerce', 'doppler-for-woocommerce')?> <?php echo $this->get_version()?></h2> 
 
     <h2 class="nav-tab-wrapper">
-        <?php if ($connected) :?>
-            <a href="?page=doppler_woocommerce_menu&tab=lists" class="nav-tab <?php echo $active_tab == 'lists' ? 'nav-tab-active' : ''; ?>"><?php _e('Lists to synchronize', 'doppler-for-woocommerce')?></a>
-            <a href="?page=doppler_woocommerce_menu&tab=fields" class="nav-tab <?php echo $active_tab == 'fields' ? 'nav-tab-active' : ''; ?>"><?php _e('Fields Mapping', 'doppler-for-woocommerce')?></a>
-            <a href="?page=doppler_woocommerce_menu&tab=hub" class="nav-tab <?php echo $active_tab == 'hub' ? 'nav-tab-active' : ''; ?>"><?php _e('On-Site Tracking', 'doppler-for-woocommerce')?></a>
-        <?php endif; ?>
+        <a href="?page=doppler_woocommerce_menu&tab=lists" class="nav-tab <?php echo $active_tab == 'lists' ? 'nav-tab-active' : ''; ?>"><?php _e('Lists to synchronize', 'doppler-for-woocommerce')?></a>
+        <a href="?page=doppler_woocommerce_menu&tab=fields" class="nav-tab <?php echo $active_tab == 'fields' ? 'nav-tab-active' : ''; ?>"><?php _e('Fields Mapping', 'doppler-for-woocommerce')?></a>
+        <a href="?page=doppler_woocommerce_menu&tab=hub" class="nav-tab <?php echo $active_tab == 'hub' ? 'nav-tab-active' : ''; ?>"><?php _e('On-Site Tracking', 'doppler-for-woocommerce')?></a>
     </h2>
 
     <h1 class="screen-reader-text"></h1>
 
     <?php
-
-    if($connected):
 
     switch($active_tab){
 
@@ -91,14 +85,6 @@
             require_once('lists.php');
         break;
     }
-
-    else:
-
-        ?>
-        <div><?php echo $this->admin_notice[1]?></div>
-        <?php
-    endif;
-
     ?>
     
 </div>
