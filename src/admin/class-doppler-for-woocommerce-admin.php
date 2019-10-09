@@ -169,8 +169,8 @@ class Doppler_For_Woocommerce_Admin {
 			  'Save'            => __( 'Save', 'doppler-for-woocommerce'),
 			  'Cancel'          => __( 'Cancel', 'doppler-for-woocommerce'),
 			  'listsSyncError'  => __( 'Ouch! The Lists couldn\'t be synchronized.', 'doppler-for-woocommerce'),
-			  'listsSyncOk'  	=> __( 'The Lists has been synchronized correctly.', 'doppler-for-woocommerce'),
-			  'Synchronizing'   => __( 'Wait a minute. We\'re synchronizing your Customers with the selected Doppler List...', 'doppler-for-woocommerce' ),
+			  'listsSyncOk'  	=> __( 'Your Lists has been syncronized and saved succesfully.', 'doppler-for-woocommerce'),
+			  'Synchronizing'   => __( 'We\'re synchronizing your Subscribers with your Doppler List....', 'doppler-for-woocommerce' ),
 			  'selectAList'		=> __( 'Select the list you want to populate.', 'doppler-for-woocommerce')	
 		));
 	}

@@ -10,7 +10,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
     <?php $this->display_error_message() ?>
 
     <p class="size-medium">
-        <?php _e('Some text explaining what Datahub script does','doppler-for-woocommerce') ?>
+        <?php _e('Obtain the Tracking Code from the Doppler App and paste it here in order to monitor the actions that the visitors perform in it. Any doubts? Press <a href="https://help.fromdoppler.com/en/create-onsite-tracking-automation" class="green-link">HELP</a>','doppler-for-woocommerce') ?>
     </p>
 
     <form id="dplrwoo-form-hub" action="" method="post" class="w-100 mw-7">

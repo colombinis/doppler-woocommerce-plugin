@@ -31,7 +31,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
                 
                 <?php
             else :
-                _e('Your Customers will be sent automatically to the selected Doppler List when enrolling to a Course.', 'doppler-for-woocommerce');
+                _e('Your Customers will be sent automatically to the selected Doppler List after checkout.', 'doppler-for-woocommerce');
             endif;
             ?>
             </p>
