@@ -445,6 +445,19 @@ class Doppler_For_Woocommerce_Admin {
 			}
 		}
 	}
+
+	/**
+	 * After registering from my-account page
+	 */
+	public function dprwoo_after_register( $user_id ){
+		$list_id = get_option('dplr_subscribers_list')['contacts'];
+		$user_info = get_userdata($user_id);
+		if(empty($list_id) || empty($user_id) || empty($user_info->user_email)) return false;
+		$meta_fields = get_user_meta($user_id);
+		$fields_map = get_option('dplrwoo_mapping');
+		$fields = $this->extract_meta_from_user( $fields_map, $meta_fields );
+		$this->subscribe_customer($list_id, $user_info->user_email, $fields);
+	}
 	
 	/**
 	 * Envía subscriptor a la lista de compradores
@@ -487,20 +500,7 @@ class Doppler_For_Woocommerce_Admin {
 		if(!empty($users)){
 			foreach($users as $k=>$user){
 				$meta_fields = get_user_meta($user->ID);
-				$fields = array();
-				if(!empty($fields_map)){
-					foreach($fields_map as $k=>$v){
-						if($v!=''){
-							if(isset($meta_fields[$k])){
-								$aux = array_values($meta_fields[$k]);
-								$value = sanitize_text_field(array_shift($aux));
-							}else{
-								$value = '';
-							}
-							$fields[] = array('name'=>$v, 'value'=>$value);
-						}
-					}
-				}
+				$fields = $this->extract_meta_from_user($fields_map, $meta_fields);
 				if(isset($meta_fields['billing_email']) && !empty($meta_fields['billing_email'])){
 					$aux = array_values($meta_fields['billing_email']);
 					$email = array_shift($aux);
@@ -509,6 +509,27 @@ class Doppler_For_Woocommerce_Admin {
 			}
 		}
 		return $registered_users;
+	}
+
+	/**
+	 * Get Doppler mapped fields from WC user fields
+	 */
+	function extract_meta_from_user( $fields_map, $meta_fields ){
+		$fields = array();
+		if(!empty($fields_map)){
+			foreach($fields_map as $k=>$v){
+				if($v!=''){
+					if(isset($meta_fields[$k])){
+						$aux = array_values($meta_fields[$k]);
+						$value = sanitize_text_field(array_shift($aux));
+					}else{
+						$value = '';
+					}
+					$fields[] = array('name'=>$v, 'value'=>$value);
+				}
+			}
+		}
+		return $fields;
 	}
 
 	/**
