@@ -417,7 +417,8 @@ class Doppler_For_Woocommerce_Admin {
 	}
 
 	/**
-	 * After registering from my-account page
+	 * Subscribe customer after registering
+	 * from my-account.
 	 */
 	public function dprwoo_after_register( $user_id ){
 		$list_id = get_option('dplr_subscribers_list')['contacts'];
@@ -430,8 +431,8 @@ class Doppler_For_Woocommerce_Admin {
 	}
 	
 	/**
-	 * Envía subscriptor a la lista de compradores
-	 * cuando una orden pasa a estado "completo".
+	 * Send subscriptor to buyers List
+	 * after order status is completed.
 	 */
 	public function dplrwoo_order_completed( $order_id, $old_status, $new_status, $instance ) {
 		if( $new_status == "completed" ) {
@@ -444,9 +445,9 @@ class Doppler_For_Woocommerce_Admin {
 	}
 
 	/**
-	 * Envía a la lista de contactos los datos del cliente
-	 * en el checkout.
-	 * Sólo para WC > 3.0
+	 * Subscribe user to a Contact List
+	 * after checking out.
+	 * Only WC > 3.0.
 	 */
 	public function dplrwoo_customer_checkout_success( $order_id ) {
 		$list_id = get_option('dplr_subscribers_list')['contacts'];
@@ -562,7 +563,10 @@ class Doppler_For_Woocommerce_Admin {
 
 	}
 
-	public function dplrwoo_clear_buyers_list(){
+	/**
+	 * Clear buyers and contacts List.
+	 */
+	public function dplrwoo_clear_lists(){
 		update_option( 'dplr_subscribers_list', array('buyers','') );
 		update_option( 'dplr_subscribers_list', array('contacts','') );
 		echo '1';
@@ -592,11 +596,17 @@ class Doppler_For_Woocommerce_Admin {
 		echo json_encode(array('contacts'=>$c_count, 'buyers'=>$b_count));
 		wp_die();
 	}
-
+	
+	/**
+	 * Validates on site tracking code.
+	 */
 	public function validate_tracking_code($code){
 		return preg_match("/(<|%3C)script[\s\S]*?(>|%3E)[\s\S]*?(<|%3C)(\/|%2F)script[\s\S]*?(>|%3E)/", $code);
 	}
-
+	
+	/**
+	 * Sanitize on site tracking pasted code.
+	 */
 	public function sanitize_tracking_code($code){
 		//Is valid to save empty value in this case.
 		if($code === '') return $code;
@@ -620,7 +630,6 @@ class Doppler_For_Woocommerce_Admin {
 		}
 	}
 	
-
 	/**
 	 * Get the mapped fields of a given order.
 	 */
@@ -678,18 +687,29 @@ class Doppler_For_Woocommerce_Admin {
 	}
 
 	/**
-	 * Sanitize list array
+	 * Sanitize lists ID array.
 	 */
 	private function sanitize_subscribers_list( $list ) {
 		return array_filter($list,'is_numeric');
 	}
 
+	/**
+	 * Sanitizes an array of text strings.
+	 * Used to sanizie map fields array.
+	 */
 	private function sanitize_text_array( $list ) {
 		return array_map(function($item){
 			return sanitize_text_field($item);
 		},$list);
 	}
 
+	/**
+	 * Get country string from a given country code.
+	 * Used to send country to doppler only if the mapped
+	 * Doppler field for billing country or shipping country
+	 * is a string. If for any reason the code isn't found
+	 * in WC countries array, just return the code.
+	 */
 	private function get_country_from_code( $code ) {
 		if(!class_exists('WC_Countries')) return $code;
 		$c = new WC_Countries();
