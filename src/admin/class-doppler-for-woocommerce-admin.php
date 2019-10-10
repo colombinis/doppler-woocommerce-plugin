@@ -695,7 +695,7 @@ class Doppler_For_Woocommerce_Admin {
 
 	/**
 	 * Sanitizes an array of text strings.
-	 * Used to sanizie map fields array.
+	 * Used to sanitize map fields array.
 	 */
 	private function sanitize_text_array( $list ) {
 		return array_map(function($item){
