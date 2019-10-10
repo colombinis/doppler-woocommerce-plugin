@@ -127,7 +127,7 @@
 			var button = $(this);
 			button.attr('disabled','disabled').addClass("button--loading");
 			var data = {
-				action: 'dplrwoo_ajax_clear_buyers_list',
+				action: 'dplrwoo_ajax_clear_lists',
 			}
 			$.post( ajaxurl, data, function(response){
 				if(response=='1') {

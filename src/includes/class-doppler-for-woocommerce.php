@@ -173,7 +173,7 @@ class Doppler_For_Woocommerce {
 		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_save_list', $plugin_admin, 'dplrwoo_save_list' );
 		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_synch', $plugin_admin, 'dplrwoo_synch' );
 		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_create_lists' , $plugin_admin, 'dplrwoo_create_default_lists' );
-		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_clear_buyers_list', $plugin_admin, 'dplrwoo_clear_buyers_list');
+		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_clear_lists', $plugin_admin, 'dplrwoo_clear_lists');
 		$this->loader->add_action( 'woocommerce_created_customer', $plugin_admin, 'dplrwoo_created_customer', 10, 3);
 		$this->loader->add_action( 'woocommerce_thankyou', $plugin_admin, 'dplrwoo_customer_checkout_success' );
 		$this->loader->add_action( 'woocommerce_order_status_changed', $plugin_admin, 'dplrwoo_order_completed', 10, 4 );
