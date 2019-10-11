@@ -34,6 +34,27 @@ class Doppler_For_Woocommerce_Activator {
 	 */
 	public static function activate() {
 		
+		global $wpdb;
+		$table_name = $wpdb->wp_prefix . DOPPLER_ABANDONED_CART_TABLE;
+		$charset_collate = $wpdb->get_charset_collate();
+		$sql = "CREATE TABLE $table_name (
+			    id BIGINT(20) NOT NULL AUTO_INCREMENT,
+			    name VARCHAR(60),
+			    lastname VARCHAR(60),
+			    email VARCHAR(100),
+			    phone VARCHAR(20),
+			    location VARCHAR(100),
+			    cart_contents LONGTEXT,
+			    cart_total DECIMAL(10,2),
+			    currency VARCHAR(10),
+			    time DATETIME DEFAULT '0000-00-00 00:00:00',
+			    session_id VARCHAR(60),
+			    other_fields LONGTEXT,
+			    PRIMARY KEY  (id)
+		) $charset_collate;";
+		  
+		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+		dbDelta( $sql );
 		update_option('dplrwoo_version', DOPPLER_FOR_WOOCOMMERCE_VERSION);
 
 	}
