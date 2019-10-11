@@ -55,7 +55,13 @@ class Doppler_For_Woocommerce_Activator {
 		  
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 		dbDelta( $sql );
+
+		$sql ="ALTER TABLE $table_name AUTO_INCREMENT = 1";
+		dbDelta( $sql );
+
+		//Saves plugin version.
 		update_option('dplrwoo_version', DOPPLER_FOR_WOOCOMMERCE_VERSION);
+
 
 	}
 
