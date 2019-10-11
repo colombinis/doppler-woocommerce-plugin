@@ -35,7 +35,7 @@ class Doppler_For_Woocommerce_Activator {
 	public static function activate() {
 		
 		global $wpdb;
-		$table_name = $wpdb->wp_prefix . DOPPLER_ABANDONED_CART_TABLE;
+		$table_name = $wpdb->prefix . DOPPLER_ABANDONED_CART_TABLE;
 		$charset_collate = $wpdb->get_charset_collate();
 		$sql = "CREATE TABLE $table_name (
 			    id BIGINT(20) NOT NULL AUTO_INCREMENT,
