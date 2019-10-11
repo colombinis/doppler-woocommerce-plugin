@@ -434,7 +434,7 @@ class Doppler_For_Woocommerce_Admin {
 	 * Send subscriptor to buyers List
 	 * after order status is completed.
 	 */
-	public function dplrwoo_order_completed( $order_id, $old_status, $new_status, $instance ) {
+	public function dplrwoo_order_status_changed( $order_id, $old_status, $new_status, $instance ) {
 		if( $new_status == "completed" ) {
 			$list_id = get_option('dplr_subscribers_list')['buyers'];
 			$order = wc_get_order( $order_id );
@@ -636,33 +636,39 @@ class Doppler_For_Woocommerce_Admin {
 	private function get_mapped_fields( $order ) {
 		$order_data = $order->get_data();
 		$fields = array();
-		if(!empty($order_data)){
-			$fields_map = get_option('dplrwoo_mapping');
-			//Map default fields.
-			foreach($order_data as $key=>$fieldgroup){
-				if( $key === 'shipping' || $key === 'billing' ){	
-					foreach($fieldgroup as $fieldname=>$v){
-						$f = $key.'_'.$fieldname;
-						if( isset($fields_map[$f]) && $fields_map[$f] != '' ){
-							if( $f === 'billing_country' || $f === 'shipping_country' ){
-								//If is mapped doppler field is string translate this to the full country name.
-								if ($fields_map[$f] != 'COUNTRY') $v = $this->get_country_from_code($v);
-							}
-							$fields[] = array('name'=>$fields_map[$f], 'value'=>$v);
+		if(empty($order_data)) return $fields;
+		
+		$fields_map = get_option('dplrwoo_mapping');
+		//Map default fields.
+		foreach($order_data as $key=>$fieldgroup){
+			if( $key === 'shipping' || $key === 'billing' ){	
+				foreach($fieldgroup as $fieldname=>$v){
+					$f = $key.'_'.$fieldname;
+					if( isset($fields_map[$f]) && $fields_map[$f] != '' ){
+						if( $f === 'billing_country' || $f === 'shipping_country' ){
+							//If is mapped doppler field is string translate this to the full country name.
+							if ($fields_map[$f] != 'COUNTRY') $v = $this->get_country_from_code($v);
 						}
+						//For billing state or shipping state translate the code to string name of the state.
+						if( in_array($f,array('billing_state','shipping_state')) ){
+							$c = new WC_Countries();
+							$states = $c->get_states($order_data[$key]['country']);
+							$v = $states[$order_data[$key]['state']];
+						}
+						$fields[] = array('name'=>$fields_map[$f], 'value'=>$v);
 					}
 				}
 			}
-			//Map custom fields
-			if(!empty($fields_map)){
-				foreach($fields_map as $wc_field=>$dplr_field){
-					if( !empty($order->get_meta('_'.$wc_field)) && !empty($dplr_field) ){
-						$fields[] = array('name'=>$dplr_field, 'value'=>$order->get_meta('_'.$wc_field));
-					}
-				}
-			}
-			return $fields;
 		}
+		//Map custom fields
+		if(!empty($fields_map)){
+			foreach($fields_map as $wc_field=>$dplr_field){
+				if( !empty($order->get_meta('_'.$wc_field)) && !empty($dplr_field) ){
+					$fields[] = array('name'=>$dplr_field, 'value'=>$order->get_meta('_'.$wc_field));
+				}
+			}
+		}
+		return $fields;
 	}
 
 	/**
