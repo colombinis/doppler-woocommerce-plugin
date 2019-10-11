@@ -176,7 +176,7 @@ class Doppler_For_Woocommerce {
 		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_clear_lists', $plugin_admin, 'dplrwoo_clear_lists');
 		$this->loader->add_action( 'woocommerce_created_customer', $plugin_admin, 'dplrwoo_created_customer', 10, 3);
 		$this->loader->add_action( 'woocommerce_thankyou', $plugin_admin, 'dplrwoo_customer_checkout_success' );
-		$this->loader->add_action( 'woocommerce_order_status_changed', $plugin_admin, 'dplrwoo_order_completed', 10, 4 );
+		$this->loader->add_action( 'woocommerce_order_status_changed', $plugin_admin, 'dplrwoo_order_status_changed', 10, 4 );
 		$this->loader->add_action( 'user_register', $plugin_admin, 'dprwoo_after_register');
 		$this->loader->add_action( 'admin_notices', $plugin_admin, 'show_admin_notice' );
 		
