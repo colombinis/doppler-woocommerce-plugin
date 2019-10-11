@@ -63,32 +63,32 @@ if ( ! current_user_can( 'manage_options' ) ) {
 
                 foreach($arr as $fieldname=>$fieldAtributes){
                     isset($fieldAtributes['type'])? $woo_field_type = $fieldAtributes['type'] : $woo_field_type = 'string';
-                    ?>
-
-                        <tr>
-                            <td><?php echo $fieldAtributes['label']?> <span style="opacity:0.6"><?php if (isset($fieldAtributes['type'])) echo $fieldAtributes['type'] ?></span></td>
-                            <td>
-                                <select class="dplrwoo-mapping-fields" name="dplrwoo_mapping[<?php echo $fieldname?>]" data-type="<?php if (isset($fieldAtributes['type'])) echo $fieldAtributes['type'] ?>">
-                                    <option></option>
-                                    <?php 
-                                    foreach ($dplr_fields as $field){
+                    if($fieldname!=='billing_email'):
+                        ?>
+                            <tr>
+                                <td><?php echo $fieldAtributes['label']?> <span style="opacity:0.6"><?php if (isset($fieldAtributes['type'])) echo $fieldAtributes['type'] ?></span></td>
+                                <td>
+                                    <select class="dplrwoo-mapping-fields" name="dplrwoo_mapping[<?php echo $fieldname?>]" data-type="<?php if (isset($fieldAtributes['type'])) echo $fieldAtributes['type'] ?>">
+                                        <option></option>
+                                        <?php 
+                                        foreach ($dplr_fields as $field){
+                                            
+                                            if( $this->check_field_type($woo_field_type,$field->type) && !in_array($field->name,$used_fields) || $maps[$fieldname] === $field->name ){
+                                                ?>
+                                                <option value="<?php echo esc_attr($field->name)?>" <?php if( $maps[$fieldname] === $field->name ) echo 'selected' ?> data-type="<?php echo esc_attr($field->type) ?>">
+                                                    <?php echo esc_html($field->name)?> (<?php echo esc_html($field->type)?>)
+                                                </option>
+                                                <?php
+                                            }
                                         
-                                        if( $this->check_field_type($woo_field_type,$field->type) && !in_array($field->name,$used_fields) || $maps[$fieldname] === $field->name ){
-                                            ?>
-                                            <option value="<?php echo esc_attr($field->name)?>" <?php if( $maps[$fieldname] === $field->name ) echo 'selected' ?> data-type="<?php echo esc_attr($field->type) ?>">
-                                                <?php echo esc_html($field->name)?> (<?php echo esc_html($field->type)?>)
-                                            </option>
-                                            <?php
                                         }
-                                    
-                                    }
-                                    ?>
-                                </select>
-                            </td>
-                        </tr>
-                    
-                    <?php
-
+                                        ?>
+                                    </select>
+                                </td>
+                            </tr>
+                        
+                        <?php
+                    endif;
                 }
 
                 ?>
