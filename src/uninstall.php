@@ -42,6 +42,11 @@ if( $_REQUEST['plugin'] === ( plugin_basename( __DIR__ ) . '/doppler-for-woocomm
 	
 	array_map('uninstall_options', $options);
 
+	//Delete abandoned cart table on uninstall.
+	global $wpdb;
+	$table_name = $wpdb->prefix . DOPPLER_ABANDONED_CART_TABLE;
+	$wpdb->query( "DROP TABLE IF EXISTS $table_name" );
+
 }
 
 function uninstall_options($option_name){
