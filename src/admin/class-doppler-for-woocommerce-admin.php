@@ -260,6 +260,8 @@ class Doppler_For_Woocommerce_Admin {
 
 	/**
 	 * Create default lists
+	 * & syncronize them 
+	 * & set them as selected.
 	 */
 	public function dplrwoo_create_default_lists(){
 		$resp = array();
@@ -270,6 +272,8 @@ class Doppler_For_Woocommerce_Admin {
 		$resp['buyers']['response'] = $respBuyer;
 		$resp['contacts']['response'] = $respContact;
 		if( !empty($respBuyer->createdResourceId) && !empty($respContact->createdResourceId) ){
+			$this->dplrwoo_synch($respBuyer->createdResourceId, 'buyers');
+			$this->dplrwoo_synch($respContact->createdResourceId, 'contacts');
 			update_option( 'dplr_subscribers_list', 
 				array( 
 					'buyers' => $respBuyer->createdResourceId, 
@@ -503,6 +507,11 @@ class Doppler_For_Woocommerce_Admin {
 		return $fields;
 	}
 
+	public function dplrwoo_ajax_synch() {
+		if( empty($_POST['list_id']) || empty($_POST['list_type']) ) return false;
+		echo $this->dplrwoo_synch( $_POST['list_id'], $_POST['list_type']);
+	}
+
 	/**
 	 * Syncrhonizes "Contacts" or "Buyers"
 	 *
@@ -512,7 +521,7 @@ class Doppler_For_Woocommerce_Admin {
 	 * have been completed.
 	 * 
 	 */
-	public function dplrwoo_synch() {
+	public function dplrwoo_synch( $list_id , $list_type) {
 
 		$orders_by_email = array();
 
@@ -521,12 +530,10 @@ class Doppler_For_Woocommerce_Admin {
 			'orderby'	=> 'date',
 			'order'		=> 'DESC'
 		);
-
-		$list_id = intval($_POST['list_id']);
 		
-		if($_POST['list_type'] === 'contacts'){
+		if( $list_type === 'contacts' ){
 			$registered_users = $this->get_registered_users();
-		}else if($_POST['list_type'] === 'buyers'){
+		}else if( $list_type === 'buyers' ){
 			$args['status'] = 'completed';
 		}
 
@@ -538,7 +545,7 @@ class Doppler_For_Woocommerce_Admin {
 			}
 		}
 
-		if($_POST['list_type'] === 'contacts'){
+		if( $list_type === 'contacts' ){
 			$users = array_merge($registered_users,$orders_by_email);
 		}else{
 			$users = $orders_by_email;
@@ -558,7 +565,7 @@ class Doppler_For_Woocommerce_Admin {
 	
 		$subscriber_resource = $this->doppler_service->getResource( 'subscribers' );
 		$this->set_origin();
-		echo $subscriber_resource->importSubscribers($list_id, $subscribers)['body'];
+		return $subscriber_resource->importSubscribers($list_id, $subscribers)['body'];
 		wp_die();
 
 	}
