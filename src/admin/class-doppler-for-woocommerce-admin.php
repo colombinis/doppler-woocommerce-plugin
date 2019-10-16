@@ -259,29 +259,69 @@ class Doppler_For_Woocommerce_Admin {
 	}
 
 	/**
-	 * Create default lists
-	 * & syncronize them 
+	 * Find a list id in a lists array
+	 * by a given name.
+	 */
+	private function find_list_by_name($list_name, $lists) {
+		$resp = array_filter($lists, function($var) use($list_name){
+			return $var['name'] == $list_name;
+		});
+		reset($resp);
+	    return ($resp!=='null')? key($resp) : false;
+	}
+
+	/**
+	 * Create default lists:
+	 * Check if default lists already exists, if exists select it, 
+	 * if not create it.
+	 * syncronize them 
 	 * & set them as selected.
 	 */
 	public function dplrwoo_create_default_lists(){
-		$resp = array();
+		$respBuyer = '';
+		$respContact = '';
+		$buyers_list_id = '';
+		$contacts_list_id = '';
 		$default_buyers_list = __('WooCommerce Buyers', 'doppler-for-woocommerce');
 		$default_contact_list = __('WooCommerce Contacts', 'doppler-for-woocommerce');
-		$respBuyer = json_decode($this->create_list($default_buyers_list));
-		$respContact = json_decode($this->create_list($default_contact_list));
-		$resp['buyers']['response'] = $respBuyer;
-		$resp['contacts']['response'] = $respContact;
-		if( !empty($respBuyer->createdResourceId) && !empty($respContact->createdResourceId) ){
-			$this->dplrwoo_synch($respBuyer->createdResourceId, 'buyers');
-			$this->dplrwoo_synch($respContact->createdResourceId, 'contacts');
-			update_option( 'dplr_subscribers_list', 
-				array( 
-					'buyers' => $respBuyer->createdResourceId, 
-					'contacts' => $respContact->createdResourceId
-				) 
-			) ;
+		$lists = $this->get_alpha_lists();
+		
+		if(!empty($lists)){
+			$buyers_list_exists = $this->find_list_by_name($default_buyers_list, $lists);
+			$contacts_list_exists = $this->find_list_by_name($default_contact_list, $lists);	
 		}
-		echo json_encode($resp);
+			
+		//If lists doesnt exist, create them.
+		if(empty($buyers_list_exists)) $respBuyer = json_decode( $this->create_list($default_buyers_list) );
+		if(empty($contacts_list_exists)) $respContact = json_decode($this->create_list($default_contact_list) );
+		
+        //Get the id from the recently created List, or if it existed get it from the Lists array.
+		(!empty($respBuyer->createdResourceId))? 
+		$buyers_list_id = $respBuyer->createdResourceId : $buyers_list_id = $buyers_list_exists;
+		(!empty($respContact->createdResourceId))? 
+		$contacts_list_id =  $respContact->createdResourceId : $contacts_list_id = $contacts_list_exists;
+
+		if( !is_numeric($buyers_list_id) || !is_numeric($contacts_list_id) ){
+			echo json_encode( array(
+				'status'=>0, 
+				'message'=>__('There was an error while trying to create the default Lists','doppler-for-woocommerce')
+			));
+			wp_die();
+		}
+		
+		//Sync the Lists
+		$this->dplrwoo_synch($buyers_list_id, 'buyers');
+		$this->dplrwoo_synch($contacts_list_id, 'contacts');
+
+		//Set them
+		update_option( 'dplr_subscribers_list', 
+			array( 
+				'buyers' => $buyers_list_id , 
+				'contacts' => $contacts_list_id
+			) 
+		) ;
+	
+		echo json_encode(array('status'=>1));
 		wp_die();
 	}
 

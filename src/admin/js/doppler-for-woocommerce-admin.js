@@ -152,14 +152,8 @@
 			clearResponseMessages();
 			$.post(ajaxurl,{action: 'dplrwoo_ajax_create_lists'}, function(response){
 				var obj = JSON.parse(response);
-				if(typeof obj.buyers.response.createdResourceId==="undefined"||typeof obj.contacts.response.createdResourceId==="undefined"){
-					var err = '';
-					if(typeof obj.buyers.response.title!=="undefined"){
-						displayErrors(obj.buyers.response);
-					}
-					if(typeof obj.contacts.response.title!=="undefined" && err===''){
-						displayErrors(obj.contacts.response);
-					}
+				if(obj.status == '0'){
+					$('#showErrorResponse').css('display','flex').html('<p>'+obj.message+'</p>');
 					button.removeClass('button--loading').css('pointer-events','initial');
 					return false;
 				}	
