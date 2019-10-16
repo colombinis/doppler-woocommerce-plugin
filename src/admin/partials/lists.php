@@ -49,9 +49,11 @@ if ( ! current_user_can( 'manage_options' ) ) {
     </div>
 
     <form id="dplrwoo-form-list" action="" method="post">
-
-        <?php wp_nonce_field( 'map-lists' );?>
-        
+        <?php 
+            wp_nonce_field( 'map-lists' );
+            $selected_contacts_list = !empty( $subscribers_lists['contacts'])? $subscribers_lists['contacts'] : '';
+            $selected_buyers_list = !empty( $subscribers_lists['buyers'])? $subscribers_lists['buyers'] : '';
+        ?>
         <p>
             <label><?php _e('Doppler List to send Buyers', 'doppler-for-woocommerce')?></label>
             <select name="dplr_subscribers_list[buyers]" class="dplrwoo-lists-sel" id="buyers-list">
@@ -59,10 +61,10 @@ if ( ! current_user_can( 'manage_options' ) ) {
                 <?php 
                 if(!empty($lists)){
                     foreach($lists as $k=>$v){
-                        if( !empty( $subscribers_lists['contacts']) && $subscribers_lists['contacts'] != $k ):
+                        if( $selected_contacts_list != $k ):
                         ?>
                         <option value="<?php echo esc_attr($k)?>" 
-                            <?php if(!empty($subscribers_lists['buyers']) && $subscribers_lists['buyers']==$k){ echo 'selected'; $scount = $v['subscribersCount']; } ?>
+                            <?php if( $selected_buyers_list ==$k ){ echo 'selected'; $scount = $v['subscribersCount']; } ?>
                             data-subscriptors="<?php echo esc_attr($v['subscribersCount'])?>">
                             <?php echo esc_html($v['name'])?>
                         </option>
@@ -83,10 +85,10 @@ if ( ! current_user_can( 'manage_options' ) ) {
                 <?php 
                     if(!empty($lists)){
                         foreach($lists as $k=>$v){
-                            if( !empty($subscribers_lists['buyers']) && $subscribers_lists['buyers'] != $k ):
+                            if( $selected_buyers_list != $k ):
                             ?>
                             <option value="<?php echo $k?>" 
-                                <?php if(!empty($subscribers_lists['contacts']) && $subscribers_lists['contacts']==$k){ echo 'selected'; $scount = $v['subscribersCount']; }?>
+                                <?php if( $selected_contacts_list ==$k ){ echo 'selected'; $scount = $v['subscribersCount']; }?>
                                 data-subscriptors="<?php echo esc_attr($v['subscribersCount'])?>">
                                 <?php echo esc_html($v['name']) ?>
                             </option>
@@ -101,7 +103,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
         <p class="d-flex justify-end">
 
             <?php
-                $btn_disable = empty($subscribers_lists['buyers']) && empty($subscribers_lists['contacts']) ? 'disabled' : '';
+               $btn_disable = empty($subscribers_lists['buyers']) && empty($subscribers_lists['contacts']) ? 'disabled' : '';
             ?>
 
             <button id="dplrwoo-clear" class="dp-button button-medium primary-grey" <?php echo $btn_disable?>>
