@@ -12,8 +12,8 @@
 
 	$(function() {
 
-		var mappingFieldsSelects = $('.dplrwoo-mapping-fields');
-		var listsSelect = $('.dplrwoo-lists-sel');
+		var mappingFieldsSelects = $(".dplrwoo-mapping-fields");
+		var listsSelect = $(".dplrwoo-lists-sel");
 		var contactListSelect = $("#contacts-list");
 		var buyersListSelect = $("#buyers-list");
 		var syncListsButton = $("#dplrwoo-lists-btn");
