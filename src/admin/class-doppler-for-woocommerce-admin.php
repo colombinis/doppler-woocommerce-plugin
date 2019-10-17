@@ -71,7 +71,7 @@ class Doppler_For_Woocommerce_Admin {
 		$this->doppler_service = $doppler_service;
 		$this->success_message = false;
 		$this->error_message = false;
-		$this->required_doppler_version = '2.1.0';
+		$this->required_doppler_version = '2.1.4';
 		$this->origin = $this->set_origin();
 		$this->set_credentials();
 	}
@@ -176,10 +176,10 @@ class Doppler_For_Woocommerce_Admin {
 
 	public function dplrwoo_check_parent() {
 		if ( !is_plugin_active( 'doppler-form/doppler-form.php' ) )  {
-			$this->admin_notice = array( 'error', __('Sorry, but <strong>Doppler for WooCommerce</strong> requires the <strong><a href="https://wordpress.org/plugins/doppler-form/">Doppler Forms plugin</a></strong> to be installed and active.', 'doppler-form') );
+			$this->admin_notice = array( 'error', __('Ouch! <strong>Doppler for WooCommerce</strong> requires the <a href="https://wordpress.org/plugins/doppler-form/">Doppler Forms</a> plugin to be installed and active.', 'doppler-for-woocommerce') );
 			$this->deactivate();
-		}else if( version_compare( get_option('dplr_version'), '2.1.4', '<' ) ){
-			$this->admin_notice = array( 'error', __('Sorry, but <strong>Doppler for WooCommerce</strong> requires Doppler Forms v2.1.4 or greater to be active. Please <a href="'.admin_url().'plugins.php">upgrade</a> Doppler Forms.', 'doppler-form') );
+		}else if( version_compare( get_option('dplr_version'), $this->get_required_doppler_version(), '<' ) ){
+			$this->admin_notice = array( 'error', sprintf(__('Ouch! <strong>Doppler for WooCommerce</strong> requires at least <strong>Doppler Forms v%s</strong> to be active. Please <a href="%splugins.php">upgrade</a> Doppler Forms.', 'doppler-for-woocommerce'), $this->get_required_doppler_version(), admin_url()));
 			$this->deactivate();
 		}
 	}
