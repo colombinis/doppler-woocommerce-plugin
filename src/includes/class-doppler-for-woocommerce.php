@@ -179,6 +179,7 @@ class Doppler_For_Woocommerce {
 		$this->loader->add_action( 'woocommerce_order_status_changed', $plugin_admin, 'dplrwoo_order_status_changed', 10, 4 );
 		$this->loader->add_action( 'user_register', $plugin_admin, 'dprwoo_after_register');
 		$this->loader->add_action( 'admin_notices', $plugin_admin, 'show_admin_notice' );
+		//TODO: add hooks for abandoned cart.
 		
 	}
 

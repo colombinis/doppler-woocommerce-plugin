@@ -23,7 +23,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
             <?php
             if( empty($subscribers_lists['contacts']) && empty($subscribers_lists['buyers']) ):
             
-                _e('You currently don\'t have Doppler Lists selected. Do you want to create a List to send your Contacts to and another to send to your buyers?', 'doppler-for-woocommerce');
+                _e('You currently don\'t have Doppler Lists selected. Do you want to create a List to send your Contacts to and another to send to your Buyers?', 'doppler-for-woocommerce');
                
                ?>
                 
@@ -31,7 +31,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
                 
                 <?php
             else :
-                _e('Your Customers will be sent automatically to the selected Doppler List after checkout.', 'doppler-for-woocommerce');
+                _e('Your Customers will be sent automatically to the selected Doppler Lists.', 'doppler-for-woocommerce');
             endif;
             ?>
             </p>

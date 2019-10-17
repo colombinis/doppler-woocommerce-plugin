@@ -169,8 +169,8 @@ class Doppler_For_Woocommerce_Admin {
 			  'Cancel'          => __( 'Cancel', 'doppler-for-woocommerce'),
 			  'listsSyncError'  => __( 'Ouch! The Lists couldn\'t be synchronized.', 'doppler-for-woocommerce'),
 			  'listsSyncOk'  	=> __( 'Your Lists has been syncronized and saved succesfully.', 'doppler-for-woocommerce'),
-			  'Synchronizing'   => __( 'We\'re synchronizing your Subscribers with your Doppler List....', 'doppler-for-woocommerce' ),
-			  'selectAList'		=> __( 'Select the list you want to populate.', 'doppler-for-woocommerce')	
+			  'Synchronizing'   => __( 'We\'re synchronizing your Customers with your Doppler List...', 'doppler-for-woocommerce' ),
+			  'selectAList'		=> __( 'Select the Doppler Lists where you want to import your Customers. When synchronized, those Customers already registered and future customers will be sent automatically.', 'doppler-for-woocommerce')	
 		));
 	}
 
@@ -178,8 +178,8 @@ class Doppler_For_Woocommerce_Admin {
 		if ( !is_plugin_active( 'doppler-form/doppler-form.php' ) )  {
 			$this->admin_notice = array( 'error', __('Sorry, but <strong>Doppler for WooCommerce</strong> requires the <strong><a href="https://wordpress.org/plugins/doppler-form/">Doppler Forms plugin</a></strong> to be installed and active.', 'doppler-form') );
 			$this->deactivate();
-		}else if( version_compare( get_option('dplr_version'), '2.1.0', '<' ) ){
-			$this->admin_notice = array( 'error', __('Sorry, but <strong>Doppler for WooCommerce</strong> requires Doppler Forms v2.1.0 or greater to be active. Please <a href="'.admin_url().'plugins.php">upgrade</a> Doppler Forms.', 'doppler-form') );
+		}else if( version_compare( get_option('dplr_version'), '2.1.4', '<' ) ){
+			$this->admin_notice = array( 'error', __('Sorry, but <strong>Doppler for WooCommerce</strong> requires Doppler Forms v2.1.4 or greater to be active. Please <a href="'.admin_url().'plugins.php">upgrade</a> Doppler Forms.', 'doppler-form') );
 			$this->deactivate();
 		}
 	}
@@ -245,6 +245,9 @@ class Doppler_For_Woocommerce_Admin {
 		$fields = $this->get_checkout_fields();
 	}
 
+	/**
+	 * Sanitizes & validate before saving new Doppler List.
+	 */
 	public function dplrwoo_save_list() {
 		if( !empty($_POST['listName']) && ( strlen($_POST['listName']) < 100) ){
 			echo $this->create_list(sanitize_text_field($_POST['listName']));
@@ -252,6 +255,9 @@ class Doppler_For_Woocommerce_Admin {
 		wp_die();
 	}
 
+	/**
+	 * Saves new Doppler List.
+	 */
 	private function create_list($list_name) {
 		$subscriber_resource = $this->doppler_service->getResource('lists');
 		$this->set_origin();
@@ -326,7 +332,7 @@ class Doppler_For_Woocommerce_Admin {
 	}
 
 	/**
-	 * Get the customer's fields.
+	 * Get the WooCommerce customer's fields.
 	 */
 	public function get_checkout_fields() {
 		if ( ! class_exists( 'WC_Session' ) ) {
@@ -338,7 +344,8 @@ class Doppler_For_Woocommerce_Admin {
 	}
 
 	/**
-	 * Compares field types between WC and Doppler
+	 * Compares field types between WooCommerce and Doppler
+	 * for showing the correct options to map.
 	 */
 	function check_field_type( $wc_field_type, $dplr_field_type ) {
 		
@@ -439,8 +446,8 @@ class Doppler_For_Woocommerce_Admin {
 	}
 
 	/**
-	 * Al registrarse se guarda el usuario
-	 * en la lista de contactos.
+	 * After creating account from checkout, saves
+	 * customer to contact List.
 	 */
 	public function dplrwoo_created_customer( $customer_id, $customer_data, $customer_password ) {
 		if( wp_verify_nonce( $_POST['woocommerce-register-nonce'], 'woocommerce-register' ) ){
@@ -507,6 +514,8 @@ class Doppler_For_Woocommerce_Admin {
 	 * Registered users are also saved
 	 * to Contact List. 
 	 * 
+	 * Used in Synch
+	 * 
 	 */
 	private function get_registered_users() {
 		$users = get_users( array('role'=>'Customer') );
@@ -547,6 +556,9 @@ class Doppler_For_Woocommerce_Admin {
 		return $fields;
 	}
 
+	/**
+	 * Synch trhough ajax.
+	 */
 	public function dplrwoo_ajax_synch() {
 		if( empty($_POST['list_id']) || empty($_POST['list_type']) ) return false;
 		echo $this->dplrwoo_synch( $_POST['list_id'], $_POST['list_type']);
@@ -626,6 +638,8 @@ class Doppler_For_Woocommerce_Admin {
 	* After synchronizing update 
 	* the subscribers counter
 	* next to the lists selector.
+	*
+	* This one should be deprected.
 	*
 	*/
 	public function update_subscribers_count() {
@@ -719,7 +733,7 @@ class Doppler_For_Woocommerce_Admin {
 	}
 
 	/**
-	 * Send email and fields to a Doppler List
+	 * Main function for sending subscriber's data to Doppler.
 	 */
 	private function subscribe_customer( $list_id, $email, $fields ){
 		if( !empty($list_id) && !empty($email) ){
