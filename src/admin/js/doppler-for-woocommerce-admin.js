@@ -17,7 +17,6 @@
 		var contactListSelect = $("#contacts-list");
 		var buyersListSelect = $("#buyers-list");
 		var syncListsButton = $("#dplrwoo-lists-btn");
-		var clearListButton = $("#dplrwoo-clear");
 		var listsForm = $("#dplrwoo-form-list");
 
 		mappingFieldsSelects.focus(function(){
@@ -50,15 +49,14 @@
 		}).change(function(){
 			var prevData = $(this).data('fieldData');
 			var current = $(this).val();
-			checkEnableListsButtons();
-			if(prevData.val!==''){
+			if(prevData.val!==''&&prevData.val!=='0'){
 				listsSelect.each(function(){
 					if( prevData.name !== $(this).attr('name') ){
 						$(this).find('option:first-child').after('<option value="'+prevData.val+'">'+prevData.selectedName+'</option>');
 					}
 				});
 			}
-			if(current!==''){
+			if(current!==''&&current!='0'){
 				var s = listsSelect.not(this);
 				s.find('option[value="'+current+'"]').remove();
 			}
@@ -83,8 +81,10 @@
 			var contactsList = contactListSelect.val();
 			$(this).attr('disabled','disabled').addClass("button--loading");
 			$("#dplr-settings-text").html(ObjWCStr.Synchronizing);
-			$.when(synchBuyers(buyersList),synchContacts(contactsList)).done(function(){
-				listsForm.submit();
+			$.when(createDefaultList(buyersList, 'buyers'), createDefaultList(contactsList, 'contacts')).done(function(bl,cl){
+				$.when(synchBuyers(bl),synchContacts(cl)).done(function(){
+					listsForm.submit();
+				});
 			});
 		});
 
@@ -123,51 +123,6 @@
 				button.removeAttr('disabled').removeClass("button--loading");
 			})
 		});
-
-		clearListButton.click(function(e){
-			e.preventDefault();
-			clearResponseMessages();
-			var button = $(this);
-			button.attr('disabled','disabled').addClass("button--loading");
-			var data = {
-				action: 'dplrwoo_ajax_clear_lists',
-			}
-			$.post( ajaxurl, data, function(response){
-				if(response=='1') {
-					listsForm.find("select").val('');
-					syncListsButton.attr('disabled',true);
-					$("#dplr-settings-text").html(ObjWCStr.selectAList);
-					button.removeClass("button--loading");
-				}
-			})
-		});
-
-		/**
-		 * Create default lists
-		 */
-		$("#dplrwoo-create-lists").click(function(){
-			var button = $(this);
-			button.closest('#dplrwoo-createlist-div').find('.error').remove();
-			button.addClass('button--loading').css('pointer-events','none');
-			clearResponseMessages();
-			$.post(ajaxurl,{action: 'dplrwoo_ajax_create_lists'}, function(response){
-				var obj = JSON.parse(response);
-				if(obj.status == '0'){
-					$('#showErrorResponse').css('display','flex').html('<p>'+obj.message+'</p>');
-					button.removeClass('button--loading').css('pointer-events','initial');
-					return false;
-				}	
-				window.location.reload(false);				
-			});
-		});
-
-		function checkEnableListsButtons(){
-			if(contactListSelect.val()==='' && buyersListSelect.val()===''){
-				listsForm.find("button").attr('disabled',true);
-				return;
-			}
-			listsForm.find("button").removeAttr('disabled');
-		}
 		
 	});
 
@@ -188,6 +143,35 @@
 		}
 
 		return false;
+	}
+
+	function createDefaultList(list_id, list_type){
+		var deferred = new $.Deferred();
+		if(list_id!='0'){
+			deferred.resolve(list_id);
+		}else{
+			var listName = '';
+			var selectElement = {}
+			if(list_type!='buyers' && list_type!='contacts')deferred.resolve(false);
+			if(list_type=='buyers'){
+				listName = ObjWCStr.default_buyers_list;
+				selectElement = $('#buyers-list option:first');
+			}
+			if(list_type=='contacts'){
+				listName = ObjWCStr.default_contacts_list;
+				selectElement = $('#contacts-list option:first');
+			}
+			$.post(ajaxurl, {action: 'dplrwoo_ajax_save_list', listName},function(response){
+				var body = 	JSON.parse(response);
+				if(body.createdResourceId){	
+					selectElement.attr('value',body.createdResourceId);
+					deferred.resolve(body.createdResourceId);
+				}else{
+					deferred.resolve(body.status);
+				}
+			})
+		}
+		return deferred.promise();
 	}
 
 })( jQuery );
