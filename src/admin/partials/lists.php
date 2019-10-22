@@ -22,7 +22,12 @@ if ( ! current_user_can( 'manage_options' ) ) {
             <p class="size-medium" id="dplr-settings-text">
             
             <?php
-
+            //Check if default lists already exists, set them as selected.
+            $default_buyers_name = __('WooCommerce Buyers','doppler-for-woocommerce');
+            $default_contacts_name = __('WooCommerce Contacts', 'doppler-for-woocommerce');
+            $default_buyers_key = $this->find_list_by_name($default_buyers_name,$lists);
+            $default_contacts_key = $this->find_list_by_name($default_contacts_name,$lists);
+            
             $suggest_default_lists = false;
             if( empty($subscribers_lists['contacts']) && empty($subscribers_lists['buyers']) ):
                 $suggest_default_lists = true;
@@ -46,20 +51,27 @@ if ( ! current_user_can( 'manage_options' ) ) {
     <form id="dplrwoo-form-list" action="" method="post">
         <?php 
             wp_nonce_field( 'map-lists' );
-            $selected_contacts_list = !empty( $subscribers_lists['contacts'])? $subscribers_lists['contacts'] : '';
-            $selected_buyers_list = !empty( $subscribers_lists['buyers'])? $subscribers_lists['buyers'] : '';
+            /**
+             * If a list is saved in database, select that list. If not
+             * check if default list exists. If default list exists in Doppler, select it,
+             * if not just set it as empty.
+             * This is done to prevent attempting to creatine a default lists that for
+             * some reason already exists in Doppler.
+             */
+            $selected_contacts_list = !empty( $subscribers_lists['contacts'])? $subscribers_lists['contacts'] : ( $default_contacts_key ? $default_contacts_key : '') ;
+            $selected_buyers_list = !empty( $subscribers_lists['buyers'])? $subscribers_lists['buyers'] : ( $default_buyers_key ? $default_buyers_key : '');
         ?>
         <p>
             <label><?php _e('Doppler List to send Buyers', 'doppler-for-woocommerce')?></label>
             <select name="dplr_subscribers_list[buyers]" class="dplrwoo-lists-sel" id="buyers-list">
-                <option value="0"><?php if($suggest_default_lists) _e('WooCommerce Buyers','doppler-for-woocommerce') ?></option>
+                <option value="0"><?php if($suggest_default_lists && !$default_buyers_key) _e('WooCommerce Buyers','doppler-for-woocommerce') ?></option>
                 <?php 
                 if(!empty($lists)){
                     foreach($lists as $k=>$v){
                         if( $selected_contacts_list != $k ):
                         ?>
                         <option value="<?php echo esc_attr($k)?>" 
-                            <?php if( $selected_buyers_list ==$k && !$suggest_default_lists ){ echo 'selected'; $scount = $v['subscribersCount']; } ?>
+                            <?php if( $selected_buyers_list == $k  ){ echo 'selected'; $scount = $v['subscribersCount']; } ?>
                             data-subscriptors="<?php echo esc_attr($v['subscribersCount'])?>">
                             <?php echo esc_html($v['name'])?>
                         </option>
@@ -76,14 +88,14 @@ if ( ! current_user_can( 'manage_options' ) ) {
             <label><?php _e('Doppler List to send Contacts', 'doppler-for-woocommerce')?></label>
                    
             <select name="dplr_subscribers_list[contacts]" class="dplrwoo-lists-sel" id="contacts-list">
-                <option value="0"><?php if($suggest_default_lists) _e('WooCommerce Contacts', 'doppler-for-woocommerce') ?></option>
+                <option value="0"><?php if($suggest_default_lists && !$default_contacts_key) _e('WooCommerce Contacts', 'doppler-for-woocommerce') ?></option>
                 <?php 
                     if(!empty($lists)){
                         foreach($lists as $k=>$v){
                             if( $selected_buyers_list != $k ):
                             ?>
                             <option value="<?php echo $k?>" 
-                                <?php if( $selected_contacts_list ==$k && !$suggest_default_lists ){ echo 'selected'; $scount = $v['subscribersCount']; }?>
+                                <?php if( $selected_contacts_list == $k ){ echo 'selected'; $scount = $v['subscribersCount']; }?>
                                 data-subscriptors="<?php echo esc_attr($v['subscribersCount'])?>">
                                 <?php echo esc_html($v['name']) ?>
                             </option>
