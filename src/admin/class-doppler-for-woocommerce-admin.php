@@ -71,7 +71,7 @@ class Doppler_For_Woocommerce_Admin {
 		$this->doppler_service = $doppler_service;
 		$this->success_message = false;
 		$this->error_message = false;
-		$this->required_doppler_version = '2.1.4';
+		$this->required_doppler_version = '2.1.5';
 		$this->origin = $this->set_origin();
 		$this->set_credentials();
 	}
