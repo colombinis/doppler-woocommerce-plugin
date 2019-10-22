@@ -181,7 +181,8 @@ msgid ""
 msgstr ""
 "Obten el Código de Seguimiento de Doppler y pégalo aquí para poder "
 "monitorear las acciones que los visitantes realizan en él. ¿Tienes dudas? "
-"Presiona HELP."
+"Presiona <a href=\"https://help.fromdoppler.com/es/crear-automation-por-"
+"comportamiento-en-sitio\" class=\"green-link\">AYUDA</a>"
 
 #: admin/partials/hub.php:20
 msgid "Paste tracking code here."
