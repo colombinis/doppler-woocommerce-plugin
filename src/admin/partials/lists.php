@@ -20,23 +20,18 @@ if ( ! current_user_can( 'manage_options' ) ) {
 
         <div class="flex-grow-1">
             <p class="size-medium" id="dplr-settings-text">
-            <?php
-            if( empty($subscribers_lists['contacts']) && empty($subscribers_lists['buyers']) ):
             
-                _e('You currently don\'t have Doppler Lists selected. Do you want to create a List to send your Contacts to and another to send to your Buyers?', 'doppler-for-woocommerce');
-               
-               ?>
-                
-                <button id="dplrwoo-create-lists" class="dp-button button-small primary-green"><?php _e('Create Doppler Lists', 'doppler-for-woocommerce')?></button>
-                
-                <?php
+            <?php
+
+            $suggest_default_lists = false;
+            if( empty($subscribers_lists['contacts']) && empty($subscribers_lists['buyers']) ):
+                $suggest_default_lists = true;
             else :
                 _e('As they register to your store or buy a product, your Subscribers will be automatically sent to the selected Doppler Lists.', 'doppler-for-woocommerce');
             endif;
             ?>
             </p>
         </div>
-
         <div class="flex-grow-1"> 
             <form id="dplrwoo-form-list-new" class="text-right" action="" method="post">
                 <input type="text" value="" class="d-inline-block"  maxlength="100" placeholder="<?php _e('Write the List name', 'doppler-for-woocommerce')?>"/>
@@ -57,14 +52,14 @@ if ( ! current_user_can( 'manage_options' ) ) {
         <p>
             <label><?php _e('Doppler List to send Buyers', 'doppler-for-woocommerce')?></label>
             <select name="dplr_subscribers_list[buyers]" class="dplrwoo-lists-sel" id="buyers-list">
-                <option value=""></option>
+                <option value="0"><?php if($suggest_default_lists) _e('WooCommerce Buyers','doppler-for-woocommerce') ?></option>
                 <?php 
                 if(!empty($lists)){
                     foreach($lists as $k=>$v){
                         if( $selected_contacts_list != $k ):
                         ?>
                         <option value="<?php echo esc_attr($k)?>" 
-                            <?php if( $selected_buyers_list ==$k ){ echo 'selected'; $scount = $v['subscribersCount']; } ?>
+                            <?php if( $selected_buyers_list ==$k && !$suggest_default_lists ){ echo 'selected'; $scount = $v['subscribersCount']; } ?>
                             data-subscriptors="<?php echo esc_attr($v['subscribersCount'])?>">
                             <?php echo esc_html($v['name'])?>
                         </option>
@@ -81,14 +76,14 @@ if ( ! current_user_can( 'manage_options' ) ) {
             <label><?php _e('Doppler List to send Contacts', 'doppler-for-woocommerce')?></label>
                    
             <select name="dplr_subscribers_list[contacts]" class="dplrwoo-lists-sel" id="contacts-list">
-                <option value=""></option>
+                <option value="0"><?php if($suggest_default_lists) _e('WooCommerce Contacts', 'doppler-for-woocommerce') ?></option>
                 <?php 
                     if(!empty($lists)){
                         foreach($lists as $k=>$v){
                             if( $selected_buyers_list != $k ):
                             ?>
                             <option value="<?php echo $k?>" 
-                                <?php if( $selected_contacts_list ==$k ){ echo 'selected'; $scount = $v['subscribersCount']; }?>
+                                <?php if( $selected_contacts_list ==$k && !$suggest_default_lists ){ echo 'selected'; $scount = $v['subscribersCount']; }?>
                                 data-subscriptors="<?php echo esc_attr($v['subscribersCount'])?>">
                                 <?php echo esc_html($v['name']) ?>
                             </option>
@@ -103,12 +98,14 @@ if ( ! current_user_can( 'manage_options' ) ) {
         <p class="d-flex justify-end">
 
             <?php
-               $btn_disable = empty($subscribers_lists['buyers']) && empty($subscribers_lists['contacts']) ? 'disabled' : '';
+               $btn_disable = !$suggest_default_lists && ( empty($subscribers_lists['buyers']) && empty($subscribers_lists['contacts']) ) ? 'disabled' : '';
             ?>
 
+            <!--
             <button id="dplrwoo-clear" class="dp-button button-medium primary-grey" <?php echo $btn_disable?>>
                 <?php _e('Clear selection', 'doppler-for-learnpress') ?>
             </button>
+            -->
         
             <button id="dplrwoo-lists-btn" class="dp-button button-medium primary-green ml-1" <?php echo $btn_disable?>>
                 <?php _e('Synchronize', 'doppler-for-woocommerce') ?>
