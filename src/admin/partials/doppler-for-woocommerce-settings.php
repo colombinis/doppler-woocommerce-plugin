@@ -80,10 +80,29 @@
                 update_option( 'dplr_subscribers_list', $this->sanitize_subscribers_list($_POST['dplr_subscribers_list']) );
                 $this->set_success_message(__('Subscribers lists saved succesfully', 'doppler-for-woocommerce'));
             }
+            
             $lists = $this->get_alpha_lists();
             $subscribers_lists = get_option('dplr_subscribers_list');
+            
+            //Check if saved buyers & contact Lists still exists, unset them if not.
+            $has_to_update = false;
+
+            if(!empty($subscribers_lists['buyers']) && !$this->list_exists($subscribers_lists['buyers'], $lists)){
+                $has_to_update = true;
+                $subscribers_lists['buyers'] = '0';
+            }
+        
+            if(!empty($subscribers_lists['contacts']) && !$this->list_exists($subscribers_lists['contacts'], $lists)){
+                $has_to_update = true;
+                $subscribers_lists['contacts'] = '0';
+            }
+                
+            if($has_to_update) update_option('dplr_subscribers_list', $subscribers_lists);
+            
             require_once('lists.php');
+        
         break;
+    
     }
     ?>
     
