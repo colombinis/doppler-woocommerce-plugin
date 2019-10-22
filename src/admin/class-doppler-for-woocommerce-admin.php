@@ -170,7 +170,9 @@ class Doppler_For_Woocommerce_Admin {
 			  'listsSyncError'  => __( 'Ouch! The Lists couldn\'t be synchronized.', 'doppler-for-woocommerce'),
 			  'listsSyncOk'  	=> __( 'Your Lists has been syncronized and saved succesfully.', 'doppler-for-woocommerce'),
 			  'Synchronizing'   => __( 'We\'re synchronizing your Customers with your Doppler List...', 'doppler-for-woocommerce' ),
-			  'selectAList'		=> __( 'Select the Doppler Lists where you want to import your Customers. When synchronized, those Customers already registered and future customers will be sent automatically.', 'doppler-for-woocommerce')	
+			  'selectAList'		=> __( 'Select the Doppler Lists where you want to import your Customers. When synchronized, those Customers already registered and future customers will be sent automatically.', 'doppler-for-woocommerce'),	
+			  'default_buyers_list' => __('WooCommerce Buyers', 'doppler-for-woocommerce'),
+			  'default_contacts_list' => __('WooCommerce Contacts', 'doppler-for-woocommerce') 
 		));
 	}
 
@@ -274,61 +276,6 @@ class Doppler_For_Woocommerce_Admin {
 		});
 		reset($resp);
 	    return ($resp!=='null')? key($resp) : false;
-	}
-
-	/**
-	 * Create default lists:
-	 * Check if default lists already exists, if exists select it, 
-	 * if not create it.
-	 * syncronize them 
-	 * & set them as selected.
-	 */
-	public function dplrwoo_create_default_lists(){
-		$respBuyer = '';
-		$respContact = '';
-		$buyers_list_id = '';
-		$contacts_list_id = '';
-		$default_buyers_list = __('WooCommerce Buyers', 'doppler-for-woocommerce');
-		$default_contact_list = __('WooCommerce Contacts', 'doppler-for-woocommerce');
-		$lists = $this->get_alpha_lists();
-		
-		if(!empty($lists)){
-			$buyers_list_exists = $this->find_list_by_name($default_buyers_list, $lists);
-			$contacts_list_exists = $this->find_list_by_name($default_contact_list, $lists);	
-		}
-			
-		//If lists doesnt exist, create them.
-		if(empty($buyers_list_exists)) $respBuyer = json_decode( $this->create_list($default_buyers_list) );
-		if(empty($contacts_list_exists)) $respContact = json_decode($this->create_list($default_contact_list) );
-		
-        //Get the id from the recently created List, or if it existed get it from the Lists array.
-		(!empty($respBuyer->createdResourceId))? 
-		$buyers_list_id = $respBuyer->createdResourceId : $buyers_list_id = $buyers_list_exists;
-		(!empty($respContact->createdResourceId))? 
-		$contacts_list_id =  $respContact->createdResourceId : $contacts_list_id = $contacts_list_exists;
-
-		if( !is_numeric($buyers_list_id) || !is_numeric($contacts_list_id) ){
-			echo json_encode( array(
-				'status'=>0, 
-				'message'=>__('There was an error while trying to create the default Lists','doppler-for-woocommerce')
-			));
-			wp_die();
-		}
-		
-		//Sync the Lists
-		$this->dplrwoo_synch($buyers_list_id, 'buyers');
-		$this->dplrwoo_synch($contacts_list_id, 'contacts');
-
-		//Set them
-		update_option( 'dplr_subscribers_list', 
-			array( 
-				'buyers' => $buyers_list_id , 
-				'contacts' => $contacts_list_id
-			) 
-		) ;
-	
-		echo json_encode(array('status'=>1));
-		wp_die();
 	}
 
 	/**
@@ -661,14 +608,14 @@ class Doppler_For_Woocommerce_Admin {
 	/**
 	 * Validates on site tracking code.
 	 */
-	public function validate_tracking_code($code){
+	public function validate_tracking_code($code) {
 		return preg_match("/(<|%3C)script[\s\S]*?(>|%3E)[\s\S]*?(<|%3C)(\/|%2F)script[\s\S]*?(>|%3E)/", $code);
 	}
 	
 	/**
 	 * Sanitize on site tracking pasted code.
 	 */
-	public function sanitize_tracking_code($code){
+	public function sanitize_tracking_code($code) {
 		//Is valid to save empty value in this case.
 		if($code === '') return $code;
 		return sanitize_text_field(htmlentities(trim($code)));
@@ -735,7 +682,7 @@ class Doppler_For_Woocommerce_Admin {
 	/**
 	 * Main function for sending subscriber's data to Doppler.
 	 */
-	private function subscribe_customer( $list_id, $email, $fields ){
+	private function subscribe_customer( $list_id, $email, $fields ) {
 		if( !empty($list_id) && !empty($email) ){
 			$subscriber['email'] = $email;
 			$subscriber['fields'] = $fields; 
@@ -782,6 +729,14 @@ class Doppler_For_Woocommerce_Admin {
 		$c = new WC_Countries();
 		$countries = $c->get_countries();
 		return !empty($countries[$code])? $countries[$code] : $code;
+	}
+
+	/**
+	 * Check if list id exists in an array of lists.
+	 * Lists must have list_id as key
+	 */
+	private function list_exists( $list_id, $lists){
+		return in_array($list_id, array_keys($lists));
 	}
 
 }
