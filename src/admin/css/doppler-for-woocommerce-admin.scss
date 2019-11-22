@@ -3,16 +3,29 @@
 */
 
 .dplr_settings{
+
   .dplr-tab-content{
-      #dplrwoo-form-list{
-        max-width: 600px;
-      }
-      #dplrwoo-form-list-new{
-        input[type="text"]{
-          width:200px;
-        }
-      }
+
+    .col-65p{
+      width: 65%;
+    }
+    .mt10{
+      margin-top: 10px;
+    }
+    .pr10{
+      padding-right: 10px;
+    }
+
+    #dplrwoo-form-list{
+      max-width: 600px;
+    }
+
+    #dplrwoo-form-list-new input[type="text"]{
+        width: 200px;
+    }
+
   }
+
 }
 
 /**

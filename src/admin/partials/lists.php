@@ -18,14 +18,15 @@ if ( ! current_user_can( 'manage_options' ) ) {
 
     <div class="d-flex flex-row">
 
-        <div class="flex-grow-1">
-            <p class="size-medium" id="dplr-settings-text">
+        <div class="col-65p">
+            <p class="size-medium mt10 pr-10" id="dplr-settings-text">
             
             <?php
 
             $suggest_default_lists = false;
             if( empty($subscribers_lists['contacts']) && empty($subscribers_lists['buyers']) ):
                 $suggest_default_lists = true;
+                _e('Pick the Doppler Lists you want to import your Users into. You can sync existing Lists or create new ones.', 'doppler-for-woocommerce');
             else :
                 _e('As they register to your store or buy a product, your Subscribers will be automatically sent to the selected Doppler Lists.', 'doppler-for-woocommerce');
             endif;
