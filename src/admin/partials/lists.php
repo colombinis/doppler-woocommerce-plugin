@@ -101,12 +101,6 @@ if ( ! current_user_can( 'manage_options' ) ) {
             <?php
                $btn_disable = !$suggest_default_lists && ( empty($subscribers_lists['buyers']) && empty($subscribers_lists['contacts']) ) ? 'disabled' : '';
             ?>
-
-            <!--
-            <button id="dplrwoo-clear" class="dp-button button-medium primary-grey" <?php echo $btn_disable?>>
-                <?php _e('Clear selection', 'doppler-for-learnpress') ?>
-            </button>
-            -->
         
             <button id="dplrwoo-lists-btn" class="dp-button button-medium primary-green ml-1" <?php echo $btn_disable?>>
                 <?php _e('Synchronize', 'doppler-for-woocommerce') ?>
