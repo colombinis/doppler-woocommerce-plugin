@@ -8,7 +8,7 @@ msgstr ""
 "Blank WordPress Pot "
 "v1.0.0\n"
 "POT-Creation-Date: "
-"2019-10-17 12:55-0300\n"
+"2019-11-22 16:04-0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Your "
 "Name <you@example.com>\n"
@@ -149,7 +149,18 @@ msgid ""
 "automatically."
 msgstr ""
 
-#: admin/class-doppler-for-woocommerce-admin.php:179
+#: admin/class-doppler-for-woocommerce-admin.php:174
+#: admin/partials/lists.php:56
+msgid "WooCommerce Buyers"
+msgstr ""
+
+#: admin/class-doppler-for-woocommerce-admin.php:175
+#: admin/partials/lists.php:80
+msgid ""
+"WooCommerce Contacts"
+msgstr ""
+
+#: admin/class-doppler-for-woocommerce-admin.php:181
 msgid ""
 "Ouch! <strong>Doppler "
 "for WooCommerce</strong> "
@@ -161,7 +172,7 @@ msgid ""
 "and active."
 msgstr ""
 
-#: admin/class-doppler-for-woocommerce-admin.php:182
+#: admin/class-doppler-for-woocommerce-admin.php:184
 #, php-format
 msgid ""
 "Ouch! <strong>Doppler "
@@ -175,27 +186,11 @@ msgid ""
 "Forms."
 msgstr ""
 
-#: admin/class-doppler-for-woocommerce-admin.php:225
-#: admin/class-doppler-for-woocommerce-admin.php:226
+#: admin/class-doppler-for-woocommerce-admin.php:227
+#: admin/class-doppler-for-woocommerce-admin.php:228
 #: admin/partials/doppler-for-woocommerce-settings.php:36
 msgid ""
 "Doppler for WooCommerce"
-msgstr ""
-
-#: admin/class-doppler-for-woocommerce-admin.php:291
-msgid "WooCommerce Buyers"
-msgstr ""
-
-#: admin/class-doppler-for-woocommerce-admin.php:292
-msgid ""
-"WooCommerce Contacts"
-msgstr ""
-
-#: admin/class-doppler-for-woocommerce-admin.php:313
-msgid ""
-"There was an error while "
-"trying to create the "
-"default Lists"
 msgstr ""
 
 #: admin/partials/doppler-for-woocommerce-settings.php:34
@@ -242,13 +237,12 @@ msgstr ""
 
 #: admin/partials/hub.php:13
 msgid ""
-"Obtain the Tracking Code "
-"from the Doppler App and "
-"paste it here in order "
-"to monitor the actions "
-"that the visitors "
-"perform in it. Any "
-"doubts? Press <a href="
+"Get your Site Tracking "
+"Code from Doppler and "
+"paste it below to track "
+"your visitors activity. "
+"Not sure how to get your "
+"code? Press <a href="
 "\"https://help."
 "fromdoppler.com/en/"
 "create-onsite-tracking-"
@@ -261,22 +255,16 @@ msgid ""
 "Paste tracking code here."
 msgstr ""
 
-#: admin/partials/lists.php:26
+#: admin/partials/lists.php:29
 msgid ""
-"You currently don't have "
-"Doppler Lists selected. "
-"Do you want to create a "
-"List to send your "
-"Contacts to and another "
-"to send to your Buyers?"
+"Pick the Doppler Lists "
+"you want to import your "
+"Users into. You can sync "
+"existing Lists or create "
+"new ones."
 msgstr ""
 
-#: admin/partials/lists.php:30
-msgid ""
-"Create Doppler Lists"
-msgstr ""
-
-#: admin/partials/lists.php:34
+#: admin/partials/lists.php:31
 msgid ""
 "As they register to your "
 "store or buy a product, "
@@ -286,31 +274,31 @@ msgid ""
 "Lists."
 msgstr ""
 
-#: admin/partials/lists.php:42
+#: admin/partials/lists.php:38
 msgid "Write the List name"
 msgstr ""
 
-#: admin/partials/lists.php:44
+#: admin/partials/lists.php:40
 msgid "Create List"
 msgstr ""
 
-#: admin/partials/lists.php:58
+#: admin/partials/lists.php:54
 msgid ""
 "Doppler List to send "
 "Buyers"
 msgstr ""
 
-#: admin/partials/lists.php:81
+#: admin/partials/lists.php:77
 msgid ""
 "Doppler List to send "
 "Contacts"
 msgstr ""
 
-#: admin/partials/lists.php:110
+#: admin/partials/lists.php:107
 msgid "Clear selection"
 msgstr ""
 
-#: admin/partials/lists.php:114
+#: admin/partials/lists.php:112
 msgid "Synchronize"
 msgstr ""
 

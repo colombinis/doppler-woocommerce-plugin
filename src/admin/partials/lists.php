@@ -18,7 +18,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 
     <div class="d-flex flex-row">
 
-        <div class="col-65p">
+        <div class="col-68">
             <p class="size-medium mt10 pr-10" id="dplr-settings-text">
             
             <?php

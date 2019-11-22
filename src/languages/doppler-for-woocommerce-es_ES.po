@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Blank WordPress Pot v1.0.0\n"
 "Report-Msgid-Bugs-To: Translator Name <translations@example.com>\n"
-"POT-Creation-Date: 2019-10-18 14:32-0300\n"
+"POT-Creation-Date: 2019-11-22 16:04-0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: Your Team <translations@example.com>\n"
@@ -94,7 +94,17 @@ msgstr ""
 "sincronizarlas, se enviarán automáticamente los existentes y los futuros "
 "clientes."
 
-#: admin/class-doppler-for-woocommerce-admin.php:179
+#: admin/class-doppler-for-woocommerce-admin.php:174
+#: admin/partials/lists.php:56
+msgid "WooCommerce Buyers"
+msgstr "Compradores de WooCommerce"
+
+#: admin/class-doppler-for-woocommerce-admin.php:175
+#: admin/partials/lists.php:80
+msgid "WooCommerce Contacts"
+msgstr "Contactos de WooCommerce"
+
+#: admin/class-doppler-for-woocommerce-admin.php:181
 msgid ""
 "Ouch! <strong>Doppler for WooCommerce</strong> requires the <a href="
 "\"https://wordpress.org/plugins/doppler-form/\">Doppler Forms</a> plugin to "
@@ -103,7 +113,7 @@ msgstr ""
 "¡Ouch! <strong>Doppler para WooCommerce</strong> requiere que tengas el "
 "plugin Formularios Doppler instalado y activo."
 
-#: admin/class-doppler-for-woocommerce-admin.php:182
+#: admin/class-doppler-for-woocommerce-admin.php:184
 #, php-format
 msgid ""
 "Ouch! <strong>Doppler for WooCommerce</strong> requires at least "
@@ -114,23 +124,11 @@ msgstr ""
 "<strong>Doppler Forms v%s</strong> para  poder activarse. Por favor <a href="
 "\"%splugins.php\">actualiza</a> Doppler Forms."
 
-#: admin/class-doppler-for-woocommerce-admin.php:225
-#: admin/class-doppler-for-woocommerce-admin.php:226
+#: admin/class-doppler-for-woocommerce-admin.php:227
+#: admin/class-doppler-for-woocommerce-admin.php:228
 #: admin/partials/doppler-for-woocommerce-settings.php:36
 msgid "Doppler for WooCommerce"
 msgstr "Doppler para WooCommerce"
-
-#: admin/class-doppler-for-woocommerce-admin.php:291
-msgid "WooCommerce Buyers"
-msgstr "Compradores de WooCommerce"
-
-#: admin/class-doppler-for-woocommerce-admin.php:292
-msgid "WooCommerce Contacts"
-msgstr "Contactos de WooCommerce"
-
-#: admin/class-doppler-for-woocommerce-admin.php:313
-msgid "There was an error while trying to create the default Lists"
-msgstr "¡Ouch! Ocurrió un error al intentar crear las Listas."
 
 #: admin/partials/doppler-for-woocommerce-settings.php:34
 #, fuzzy
@@ -174,33 +172,29 @@ msgstr "Las Listas han sido guardadas correctamente."
 
 #: admin/partials/hub.php:13
 msgid ""
-"Obtain the Tracking Code from the Doppler App and paste it here in order to "
-"monitor the actions that the visitors perform in it. Any doubts? Press <a "
-"href=\"https://help.fromdoppler.com/en/create-onsite-tracking-automation\" "
-"class=\"green-link\">HELP</a>"
+"Get your Site Tracking Code from Doppler and paste it below to track your "
+"visitors activity. Not sure how to get your code? Press <a href=\"https://"
+"help.fromdoppler.com/en/create-onsite-tracking-automation\" class=\"green-"
+"link\">HELP</a>"
 msgstr ""
-"Obten el Código de Seguimiento de Doppler y pégalo aquí para poder "
-"monitorear las acciones que los visitantes realizan en él. ¿Tienes dudas? "
-"Presiona <a href=\"https://help.fromdoppler.com/es/crear-automation-por-"
-"comportamiento-en-sitio\" class=\"green-link\">AYUDA</a>"
+"Obtén el código de Seguimiento de Doppler para tu Sitio Web y colócalo "
+"debajo para monitorear la actividad de tus visitantes. ¿Tienes dudas sobre "
+"cómo obtener tu código? Presiona <a href=\"https://help.fromdoppler.com/es/"
+"crear-automation-por-comportamiento-en-sitio\" class=\"green-link\">AYUDA</a>"
 
 #: admin/partials/hub.php:20
 msgid "Paste tracking code here."
 msgstr "Pegue aquí el código de Seguimiento en Sitio"
 
-#: admin/partials/lists.php:26
+#: admin/partials/lists.php:29
 msgid ""
-"You currently don't have Doppler Lists selected. Do you want to create a "
-"List to send your Contacts to and another to send to your Buyers?"
+"Pick the Doppler Lists you want to import your Users into. You can sync "
+"existing Lists or create new ones."
 msgstr ""
-"Actualmente no tienes Listas de Doppler seleccionadas. ¿Quieres crear una "
-"Lista a donde enviar tus Contactos y otra a donde llevar tus compradores?"
+"Selecciona las Listas de Doppler a donde quieres importar tus Usuarios. "
+"Puedes sincronizar Listas existentes o crear nuevas."
 
-#: admin/partials/lists.php:30
-msgid "Create Doppler Lists"
-msgstr "Crear Listas en Doppler"
-
-#: admin/partials/lists.php:34
+#: admin/partials/lists.php:31
 msgid ""
 "As they register to your store or buy a product, your Subscribers will be "
 "automatically sent to the selected Doppler Lists."
@@ -208,36 +202,31 @@ msgstr ""
 "Cuando se registren a tu tienda o realicen una compra, tus suscriptores "
 "serán enviados automáticamente a la Lista de Doppler seleccionada."
 
-#: admin/partials/lists.php:42
+#: admin/partials/lists.php:38
 msgid "Write the List name"
 msgstr "Escribe el nombre de la Lista"
 
-#: admin/partials/lists.php:44
+#: admin/partials/lists.php:40
 msgid "Create List"
 msgstr "Crear Lista"
 
-#: admin/partials/lists.php:58
+#: admin/partials/lists.php:54
 msgid "Doppler List to send Buyers"
 msgstr "Lista de Doppler a la cual enviarás Compradores"
 
-#: admin/partials/lists.php:81
+#: admin/partials/lists.php:77
 msgid "Doppler List to send Contacts"
 msgstr "Lista de Doppler a la cual enviarás Contactos"
 
-#: admin/partials/lists.php:110
+#: admin/partials/lists.php:107
 msgid "Clear selection"
 msgstr "Limpiar selección"
 
-#: admin/partials/lists.php:114
+#: admin/partials/lists.php:112
 msgid "Synchronize"
 msgstr "Sincronizar"
 
 #: admin/partials/mapping.php:14
-#, fuzzy
-#| msgid ""
-#| "Send the information of your Contacts in WooCommerce to Doppler. To do "
-#| "this, select the Doppler Field equivalent to each of the WooCommerce "
-#| "Fields. Need to create Custom Fields in Doppler?"
 msgid ""
 "Send the information of your Contacts in WooCommerce to Doppler. To do this, "
 "select the Doppler Field equivalent to each of the WooCommerce Fields. <br/"
@@ -245,7 +234,7 @@ msgid ""
 msgstr ""
 "Envía la información de tus Contactos en WooCommerce a Doppler. Para ello, "
 "selecciona el Campo de Doppler equivalente a cada uno de los Campos de "
-"WooCommerce. ¿Necesitas crear Campos Personalizados en Doppler?"
+"WooCommerce. <br/> ¿Necesitas crear Campos Personalizados en Doppler?"
 
 #: admin/partials/mapping.php:15
 msgid ""
@@ -257,7 +246,7 @@ msgstr ""
 
 #: admin/partials/mapping.php:15
 msgid "Learn how"
-msgstr "Aprende cómo"
+msgstr "Descubre cómo"
 
 #: admin/partials/mapping.php:40
 msgid "Billing fields"
@@ -286,6 +275,19 @@ msgstr "Este plugin requiere que el plugin"
 #: doppler-for-woocommerce.php:56
 msgid " plugin to be active."
 msgstr "esté activo."
+
+#~ msgid "There was an error while trying to create the default Lists"
+#~ msgstr "¡Ouch! Ocurrió un error al intentar crear las Listas."
+
+#~ msgid ""
+#~ "You currently don't have Doppler Lists selected. Do you want to create a "
+#~ "List to send your Contacts to and another to send to your Buyers?"
+#~ msgstr ""
+#~ "Actualmente no tienes Listas de Doppler seleccionadas. ¿Quieres crear una "
+#~ "Lista a donde enviar tus Contactos y otra a donde llevar tus compradores?"
+
+#~ msgid "Create Doppler Lists"
+#~ msgstr "Crear Listas en Doppler"
 
 #, fuzzy
 #~| msgid "Lists Managment"
