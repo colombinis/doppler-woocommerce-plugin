@@ -180,7 +180,7 @@ msgstr ""
 "Obtén el código de Seguimiento de Doppler para tu Sitio Web y colócalo "
 "debajo para monitorear la actividad de tus visitantes. ¿Tienes dudas sobre "
 "cómo obtener tu código? Presiona <a href=\"https://help.fromdoppler.com/es/"
-"crear-automation-por-comportamiento-en-sitio\" class=\"green-link\">AYUDA</a>"
+"crear-automation-por-comportamiento-en-sitio\" class=\"green-link\">HELP</a>"
 
 #: admin/partials/hub.php:20
 msgid "Paste tracking code here."
