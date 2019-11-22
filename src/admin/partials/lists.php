@@ -18,8 +18,8 @@ if ( ! current_user_can( 'manage_options' ) ) {
 
     <div class="d-flex flex-row">
 
-        <div class="flex-grow-1">
-            <p class="size-medium" id="dplr-settings-text">
+        <div class="col-68">
+            <p class="size-medium mt10 pr-10" id="dplr-settings-text">
             
             <?php
             //Check if default lists already exists, set them as selected.
@@ -31,6 +31,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
             $suggest_default_lists = false;
             if( empty($subscribers_lists['contacts']) && empty($subscribers_lists['buyers']) ):
                 $suggest_default_lists = true;
+                _e('Pick the Doppler Lists you want to import your Users into. You can sync existing Lists or create new ones.', 'doppler-for-woocommerce');
             else :
                 _e('As they register to your store or buy a product, your Subscribers will be automatically sent to the selected Doppler Lists.', 'doppler-for-woocommerce');
             endif;
@@ -112,12 +113,6 @@ if ( ! current_user_can( 'manage_options' ) ) {
             <?php
                $btn_disable = !$suggest_default_lists && ( empty($subscribers_lists['buyers']) && empty($subscribers_lists['contacts']) ) ? 'disabled' : '';
             ?>
-
-            <!--
-            <button id="dplrwoo-clear" class="dp-button button-medium primary-grey" <?php echo $btn_disable?>>
-                <?php _e('Clear selection', 'doppler-for-learnpress') ?>
-            </button>
-            -->
         
             <button id="dplrwoo-lists-btn" class="dp-button button-medium primary-green ml-1" <?php echo $btn_disable?>>
                 <?php _e('Synchronize', 'doppler-for-woocommerce') ?>
