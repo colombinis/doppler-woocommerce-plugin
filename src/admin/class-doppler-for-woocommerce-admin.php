@@ -102,11 +102,11 @@ class Doppler_For_Woocommerce_Admin {
 		return $this->success_message;
 	}
 
-	public function get_required_doppler_version(){
+	public function get_required_doppler_version() {
 		return $this->required_doppler_version;
 	}
 
-	public function set_origin(){
+	public function set_origin() {
 		$this->doppler_service->set_origin('WooCommerce');
 	}
 
@@ -186,7 +186,7 @@ class Doppler_For_Woocommerce_Admin {
 		}
 	}
 
-	private function deactivate(){
+	private function deactivate() {
 		deactivate_plugins( DOPPLER_FOR_WOOCOMMERCE_PLUGIN ); 
 		if ( isset( $_GET['activate'] ) ) {
 			unset( $_GET['activate'] );
@@ -205,7 +205,7 @@ class Doppler_For_Woocommerce_Admin {
 	 * Set the credentials to doppler service
 	 * before running api calls.
 	 */
-	private function set_credentials(){
+	private function set_credentials() {
 		$options = get_option('dplr_settings');
 		if ( empty($options) ) {
 			return;
@@ -418,7 +418,7 @@ class Doppler_For_Woocommerce_Admin {
 	 * Subscribe customer after registering
 	 * from my-account.
 	 */
-	public function dprwoo_after_register( $user_id ){
+	public function dprwoo_after_register( $user_id ) {
 		$list_id = get_option('dplr_subscribers_list')['contacts'];
 		$user_info = get_userdata($user_id);
 		if(empty($list_id) || empty($user_id) || empty($user_info->user_email)) return false;
@@ -485,7 +485,7 @@ class Doppler_For_Woocommerce_Admin {
 	/**
 	 * Get Doppler mapped fields from WC user fields
 	 */
-	function extract_meta_from_user( $fields_map, $meta_fields ){
+	function extract_meta_from_user( $fields_map, $meta_fields ) {
 		$fields = array();
 		if(!empty($fields_map)){
 			foreach($fields_map as $k=>$v){
@@ -572,7 +572,7 @@ class Doppler_For_Woocommerce_Admin {
 	/**
 	 * Clear buyers and contacts List.
 	 */
-	public function dplrwoo_clear_lists(){
+	public function dplrwoo_clear_lists() {
 		update_option( 'dplr_subscribers_list', array('buyers','') );
 		update_option( 'dplr_subscribers_list', array('contacts','') );
 		echo '1';
@@ -735,8 +735,183 @@ class Doppler_For_Woocommerce_Admin {
 	 * Check if list id exists in an array of lists.
 	 * Lists must have list_id as key
 	 */
-	private function list_exists( $list_id, $lists){
+	private function list_exists( $list_id, $lists) {
 		return in_array($list_id, array_keys($lists));
+	}
+
+	/**
+	 * Returns the header to be sent in the requests.
+	 * 
+	 * @since 1.0.2
+	 * Return: string
+	 */
+	function set_request_header( $api_key ) {
+		return array(
+            "Accept" => "application/json",
+            "Content-Type" => "application/json",
+            "X-Doppler-Subscriber-Origin" => 'WooCommerece',
+            "Authorization" => "token ". $api_key
+        );
+	}  
+
+	/**
+	 * Send API credentials to Doppler API. 
+	 * 
+	 * @since 1.0.2
+	 * Returns: boolean 
+	 */
+	private function submit_WC_keys( $keys ) {
+		
+		$options = get_option('dplr_settings');
+		
+		if( empty($options['dplr_option_useraccount']) || empty($options['dplr_option_apikey']) ||
+			empty($keys['consumer_key']) || empty($keys['consumer_secret']) ) return false;
+		
+		$body = array(	
+			'accessToken'=> $keys['consumer_key_ori'], 
+			'accountName' => get_site_url(), 
+			'refreshToken' => $keys['consumer_secret']
+		);
+
+		//$url = DOPPLER_WOO_API_URL . 'accounts/'.$options['dplr_option_useraccount'].'/integrations/magento';
+		/* DELETE THIS FOR PRODUCTION */
+		$url = 'http://newapiqa.fromdoppler.net/accounts/mariofabianblanc@gmail.com/integrations/magento';
+		$options['dplr_option_apikey'] = '884E71335D719C8F7A37A84F48D7EE6F';
+		/* END DELETE THIS */
+		
+		$response = wp_remote_request($url, array(
+			'method' => 'PUT',
+			'headers'=> $this->set_request_header($options['dplr_option_apikey']),
+			'timeout' => 12,
+			'body'=> json_encode($body)
+		));
+		
+		return $response;
+	}
+
+	/**
+	 * Check if a key is saved. 
+	 * If not, generate a WC API KEY
+	 * submit to App, wait for response, and save key.
+	 */
+	public function dplrwoo_verify_keys() {
+		if(!empty(get_option('dplrwoo_consumer_secret'))){
+			wp_send_json_success();
+		}else{
+			$keys = $this->dplrwoo_generate_keys();
+			$response = $this->submit_WC_keys( $keys );
+			if($response['response']['code'] == '200'){
+				update_option('dplrwoo_consumer_secret', $keys['consumer_secret']);
+				wp_send_json_success();
+			}		
+		}
+		wp_send_json_error();
+	}
+
+	public function dplrwoo_verify_keys2() {
+		/*
+		if( empty( get_option('dplrwoo_customer_key') ) ){
+			$response = dplrwoo_generate_keys();
+			//Submit $response['consumer_key_ori'] & $response['consumer_secret']
+			//Wait for response, if ok update option.
+			update_option('dplrwoo_customer_key', $response['consumer_key']);
+		}*/
+		echo 'two';
+	}
+
+	/**
+	 * Generate api keys
+	 */
+	private function dplrwoo_generate_keys() {
+
+		global $wpdb;
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_die( -1 );
+		}
+
+		$response = array();
+
+		try {
+			
+			//$key_id      = isset( $_POST['key_id'] ) ? absint( $_POST['key_id'] ) : 0;
+			//Key will always be zero, since we do not edit keys, just create and send to Doppler.
+			$key_id = 0;
+			$description = sanitize_text_field( wp_unslash( 'Doppler customer keys' ) );
+			$permissions = 'read';
+			$user_id     = get_current_user_id();
+
+			// Check if current user can edit other users.
+			if ( $user_id && ! current_user_can( 'edit_user', $user_id ) ) {
+				if ( get_current_user_id() !== $user_id ) {
+					throw new Exception( __( 'You do not have permission to assign API Keys to the selected user.', 'woocommerce' ) );
+				}
+			}
+
+			if ( 0 < $key_id ) {
+				//We never get here.
+				$data = array(
+					'user_id'     => $user_id,
+					'description' => $description,
+					'permissions' => $permissions,
+				);
+
+				$wpdb->update(
+					$wpdb->prefix . 'woocommerce_api_keys',
+					$data,
+					array( 'key_id' => $key_id ),
+					array(
+						'%d',
+						'%s',
+						'%s',
+					),
+					array( '%d' )
+				);
+
+				$response                    = $data;
+				$response['consumer_key']    = '';
+				$response['consumer_secret'] = '';
+				$response['message']         = __( 'API Key updated successfully.', 'woocommerce' );
+			} else {
+				$consumer_key    = 'ck_' . wc_rand_hash();
+				$consumer_secret = 'cs_' . wc_rand_hash();
+
+				$data = array(
+					'user_id'         => $user_id,
+					'description'     => $description,
+					'permissions'     => $permissions,
+					'consumer_key'    => wc_api_hash( $consumer_key ),
+					'consumer_secret' => $consumer_secret,
+					'truncated_key'   => substr( $consumer_key, -7 ),
+				);
+
+				$wpdb->insert(
+					$wpdb->prefix . 'woocommerce_api_keys',
+					$data,
+					array(
+						'%d',
+						'%s',
+						'%s',
+						'%s',
+						'%s',
+						'%s',
+					)
+				);
+
+				//$wpdb->print_error();				
+
+				$key_id                      = $wpdb->insert_id;
+				$response                    = $data;
+				$response['consumer_key']    = $consumer_key;
+				$response['consumer_secret'] = $consumer_secret;
+				$response['message']         = __( 'API Key generated successfully. Make sure to copy your new keys now as the secret key will be hidden once you leave this page.', 'woocommerce' );
+				$response['revoke_url']      = '<a style="color: #a00; text-decoration: none;" href="' . esc_url( wp_nonce_url( add_query_arg( array( 'revoke-key' => $key_id ), admin_url( 'admin.php?page=wc-settings&tab=advanced&section=keys' ) ), 'revoke' ) ) . '">' . __( 'Revoke key', 'woocommerce' ) . '</a>';
+			}
+		} catch ( Exception $e ) {
+			wp_send_json_error( array( 'message' => $e->getMessage() ) );
+		}
+
+		return $response;
 	}
 
 }
