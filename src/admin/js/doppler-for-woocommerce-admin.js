@@ -65,6 +65,7 @@
 			);
 		});
 
+		/*
 		var synchBuyers = function(buyersList){
 			if(buyersList==='') return false;
 			$.post( ajaxurl, {action:'dplrwoo_ajax_synch',list_type: 'buyers', list_id: buyersList});
@@ -77,6 +78,7 @@
 
 		syncListsButton.click(function(e){
 			e.preventDefault();
+
 			var buyersList = buyersListSelect.val();
 			var contactsList = contactListSelect.val();
 			$(this).attr('disabled','disabled').addClass("button--loading");
@@ -86,6 +88,21 @@
 					listsForm.submit();
 				});
 			});
+		});
+		*/
+
+		function verifyKeys(){
+			return $.post(ajaxurl, {action: 'dplrwoo_ajax_verify_keys'});
+		}
+
+		function verifyKeys2(resp){
+			console.log(resp.success); //wp_send_json_success or wp_send_json_error
+			//return $.post(ajaxurl, {action: 'dplrwoo_ajax_verify_keys2'});
+		}
+
+		syncListsButton.click(function(e){
+			e.preventDefault();
+			verifyKeys().then(verifyKeys2).then();
 		});
 
 		$("#dplrwoo-form-list-new input[type=text]").keyup(function(){
@@ -174,4 +191,5 @@
 		return deferred.promise();
 	}
 
+	
 })( jQuery );
