@@ -307,7 +307,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
     }
     
     /**
-	 * Ccheck if current user session ID exists in database
+	 * Check if current user session ID exists in database
 	 *
 	 * @since    1.0.2
 	 * @return  boolean

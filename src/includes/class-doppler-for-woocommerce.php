@@ -134,8 +134,7 @@ class Doppler_For_Woocommerce {
 		/**
 		 * The class responsible of managing the abandoned cart.
 		 */
-		require_once plugin_dir_path( dirname(__FILE__) ) . "includes/class-doppler-for-woocommerce-ac.php";
-
+		require_once plugin_dir_path( dirname(__FILE__) ) . 'includes/class-doppler-for-woocommerce-ac.php';
 
 		$this->loader = new Doppler_For_Woocommerce_Loader();
 
