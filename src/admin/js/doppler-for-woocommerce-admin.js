@@ -66,16 +66,6 @@
 		});
 
 		/*
-		var synchBuyers = function(buyersList){
-			if(buyersList==='') return false;
-			$.post( ajaxurl, {action:'dplrwoo_ajax_synch',list_type: 'buyers', list_id: buyersList});
-		}
-		
-		var synchContacts = function(contactsList){
-			if(contactsList==='') return false;
-			$.post(ajaxurl, {action: 'dplrwoo_ajax_synch', list_type: 'contacts', list_id: contactsList});
-		}
-
 		syncListsButton.click(function(e){
 			e.preventDefault();
 
@@ -91,19 +81,38 @@
 		});
 		*/
 
-		function verifyKeys(){
-			return $.post(ajaxurl, {action: 'dplrwoo_ajax_verify_keys'});
+		var synchBuyers = function(buyersList){
+			if(buyersList==='') return false;
+			$.post( ajaxurl, {action:'dplrwoo_ajax_synch',list_type: 'buyers', list_id: buyersList});
 		}
-
-		function verifyKeys2(resp){
-			console.log(resp.success); //wp_send_json_success or wp_send_json_error
-			//return $.post(ajaxurl, {action: 'dplrwoo_ajax_verify_keys2'});
+		
+		var synchContacts = function(contactsList){
+			if(contactsList==='') return false;
+			$.post(ajaxurl, {action: 'dplrwoo_ajax_synch', list_type: 'contacts', list_id: contactsList});
 		}
 
 		syncListsButton.click(function(e){
 			e.preventDefault();
-			verifyKeys().then(verifyKeys2).then();
+			verifyKeys().then(syncrhonizeLists);
 		});
+
+		function verifyKeys(){
+			console.log('Verifying keys');
+			syncListsButton.attr('disabled','disabled').addClass("button--loading");
+			$("#dplr-settings-text").html(ObjWCStr.Synchronizing);
+			return $.post(ajaxurl, {action: 'dplrwoo_ajax_verify_keys'});
+		}
+
+		function syncrhonizeLists(resp){
+			console.log(resp.success); //wp_send_json_success or wp_send_json_error
+			var buyersList = buyersListSelect.val();
+			var contactsList = contactListSelect.val();
+			$.when(createDefaultList(buyersList, 'buyers'), createDefaultList(contactsList, 'contacts')).done(function(bl,cl){
+				$.when(synchBuyers(bl),synchContacts(cl)).done(function(){
+					listsForm.submit();
+				});
+			});
+		}
 
 		$("#dplrwoo-form-list-new input[type=text]").keyup(function(){
 			var button = $(this).closest('form').find('button');
