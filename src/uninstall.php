@@ -38,7 +38,8 @@ if( $_REQUEST['plugin'] === ( plugin_basename( __DIR__ ) . '/doppler-for-woocomm
 		'dplrwoo_mapping',
 		'dplrwoo_use_hub',
 		'dplrwoo_version',
-		'dplrwoo_consumer_secret'
+		'dplrwoo_consumer_secret',
+		'dplrwoo_notice_field'
 	);
 	
 	array_map('uninstall_options', $options);
