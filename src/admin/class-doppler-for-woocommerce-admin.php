@@ -44,7 +44,7 @@ class Doppler_For_Woocommerce_Admin {
 
 	private $doppler_service;
 
-	private $connectionStatus;
+	//private $connectionStatus;
 
 	private $admin_notice;
 
@@ -107,7 +107,7 @@ class Doppler_For_Woocommerce_Admin {
 	}
 
 	public function set_origin() {
-		$this->doppler_service->set_origin('WooCommerce');
+		$this->doppler_service->set_origin(DOPPLER_FOR_WOOCOMMERCE_ORIGIN);
 	}
 
 	public function display_error_message() {
@@ -207,15 +207,13 @@ class Doppler_For_Woocommerce_Admin {
 	 */
 	private function set_credentials() {
 		$options = get_option('dplr_settings');
-		if ( empty($options) ) {
-			return;
-		}
+		if(empty($options))  return;
+
 		$this->doppler_service->setCredentials(array(	
 			'api_key' => $options['dplr_option_apikey'], 
 			'user_account' => $options['dplr_option_useraccount'])
 		);
 	}
-
 
 	/**
 	 * Registers the admin menu
@@ -242,10 +240,13 @@ class Doppler_For_Woocommerce_Admin {
 
 	/**
 	 * Display the Fields Mapping screen
+	 * deprecated
 	 */
+	/*
 	public function dplrwoo_mapping_page() {
 		$fields = $this->get_checkout_fields();
 	}
+	*/
 
 	/**
 	 * Sanitizes & validate before saving new Doppler List.
@@ -625,6 +626,10 @@ class Doppler_For_Woocommerce_Admin {
 	 * If want to show an admin message, 
 	 * set $this->admin_notice = array( $class, $text), 
 	 * where class is success, warning, etc.
+	 * 
+	 * Also, will show messages from 
+	 * Doppler_For_WooCommerce_Admin_Notice class, that
+	 * persists through page redirects.
 	 */
 	public function show_admin_notice() {
 		$class = $this->admin_notice[0];
@@ -636,6 +641,7 @@ class Doppler_For_Woocommerce_Admin {
 				</div>
 			<?php
 		}
+		Doppler_For_WooCommerce_Admin_Notice::display_admin_notice();
 	}
 	
 	/**
@@ -740,69 +746,31 @@ class Doppler_For_Woocommerce_Admin {
 	}
 
 	/**
-	 * Returns the header to be sent in the requests.
-	 * 
-	 * @since 1.0.2
-	 * Return: string
-	 */
-	function set_request_header( $api_key ) {
-		return array(
-            "Accept" => "application/json",
-            "Content-Type" => "application/json",
-            "X-Doppler-Subscriber-Origin" => 'WooCommerece',
-            "Authorization" => "token ". $api_key
-        );
-	}  
-
-	/**
-	 * Send API credentials to Doppler API. 
-	 * 
-	 * @since 1.0.2
-	 * Returns: boolean 
-	 */
-	private function submit_WC_keys( $keys ) {
-		
-		$options = get_option('dplr_settings');
-		
-		if( empty($options['dplr_option_useraccount']) || empty($options['dplr_option_apikey']) ||
-			empty($keys['consumer_key']) || empty($keys['consumer_secret']) ) return false;
-		
-		$body = array(	
-			'accessToken'=> $keys['consumer_key_ori'], 
-			'accountName' => get_site_url(), 
-			'refreshToken' => $keys['consumer_secret']
-		);
-
-		//$url = DOPPLER_WOO_API_URL . 'accounts/'.$options['dplr_option_useraccount'].'/integrations/magento';
-		/* DELETE THIS FOR PRODUCTION */
-		$url = 'http://newapiqa.fromdoppler.net/accounts/mariofabianblanc@gmail.com/integrations/magento';
-		$options['dplr_option_apikey'] = '884E71335D719C8F7A37A84F48D7EE6F';
-		/* END DELETE THIS */
-		
-		$response = wp_remote_request($url, array(
-			'method' => 'PUT',
-			'headers'=> $this->set_request_header($options['dplr_option_apikey']),
-			'timeout' => 12,
-			'body'=> json_encode($body)
-		));
-		
-		return $response;
-	}
-
-	/**
-	 * Check if a key is saved. 
+	 * Check if a key is saved (already connected) when synching. 
 	 * If not, generate a WC API KEY
-	 * submit to App, wait for response, and save key.
+	 * submit to App, wait for response, and save flag.
+	 * 
+	 * @return object
 	 */
 	public function dplrwoo_verify_keys() {
 		if(!empty(get_option('dplrwoo_consumer_secret'))){
 			wp_send_json_success();
 		}else{
-			$keys = $this->dplrwoo_generate_keys();
-			$response = $this->submit_WC_keys( $keys );
-			if($response['response']['code'] == '200'){
-				update_option('dplrwoo_consumer_secret', $keys['consumer_secret']);
-				wp_send_json_success();
+			$options = get_option('dplr_settings');
+		    if( !empty($options['dplr_option_useraccount']) &&  !empty($options['dplr_option_apikey'] )){
+				
+				$app_connect = new Doppler_For_WooCommerce_App_Connect(
+					$options['dplr_option_useraccount'],
+					$options['dplr_option_apikey'], 
+					DOPPLER_WOO_API_URL,
+					DOPPLER_FOR_WOOCOMMERCE_ORIGIN
+				);
+
+				$response = $app_connect->connect();
+				if($response['response']['code'] === 200){
+					update_option('dplrwoo_consumer_secret', 'on');
+					wp_send_json_success();
+				}
 			}		
 		}
 		wp_send_json_error();
@@ -818,100 +786,4 @@ class Doppler_For_Woocommerce_Admin {
 		}*/
 		echo 'two';
 	}
-
-	/**
-	 * Generate api keys
-	 */
-	private function dplrwoo_generate_keys() {
-
-		global $wpdb;
-
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_die( -1 );
-		}
-
-		$response = array();
-
-		try {
-			
-			//$key_id      = isset( $_POST['key_id'] ) ? absint( $_POST['key_id'] ) : 0;
-			//Key will always be zero, since we do not edit keys, just create and send to Doppler.
-			$key_id = 0;
-			$description = sanitize_text_field( wp_unslash( 'Doppler customer keys' ) );
-			$permissions = 'read';
-			$user_id     = get_current_user_id();
-
-			// Check if current user can edit other users.
-			if ( $user_id && ! current_user_can( 'edit_user', $user_id ) ) {
-				if ( get_current_user_id() !== $user_id ) {
-					throw new Exception( __( 'You do not have permission to assign API Keys to the selected user.', 'woocommerce' ) );
-				}
-			}
-
-			if ( 0 < $key_id ) {
-				//We never get here.
-				$data = array(
-					'user_id'     => $user_id,
-					'description' => $description,
-					'permissions' => $permissions,
-				);
-
-				$wpdb->update(
-					$wpdb->prefix . 'woocommerce_api_keys',
-					$data,
-					array( 'key_id' => $key_id ),
-					array(
-						'%d',
-						'%s',
-						'%s',
-					),
-					array( '%d' )
-				);
-
-				$response                    = $data;
-				$response['consumer_key']    = '';
-				$response['consumer_secret'] = '';
-				$response['message']         = __( 'API Key updated successfully.', 'woocommerce' );
-			} else {
-				$consumer_key    = 'ck_' . wc_rand_hash();
-				$consumer_secret = 'cs_' . wc_rand_hash();
-
-				$data = array(
-					'user_id'         => $user_id,
-					'description'     => $description,
-					'permissions'     => $permissions,
-					'consumer_key'    => wc_api_hash( $consumer_key ),
-					'consumer_secret' => $consumer_secret,
-					'truncated_key'   => substr( $consumer_key, -7 ),
-				);
-
-				$wpdb->insert(
-					$wpdb->prefix . 'woocommerce_api_keys',
-					$data,
-					array(
-						'%d',
-						'%s',
-						'%s',
-						'%s',
-						'%s',
-						'%s',
-					)
-				);
-
-				//$wpdb->print_error();				
-
-				$key_id                      = $wpdb->insert_id;
-				$response                    = $data;
-				$response['consumer_key']    = $consumer_key;
-				$response['consumer_secret'] = $consumer_secret;
-				$response['message']         = __( 'API Key generated successfully. Make sure to copy your new keys now as the secret key will be hidden once you leave this page.', 'woocommerce' );
-				$response['revoke_url']      = '<a style="color: #a00; text-decoration: none;" href="' . esc_url( wp_nonce_url( add_query_arg( array( 'revoke-key' => $key_id ), admin_url( 'admin.php?page=wc-settings&tab=advanced&section=keys' ) ), 'revoke' ) ) . '">' . __( 'Revoke key', 'woocommerce' ) . '</a>';
-			}
-		} catch ( Exception $e ) {
-			wp_send_json_error( array( 'message' => $e->getMessage() ) );
-		}
-
-		return $response;
-	}
-
 }
