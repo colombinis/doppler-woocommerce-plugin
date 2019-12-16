@@ -32,30 +32,41 @@ class Doppler_For_Woocommerce_Deactivator {
 	 * @since    1.0.0
 	 */
 	public static function deactivate() {
-		
+
+		/**
+		 * On deactivation delete integration with APP.
+		 * If APP couldn't delete stops deactivation
+		 * and shows message.
+		 */
 		$options = get_option('dplr_settings');
 		$has_consumer_secret = get_option('dplrwoo_consumer_secret');
-		
+
 		if( empty($options['dplr_option_useraccount']) || empty($options['dplr_option_apikey']) ||
 			empty($has_consumer_secret) ) return false;
-
-		//$url = DOPPLER_WOO_API_URL . 'accounts/'.$options['dplr_option_useraccount'].'/integrations/magento';
-		/* DELETE THIS FOR PRODUCTION */
-		$url = 'http://newapiqa.fromdoppler.net/accounts/mariofabianblanc@gmail.com/integrations/magento';
-		$options['dplr_option_apikey'] = '884E71335D719C8F7A37A84F48D7EE6F';
-		/* END DELETE THIS */
 		
-		$response = wp_remote_request($url, array(
-			'method' => 'DELETE',
-			'headers'=> array(
-				"Accept" => "application/json",
-				"Content-Type" => "application/json",
-				"X-Doppler-Subscriber-Origin" => 'WooCommerece',
-				"Authorization" => "token ". $options['dplr_option_apikey']
-			),
-			'timeout' => 12,
-		));
-		var_dump($response); die();
+		$doppler_app_connect = new Doppler_For_WooCommerce_App_Connect(
+			$options['dplr_option_useraccount'], $options['dplr_option_apikey'],
+			DOPPLER_WOO_API_URL, DOPPLER_FOR_WOOCOMMERCE_ORIGIN
+		);
+
+		$response = $doppler_app_connect->disconnect();
+		
+		if($response['response']['code'] == 400){
+			$body = json_decode(wp_remote_retrieve_body($response));
+			//If integration doesn't exists go on with deactivation...
+			if($body->errorCode != 41){
+				$err_message = '';
+				if($body->errorCode == 40){
+					$err_message = _('Please delete associated campaings in Doppler before deactivating.', 'doppler-for-woocommerce');
+				}
+				Doppler_For_WooCommerce_Admin_Notice::display_error(
+					__("<strong>Doppler For WooCommerce wasn't deactivated.</strong>".$err_message, "doppler-for-woocommerce")
+				);
+				header("Location: ".admin_url('plugins.php'));
+				exit();
+			}
+		}
+	
 	}
 
 }
