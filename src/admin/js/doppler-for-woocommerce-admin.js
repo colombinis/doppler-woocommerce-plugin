@@ -65,6 +65,22 @@
 			);
 		});
 
+		/*
+		syncListsButton.click(function(e){
+			e.preventDefault();
+
+			var buyersList = buyersListSelect.val();
+			var contactsList = contactListSelect.val();
+			$(this).attr('disabled','disabled').addClass("button--loading");
+			$("#dplr-settings-text").html(ObjWCStr.Synchronizing);
+			$.when(createDefaultList(buyersList, 'buyers'), createDefaultList(contactsList, 'contacts')).done(function(bl,cl){
+				$.when(synchBuyers(bl),synchContacts(cl)).done(function(){
+					listsForm.submit();
+				});
+			});
+		});
+		*/
+
 		var synchBuyers = function(buyersList){
 			if(buyersList==='') return false;
 			$.post( ajaxurl, {action:'dplrwoo_ajax_synch',list_type: 'buyers', list_id: buyersList});
@@ -77,16 +93,25 @@
 
 		syncListsButton.click(function(e){
 			e.preventDefault();
+			verifyKeys().then(syncrhonizeLists);
+		});
+
+		function verifyKeys(){
+			syncListsButton.attr('disabled','disabled').addClass("button--loading");
+			$("#dplr-settings-text").html(ObjWCStr.Synchronizing);
+			return $.post(ajaxurl, {action: 'dplrwoo_ajax_verify_keys'});
+		}
+
+		function syncrhonizeLists(resp){
+			//check resp.success if needed.
 			var buyersList = buyersListSelect.val();
 			var contactsList = contactListSelect.val();
-			$(this).attr('disabled','disabled').addClass("button--loading");
-			$("#dplr-settings-text").html(ObjWCStr.Synchronizing);
 			$.when(createDefaultList(buyersList, 'buyers'), createDefaultList(contactsList, 'contacts')).done(function(bl,cl){
 				$.when(synchBuyers(bl),synchContacts(cl)).done(function(){
 					listsForm.submit();
 				});
 			});
-		});
+		}
 
 		$("#dplrwoo-form-list-new input[type=text]").keyup(function(){
 			var button = $(this).closest('form').find('button');
@@ -174,4 +199,5 @@
 		return deferred.promise();
 	}
 
+	
 })( jQuery );

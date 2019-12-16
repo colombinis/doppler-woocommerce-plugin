@@ -131,6 +131,10 @@ class Doppler_For_Woocommerce {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-doppler-for-woocommerce-public.php';
 
+		/**
+		 * The class responsible of managing the abandoned cart.
+		 */
+		require_once plugin_dir_path( dirname(__FILE__) ) . 'includes/class-doppler-for-woocommerce-ac.php';
 
 		$this->loader = new Doppler_For_Woocommerce_Loader();
 
@@ -174,12 +178,15 @@ class Doppler_For_Woocommerce {
 		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_synch', $plugin_admin, 'dplrwoo_ajax_synch' );
 		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_create_lists' , $plugin_admin, 'dplrwoo_create_default_lists' );
 		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_clear_lists', $plugin_admin, 'dplrwoo_clear_lists');
+		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_verify_keys', $plugin_admin, 'dplrwoo_verify_keys');
+		//Delete this, just for testing
+		$this->loader->add_action( 'wp_ajax_dplrwoo_ajax_verify_keys2', $plugin_admin, 'dplrwoo_verify_keys2');
+
 		$this->loader->add_action( 'woocommerce_created_customer', $plugin_admin, 'dplrwoo_created_customer', 10, 3);
 		$this->loader->add_action( 'woocommerce_thankyou', $plugin_admin, 'dplrwoo_customer_checkout_success' );
 		$this->loader->add_action( 'woocommerce_order_status_changed', $plugin_admin, 'dplrwoo_order_status_changed', 10, 4 );
 		$this->loader->add_action( 'user_register', $plugin_admin, 'dprwoo_after_register');
 		$this->loader->add_action( 'admin_notices', $plugin_admin, 'show_admin_notice' );
-		//TODO: add hooks for abandoned cart.
 		
 	}
 
@@ -191,9 +198,24 @@ class Doppler_For_Woocommerce {
 	 * @access   private
 	 */
 	private function define_public_hooks() {
-
+		global $wpdb;
 		$plugin_public = new Doppler_For_Woocommerce_Public( $this->get_plugin_name(), $this->get_version() );
+		$doppler_abandoned_cart = new Doppler_For_Woocommerce_Abandoned_Cart( $wpdb->prefix . DOPPLER_ABANDONED_CART_TABLE );
+
 		$this->loader->add_action( 'wp_head', $plugin_public, 'add_tracking_script' );
+		//Abandoned cart public hooks.
+		//$this->loader->add_action( 'woocommerce_after_checkout_form', $plugin_public, 'add_additional_scripts_on_checkout' ); //Adds additional functionality only to Checkout page
+		//$this->loader->add_action( 'wp_ajax_nopriv_save_data', $plugin_public, 'save_user_data' ); //Handles data saving using Ajax after any changes made by the user on the E-mail or Phone field in Checkout form
+		//$this->loader->add_action( 'wp_ajax_save_data', $plugin_public, 'save_user_data' ); //Handles data saving using Ajax after any changes made by the user on the E-mail field for Logged in users
+		$this->loader->add_action( 'woocommerce_add_to_cart', $doppler_abandoned_cart, 'save_cart_session', 200 ); //Handles data saving if an item is added to shopping cart, 200 = priority set to run the function last after all other functions are finished
+		$this->loader->add_action( 'woocommerce_cart_actions', $doppler_abandoned_cart, 'save_cart_session', 200 ); //Handles data updating if a cart is updated. 200 = priority set to run the function last after all other functions are finished
+		$this->loader->add_action( 'woocommerce_cart_item_removed', $doppler_abandoned_cart, 'save_cart_session', 200 ); //Handles data updating if an item is removed from cart. 200 = priority set to run the function last after all other functions are finished
+		//$this->loader->add_action( 'woocommerce_add_to_cart', $plugin_public, 'dplr_update_cart_data', 210 );
+		//$this->loader->add_action( 'woocommerce_cart_actions', $plugin_public, 'dplr_update_cart_data', 210 );
+		//$this->loader->add_action( 'woocommerce_cart_item_removed', $plugin_public, 'dplr_update_cart_data', 210 );
+		//$this->loader->add_action( 'woocommerce_new_order', $plugin_public, 'dplr_delete_user_data', 30 ); //Hook fired once a new order is created via Checkout process. Order is created as soon as user is taken to payment page. No matter if he pays or not
+		//$this->loader->add_action( 'woocommerce_thankyou', $plugin_public, 'dplr_delete_user_data', 30 ); //Hooks into Thank you page to delete a row with a user who completes the checkout (Backup version if first hook does not get triggered after an WooCommerce order gets created)
+		//$this->loader->add_filter( 'woocommerce_checkout_fields', $plugin_public, 'dplr_restore_input_data', 1); //Restoring previous user input in Checkout form
 		
 	}
 

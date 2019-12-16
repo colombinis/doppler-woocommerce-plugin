@@ -44,7 +44,7 @@ class Doppler_For_Woocommerce_Admin {
 
 	private $doppler_service;
 
-	private $connectionStatus;
+	//private $connectionStatus;
 
 	private $admin_notice;
 
@@ -102,12 +102,12 @@ class Doppler_For_Woocommerce_Admin {
 		return $this->success_message;
 	}
 
-	public function get_required_doppler_version(){
+	public function get_required_doppler_version() {
 		return $this->required_doppler_version;
 	}
 
-	public function set_origin(){
-		$this->doppler_service->set_origin('WooCommerce');
+	public function set_origin() {
+		$this->doppler_service->set_origin(DOPPLER_FOR_WOOCOMMERCE_ORIGIN);
 	}
 
 	public function display_error_message() {
@@ -186,7 +186,7 @@ class Doppler_For_Woocommerce_Admin {
 		}
 	}
 
-	private function deactivate(){
+	private function deactivate() {
 		deactivate_plugins( DOPPLER_FOR_WOOCOMMERCE_PLUGIN ); 
 		if ( isset( $_GET['activate'] ) ) {
 			unset( $_GET['activate'] );
@@ -205,17 +205,15 @@ class Doppler_For_Woocommerce_Admin {
 	 * Set the credentials to doppler service
 	 * before running api calls.
 	 */
-	private function set_credentials(){
+	private function set_credentials() {
 		$options = get_option('dplr_settings');
-		if ( empty($options) ) {
-			return;
-		}
+		if(empty($options))  return;
+
 		$this->doppler_service->setCredentials(array(	
 			'api_key' => $options['dplr_option_apikey'], 
 			'user_account' => $options['dplr_option_useraccount'])
 		);
 	}
-
 
 	/**
 	 * Registers the admin menu
@@ -242,10 +240,13 @@ class Doppler_For_Woocommerce_Admin {
 
 	/**
 	 * Display the Fields Mapping screen
+	 * deprecated
 	 */
+	/*
 	public function dplrwoo_mapping_page() {
 		$fields = $this->get_checkout_fields();
 	}
+	*/
 
 	/**
 	 * Sanitizes & validate before saving new Doppler List.
@@ -418,7 +419,7 @@ class Doppler_For_Woocommerce_Admin {
 	 * Subscribe customer after registering
 	 * from my-account.
 	 */
-	public function dprwoo_after_register( $user_id ){
+	public function dprwoo_after_register( $user_id ) {
 		$list_id = get_option('dplr_subscribers_list')['contacts'];
 		$user_info = get_userdata($user_id);
 		if(empty($list_id) || empty($user_id) || empty($user_info->user_email)) return false;
@@ -485,7 +486,7 @@ class Doppler_For_Woocommerce_Admin {
 	/**
 	 * Get Doppler mapped fields from WC user fields
 	 */
-	function extract_meta_from_user( $fields_map, $meta_fields ){
+	function extract_meta_from_user( $fields_map, $meta_fields ) {
 		$fields = array();
 		if(!empty($fields_map)){
 			foreach($fields_map as $k=>$v){
@@ -572,7 +573,7 @@ class Doppler_For_Woocommerce_Admin {
 	/**
 	 * Clear buyers and contacts List.
 	 */
-	public function dplrwoo_clear_lists(){
+	public function dplrwoo_clear_lists() {
 		update_option( 'dplr_subscribers_list', array('buyers','') );
 		update_option( 'dplr_subscribers_list', array('contacts','') );
 		echo '1';
@@ -625,6 +626,10 @@ class Doppler_For_Woocommerce_Admin {
 	 * If want to show an admin message, 
 	 * set $this->admin_notice = array( $class, $text), 
 	 * where class is success, warning, etc.
+	 * 
+	 * Also, will show messages from 
+	 * Doppler_For_WooCommerce_Admin_Notice class, that
+	 * persists through page redirects.
 	 */
 	public function show_admin_notice() {
 		$class = $this->admin_notice[0];
@@ -636,6 +641,7 @@ class Doppler_For_Woocommerce_Admin {
 				</div>
 			<?php
 		}
+		Doppler_For_WooCommerce_Admin_Notice::display_admin_notice();
 	}
 	
 	/**
@@ -735,8 +741,38 @@ class Doppler_For_Woocommerce_Admin {
 	 * Check if list id exists in an array of lists.
 	 * Lists must have list_id as key
 	 */
-	private function list_exists( $list_id, $lists){
+	private function list_exists( $list_id, $lists) {
 		return in_array($list_id, array_keys($lists));
 	}
 
+	/**
+	 * Check if a key is saved (already connected) when synching. 
+	 * If not, generate a WC API KEY
+	 * submit to App, wait for response, and save flag.
+	 * 
+	 * @return object
+	 */
+	public function dplrwoo_verify_keys() {
+		if(!empty(get_option('dplrwoo_consumer_secret'))){
+			wp_send_json_success();
+		}else{
+			$options = get_option('dplr_settings');
+		    if( !empty($options['dplr_option_useraccount']) &&  !empty($options['dplr_option_apikey'] )){
+				
+				$app_connect = new Doppler_For_WooCommerce_App_Connect(
+					$options['dplr_option_useraccount'],
+					$options['dplr_option_apikey'], 
+					DOPPLER_WOO_API_URL,
+					DOPPLER_FOR_WOOCOMMERCE_ORIGIN
+				);
+
+				$response = $app_connect->connect();
+				if($response['response']['code'] === 200){
+					update_option('dplrwoo_consumer_secret', 'on');
+					wp_send_json_success();
+				}
+			}		
+		}
+		wp_send_json_error();
+	}
 }
