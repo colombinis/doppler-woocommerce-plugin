@@ -65,22 +65,6 @@
 			);
 		});
 
-		/*
-		syncListsButton.click(function(e){
-			e.preventDefault();
-
-			var buyersList = buyersListSelect.val();
-			var contactsList = contactListSelect.val();
-			$(this).attr('disabled','disabled').addClass("button--loading");
-			$("#dplr-settings-text").html(ObjWCStr.Synchronizing);
-			$.when(createDefaultList(buyersList, 'buyers'), createDefaultList(contactsList, 'contacts')).done(function(bl,cl){
-				$.when(synchBuyers(bl),synchContacts(cl)).done(function(){
-					listsForm.submit();
-				});
-			});
-		});
-		*/
-
 		var synchBuyers = function(buyersList){
 			if(buyersList==='') return false;
 			$.post( ajaxurl, {action:'dplrwoo_ajax_synch',list_type: 'buyers', list_id: buyersList});
