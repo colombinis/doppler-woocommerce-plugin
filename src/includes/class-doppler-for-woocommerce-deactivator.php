@@ -39,7 +39,7 @@ class Doppler_For_Woocommerce_Deactivator {
 		 * and shows message.
 		 */
 		$options = get_option('dplr_settings');
-		$has_consumer_secret = get_option('dplrwoo_consumer_secret');
+		$has_consumer_secret = get_option('dplrwoo_api_connected');
 
 		if( empty($options['dplr_option_useraccount']) || empty($options['dplr_option_apikey']) ||
 			empty($has_consumer_secret) ) return false;

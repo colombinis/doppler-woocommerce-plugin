@@ -753,7 +753,7 @@ class Doppler_For_Woocommerce_Admin {
 	 * @return object
 	 */
 	public function dplrwoo_verify_keys() {
-		if(!empty(get_option('dplrwoo_consumer_secret'))){
+		if(!empty(get_option('dplrwoo_api_connected'))){
 			wp_send_json_success();
 		}else{
 			$options = get_option('dplr_settings');
@@ -768,7 +768,10 @@ class Doppler_For_Woocommerce_Admin {
 
 				$response = $app_connect->connect();
 				if($response['response']['code'] === 200){
-					update_option('dplrwoo_consumer_secret', 'on');
+					update_option('dplrwoo_api_connected', array(
+						'account' => $options['dplr_option_useraccount'],
+						'status' => 'on'
+					));
 					wp_send_json_success();
 				}
 			}		
