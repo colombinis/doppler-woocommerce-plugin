@@ -775,15 +775,4 @@ class Doppler_For_Woocommerce_Admin {
 		}
 		wp_send_json_error();
 	}
-
-	public function dplrwoo_verify_keys2() {
-		/*
-		if( empty( get_option('dplrwoo_customer_key') ) ){
-			$response = dplrwoo_generate_keys();
-			//Submit $response['consumer_key_ori'] & $response['consumer_secret']
-			//Wait for response, if ok update option.
-			update_option('dplrwoo_customer_key', $response['consumer_key']);
-		}*/
-		echo 'two';
-	}
 }
