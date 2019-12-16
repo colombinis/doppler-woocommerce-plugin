@@ -97,14 +97,13 @@
 		});
 
 		function verifyKeys(){
-			console.log('Verifying keys');
 			syncListsButton.attr('disabled','disabled').addClass("button--loading");
 			$("#dplr-settings-text").html(ObjWCStr.Synchronizing);
 			return $.post(ajaxurl, {action: 'dplrwoo_ajax_verify_keys'});
 		}
 
 		function syncrhonizeLists(resp){
-			console.log(resp.success); //wp_send_json_success or wp_send_json_error
+			//check resp.success if needed.
 			var buyersList = buyersListSelect.val();
 			var contactsList = contactListSelect.val();
 			$.when(createDefaultList(buyersList, 'buyers'), createDefaultList(contactsList, 'contacts')).done(function(bl,cl){
