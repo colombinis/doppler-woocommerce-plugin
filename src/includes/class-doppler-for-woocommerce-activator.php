@@ -62,7 +62,27 @@ class Doppler_For_Woocommerce_Activator {
 		//Saves plugin version.
 		update_option('dplrwoo_version', DOPPLER_FOR_WOOCOMMERCE_VERSION);
 
-
+		/**
+		 * Doppler App Integration.
+		 * 
+		 * If plugin in installed for the 1st time (dplrwoo_consumer_secret is empty)
+		 * we ignore app integration becouse it will be performed on first sync.
+		 * 
+		 * If for some reason dplrwoo_consumer_secret has a value, it means plugin was
+		 * deactivated and re-activated. On deactivation Integration was DELETED, so we
+		 * are goint to re-activate and regenerate the keys.
+		 * 
+		 */
+		$options = get_option('dplr_settings');
+		if(!empty(get_option('dplrwoo_consumer_secret'))){
+			$DopplerAppConnect = new Doppler_For_WooCommerce_App_Connect(
+				$options['dplr_option_useraccount'], $options['dplr_option_apikey'],
+				DOPPLER_WOO_API_URL, DOPPLER_FOR_WOOCOMMERCE_ORIGIN
+			);
+			//TODO: On fail through warning, but goes on with the activation.
+			//TODO: Display onscreen status somewhere. 
+			$DopplerAppConnect->connect();
+		}
 	}
 
 }
