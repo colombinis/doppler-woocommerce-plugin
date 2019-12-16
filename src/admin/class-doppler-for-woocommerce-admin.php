@@ -74,6 +74,7 @@ class Doppler_For_Woocommerce_Admin {
 		$this->required_doppler_version = '2.1.5';
 		$this->origin = $this->set_origin();
 		$this->set_credentials();
+		$this->check_current_account();
 	}
 
 	/**
@@ -213,6 +214,20 @@ class Doppler_For_Woocommerce_Admin {
 			'api_key' => $options['dplr_option_apikey'], 
 			'user_account' => $options['dplr_option_useraccount'])
 		);
+	}
+
+	private function check_current_account() {
+		$options = get_option('dplr_settings');
+		$status = get_option('dplrwoo_api_connected');
+		if( !empty($status) && !empty($options) && 
+			!$this->compare_accounts($options['dplr_option_apikey'], $status['account']) )
+			{
+				
+			}
+	}
+
+	private function compare_accounts($doppler_account, $connected_account) {
+		return $doppler_account == $connected_account;
 	}
 
 	/**
