@@ -216,18 +216,41 @@ class Doppler_For_Woocommerce_Admin {
 		);
 	}
 
+	/**
+	 * Check if connected Doppler account
+	 * matches the account used to integrate with
+	 * the App.
+	 * If not, create keys and activate integration.
+	 * 
+	 * @since 1.0.2
+	 */
 	private function check_current_account() {
-		$options = get_option('dplr_settings');
-		$status = get_option('dplrwoo_api_connected');
-		if( !empty($status) && !empty($options) && 
-			!$this->compare_accounts($options['dplr_option_apikey'], $status['account']) )
-			{
-				
-			}
-	}
-
-	private function compare_accounts($doppler_account, $connected_account) {
-		return $doppler_account == $connected_account;
+		if(is_admin()){
+			$options = get_option('dplr_settings');
+			//If status is empty, api is not connected.
+			$status = get_option('dplrwoo_api_connected');
+			if( !empty($status) && !empty($options) && 
+				($options['dplr_option_useraccount'] != $status['account']) )
+				{
+					$dplr_app_connect = new Doppler_For_WooCommerce_App_Connect(
+						$options['dplr_option_useraccount'],
+						$options['dplr_option_apikey'],
+						DOPPLER_WOO_API_URL,
+						DOPPLER_FOR_WOOCOMMERCE_ORIGIN
+					);
+					//delete previous keys.
+					$dplr_app_connect->disconnect();
+					//generate new keys, associates it in Doppler with request account.
+					$connect_response = $dplr_app_connect->connect();
+					if($connect_response['response']['code'] === 200){
+						//save flag with current account.
+						update_option('dplrwoo_api_connected', array(
+							'account' => $options['dplr_option_useraccount'],
+							'status' => 'on'
+						));
+					}
+				}
+		}
 	}
 
 	/**

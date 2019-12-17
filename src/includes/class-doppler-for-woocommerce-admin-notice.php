@@ -20,7 +20,7 @@ class Doppler_For_WooCommerce_Admin_Notice
     
         if ($message) {
             echo "<div class='notice {$noticeLevel} is-dismissible'><p>{$message}</p></div>";
-            delete_option(self::NOTICE_FIELD);
+            delete_option(static::NOTICE_FIELD);
         }
     }
 

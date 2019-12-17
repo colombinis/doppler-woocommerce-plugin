@@ -32,7 +32,7 @@ class Doppler_For_Woocommerce_Deactivator {
 	 * @since    1.0.0
 	 */
 	public static function deactivate() {
-
+		
 		/**
 		 * On deactivation delete integration with APP.
 		 * If APP couldn't delete stops deactivation
