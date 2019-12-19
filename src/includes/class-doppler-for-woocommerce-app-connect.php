@@ -40,7 +40,7 @@ class Doppler_For_WooCommerce_App_Connect {
     }
 
     private function get_api_key() {
-		return (static::DEBUG_MODE)? '884E71335D719C8F7A37A84F48D7EE6F' : $this->api_key;		
+		return $this->api_key;		
     }
 
     private function get_api_url() {
@@ -87,10 +87,6 @@ class Doppler_For_WooCommerce_App_Connect {
 		if(empty($account) || empty($api_url)) return false;
 		
 		$url = $api_url . '/'. $account. '/' . static::INTEGRATION;
-		
-		if(static::DEBUG_MODE){
-			$url = 'http://newapiqa.fromdoppler.net/accounts/mariofabianblanc@gmail.com/integrations/magento';
-		}
 
 		 return wp_remote_request($url, array(
 			'method' => $method,
