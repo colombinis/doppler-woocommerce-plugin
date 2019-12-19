@@ -86,7 +86,7 @@ class Doppler_For_WooCommerce_App_Connect {
 		
 		if(empty($account) || empty($api_url)) return false;
 		
-		$url = $api_url . '/'. $account. '/' . static::INTEGRATION;
+		$url = $api_url . '/'. $account. '/' . self::INTEGRATION;
 
 		 return wp_remote_request($url, array(
 			'method' => $method,
