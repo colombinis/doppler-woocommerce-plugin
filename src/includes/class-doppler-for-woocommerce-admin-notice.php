@@ -13,14 +13,14 @@ class Doppler_For_WooCommerce_Admin_Notice
 {
     const NOTICE_FIELD = 'dplrwoo_notice_field';
 
-    public function display_admin_notice() {
-        $option      = get_option(static::NOTICE_FIELD);
+    public static function display_admin_notice() {
+        $option      = get_option(self::NOTICE_FIELD);
         $message     = isset($option['notice_message']) ? $option['notice_message'] : false;
         $noticeLevel = !empty($option['notice_class']) ? $option['notice_class'] : 'notice-error';
     
         if ($message) {
             echo "<div class='notice {$noticeLevel} is-dismissible'><p>{$message}</p></div>";
-            delete_option(static::NOTICE_FIELD);
+            delete_option(self::NOTICE_FIELD);
         }
     }
 
@@ -41,7 +41,7 @@ class Doppler_For_WooCommerce_Admin_Notice
     }
     
     protected static function update_option_field( $notice_message, $notice_class){
-        update_option(  static::NOTICE_FIELD, 
+        update_option(  self::NOTICE_FIELD, 
                         array(  'notice_message' => $notice_message,
                                 'notice_class' => $notice_class)
         );
