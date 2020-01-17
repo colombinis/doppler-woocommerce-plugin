@@ -144,7 +144,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
      * removes or update something from cart.
 	 * @since    1.0.2
 	 */
-	function save_cart_session(){
+	function save_cart_session() {
         
         if(!is_user_logged_in()) return false;
         
@@ -159,7 +159,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
         $session_id = $cart_data['session_id'];
         $product_array = $cart_data['product_array'];
         //Where is this setted?
-        $dplr_cart_session_id = WC()->session->get('dplr_cart_session_id');
+		$dplr_cart_session_id = WC()->session->get('dplr_cart_session_id');
 
         //In case if the user updates the cart and takes out all items from the cart
         if(empty($product_array)){
@@ -239,7 +239,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
             $wpdb->query(
                 $wpdb->prepare(
                     "INSERT INTO ". $table_name ."
-                    ( name, lastname, email, phone, location, cart_contents, cart_total, currency, time, session_id)
+                    ( name, lastname, email, phone, location, cart_contents, cart_total, currency, time, session_id )
                     VALUES ( %s, %s, %s, %s, %s, %s, %0.2f, %s, %s, %s)",
                     array(
                         sanitize_text_field( $name ),
@@ -264,7 +264,173 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
             //Is this necessary?
             //$this->increase_captured_abandoned_cart_count(); //Increasing total count of captured abandoned carts
         }
-    }
+	}
+
+	/**
+	 * Save user's data with ajax after changing email from checkout.
+	 */
+	function save_frontend_user_data() {
+	
+		if ( isset( $_POST["dplrwoo_email"] ) ) {
+			global $wpdb;
+			$table_name = $this->get_cart_session_table();
+
+			$cart_data = $this->get_cart();
+			$cart_total = $cart_data['cart_total'];
+			$cart_currency = $cart_data['cart_currency'];
+			$current_time = $cart_data['current_time'];
+			$session_id = $cart_data['session_id'];
+			$product_array = $cart_data['product_array'];
+			$dplr_cart_session_id = WC()->session->get('dplr_cart_session_id');
+
+			//If cart has no items delete the abandoned cart.
+			if(empty($product_array)){
+				$this->delete_cart_session();
+				return;
+			}
+			
+			(isset($_POST['dplrwoo_name'])) ? $name = $_POST['dplrwoo_name'] : $name = '';
+			(isset($_POST['dplrwoo_surname'])) ? $surname = $_POST['dplrwoo_lastname'] : $surname = '';
+			(isset($_POST['dplrwoo_phone'])) ? $phone = $_POST['dplrwoo_phone'] : $phone = '';
+			(isset($_POST['dplrwoo_country'])) ? $country = $_POST['dplrwoo_country'] : $country = '';
+			(isset($_POST['dplrwoo_city']) && $_POST['dplrwoo_city'] != '') ? $city = ", ". $_POST['dplrwoo_city'] : $city = '';
+			(isset($_POST['dplrwoo_billing_company'])) ? $company = $_POST['dplrwoo_billing_company'] : $company = '';
+			(isset($_POST['dplrwoo_billing_address_1'])) ? $address_1 = $_POST['dplrwoo_billing_address_1'] : $address_1 = '';
+			(isset($_POST['dplrwoo_billing_address_2'])) ? $address_2 = $_POST['dplrwoo_billing_address_2'] : $address_2 = '';
+			(isset($_POST['dplrwoo_billing_state'])) ? $state = $_POST['dplrwoo_billing_state'] : $state = '';
+			(isset($_POST['dplrwoo_billing_postcode'])) ? $postcode = $_POST['dplrwoo_billing_postcode'] : $postcode = '';
+			(isset($_POST['dplrwoo_shipping_first_name'])) ? $shipping_name = $_POST['dplrwoo_shipping_first_name'] : $shipping_name = '';
+			(isset($_POST['dplrwoo_shipping_last_name'])) ? $shipping_surname = $_POST['dplrwoo_shipping_last_name'] : $shipping_surname = '';
+			(isset($_POST['dplrwoo_shipping_company'])) ? $shipping_company = $_POST['dplrwoo_shipping_company'] : $shipping_company = '';
+			(isset($_POST['dplrwoo_shipping_country'])) ? $shipping_country = $_POST['dplrwoo_shipping_country'] : $shipping_country = '';
+			(isset($_POST['dplrwoo_shipping_address_1'])) ? $shipping_address_1 = $_POST['dplrwoo_shipping_address_1'] : $shipping_address_1 = '';
+			(isset($_POST['dplrwoo_shipping_address_2'])) ? $shipping_address_2 = $_POST['dplrwoo_shipping_address_2'] : $shipping_address_2 = '';
+			(isset($_POST['dplrwoo_shipping_city'])) ? $shipping_city = $_POST['dplrwoo_shipping_city'] : $shipping_city = '';
+			(isset($_POST['dplrwoo_shipping_state'])) ? $shipping_state = $_POST['dplrwoo_shipping_state'] : $shipping_state = '';
+			(isset($_POST['dplrwoo_shipping_postcode'])) ? $shipping_postcode = $_POST['dplrwoo_shipping_postcode'] : $shipping_postcode = '';
+			(isset($_POST['dplrwoo_order_comments'])) ? $comments = $_POST['dplrwoo_order_comments'] : $comments = '';
+			(isset($_POST['dplrwoo_create_account'])) ? $create_account = $_POST['dplrwoo_create_account'] : $create_account = '';
+			(isset($_POST['dplrwoo_ship_elsewhere'])) ? $ship_elsewhere = $_POST['dplrwoo_ship_elsewhere'] : $ship_elsewhere = '';
+			
+			$other_fields = array(
+				'dplrwoo_billing_company' 		=> $company,
+				'dplrwoo_billing_address_1' 		=> $address_1,
+				'dplrwoo_billing_address_2' 		=> $address_2,
+				'dplrwoo_billing_state' 			=> $state,
+				'dplrwoo_billing_postcode' 		=> $postcode,
+				'dplrwoo_shipping_first_name' 	=> $shipping_name,
+				'dplrwoo_shipping_last_name' 	=> $shipping_surname,
+				'dplrwoo_shipping_company' 		=> $shipping_company,
+				'dplrwoo_shipping_country' 		=> $shipping_country,
+				'dplrwoo_shipping_address_1' 	=> $shipping_address_1,
+				'dplrwoo_shipping_address_2' 	=> $shipping_address_2,
+				'dplrwoo_shipping_city' 			=> $shipping_city,
+				'dplrwoo_shipping_state' 		=> $shipping_state,
+				'dplrwoo_shipping_postcode' 		=> $shipping_postcode,
+				'dplrwoo_order_comments' 		=> $comments,
+				'dplrwoo_create_account' 		=> $create_account,
+				'dplrwoo_ship_elsewhere' 		=> $ship_elsewhere
+			);
+			
+			$location = $country . $city;
+
+			$current_session_exist_in_db = $this->current_session_exist_in_db($dplr_cart_session_id);
+
+			if( $current_session_exist_in_db && $dplr_cart_session_id !== NULL ){
+				$wpdb->prepare('%s',
+
+					$wpdb->update(
+						$table_name,
+						array(
+							'name'			=>	sanitize_text_field( $name ),
+							'lastname'		=>	sanitize_text_field( $surname ),
+							'email'			=>	sanitize_email( $_POST['dplrwoo_email'] ),
+							'phone'			=>	filter_var( $phone, FILTER_SANITIZE_NUMBER_INT),
+							'location'		=>	sanitize_text_field( $location ),
+							'cart_contents'	=>	serialize($product_array),
+							'cart_total'	=>	sanitize_text_field( $cart_total ),
+							'currency'		=>	sanitize_text_field( $cart_currency ),
+							'time'			=>	sanitize_text_field( $current_time ),
+							'other_fields'	=>	sanitize_text_field( serialize($other_fields) )
+						),
+						array('session_id' => $dplr_cart_session_id),
+						array('%s', '%s', '%s', '%s', '%s', '%s', '%0.2f', '%s', '%s', '%s'),
+						array('%s')
+					)
+				);
+
+			}else{
+				
+				$wpdb->query(
+					$wpdb->prepare(
+						"INSERT INTO ". $table_name ."
+						( name, lastname, email, phone, location, cart_contents, cart_total, currency, time, session_id, other_fields )
+						VALUES ( %s, %s, %s, %s, %s, %s, %0.2f, %s, %s, %s, %s)",
+						array(
+							sanitize_text_field( $name ),
+							sanitize_text_field( $surname ),
+							sanitize_email( $_POST['dplrwoo_email'] ),
+							filter_var($phone, FILTER_SANITIZE_NUMBER_INT),
+							sanitize_text_field( $location ),
+							serialize($product_array),
+							sanitize_text_field( $cart_total ),
+							sanitize_text_field( $cart_currency ),
+							sanitize_text_field( $current_time ),
+							sanitize_text_field( $session_id ),
+							sanitize_text_field( serialize($other_fields) )
+						) 
+					)
+				);
+				
+				WC()->session->set('dplr_cart_session_id', $session_id);
+				//$this->increase_captured_abandoned_cart_count();
+				wp_die();
+			}
+		}
+	}
+	
+	/**
+	 * Save cart session for users who are not logged in
+	 */
+	function update_cart_session() {
+
+		if(is_user_logged_in()) return false;
+
+		$dplr_cart_session_id = WC()->session->get('dplr_cart_session_id');
+
+		if( $dplr_cart_session_id !== NULL ){
+			
+			global $wpdb;
+			$table_name = $this->get_cart_session_table();
+			$cart_data = $this->get_cart();
+			$product_array = $cart_data['product_array'];
+			$cart_total = $cart_data['cart_total'];
+			$cart_currency = $cart_data['cart_currency'];
+			$current_time = $cart_data['current_time'];
+
+			//In case if the cart has no items in it, we need to delete the abandoned cart
+			if(empty($product_array)){
+				$this->clear_cart_session();
+				return;
+			}
+
+			//Updating row in the Database where users Session id = same as prevously saved in Session
+			$wpdb->prepare('%s',
+				$wpdb->update(
+					$table_name,
+					array(
+						'cart_contents'	=>	serialize($product_array),
+						'cart_total'	=>	sanitize_text_field( $cart_total ),
+						'currency'		=>	sanitize_text_field( $cart_currency ),
+						'time'			=>	sanitize_text_field( $current_time )
+					),
+					array('session_id' => $dplr_cart_session_id),
+					array('%s', '%0.2f', '%s', '%s'),
+					array('%s')
+				)
+			);
+		}
+	}
 
 
    /**
@@ -272,7 +438,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 	 *
 	 * @since    1.0.2
 	 */
-	function clear_cart_session(){
+	function clear_cart_session() {
 		global $wpdb;
 		$table_name = $this->get_cart_session_table();
 		
@@ -283,7 +449,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			$dplr_cart_session_id = WC()->session->get('dplr_cart_session_id');
 			if(isset($dplr_cart_session_id)){
 
-				$cart_data = $this->read_cart();
+				$cart_data = $this->get_cart();
 				$cart_currency = $cart_data['cart_currency'];
 				$current_time = $cart_data['current_time'];
 				
@@ -304,7 +470,35 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				);
 			}
 		}
-    }
+	}
+	
+	/**
+	 * Delete row from table if the user completed the checkout
+	 */
+	function delete_cart_session() {
+		global $wpdb;
+		$table_name = $this->get_cart_session_table();
+		if(isset(WC()->session)){
+
+			$dplr_cart_session_id = WC()->session->get('dplr_cart_session_id');
+			if(isset($dplr_cart_session_id)){
+				//Deleting row from database
+				$wpdb->show_errors();
+				$resp = $wpdb->query(
+					$wpdb->prepare(
+						"DELETE FROM ". $table_name ."
+						 WHERE session_id = %s",
+						sanitize_key($dplr_cart_session_id)
+					)
+				);
+				
+				$wpdb->print_error();
+				//$this->decrease_captured_abandoned_cart_count( $count = false ); //Decreasing total count of captured abandoned carts
+			}
+			
+			$this->unset_session_id();
+		}
+	}
     
     /**
 	 * Check if current user session ID exists in database
@@ -312,7 +506,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 	 * @since    1.0.2
 	 * @return  boolean
 	 */
-	function current_session_exist_in_db($dplr_cart_session_id){
+	function current_session_exist_in_db($dplr_cart_session_id) {
 		if( $dplr_cart_session_id !== NULL ){
 			global $wpdb;
 			$main_table = $this->get_cart_session_table();
@@ -328,6 +522,30 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 		}else{
 			return false;
 		}
+	}
+
+	/**
+	 * Function decreases the total count of captured abandoned carts
+	 *
+	 * @since    3.0
+	 */
+	/*
+	function decrease_captured_abandoned_cart_count($count){
+		if(!$count){
+			$count = 1;
+		}
+		$previously_captured_abandoned_cart_count = get_option('captured_abandoned_cart_count');
+		update_option('captured_abandoned_cart_count', $previously_captured_abandoned_cart_count - $count); //Decreasing the count by one abandoned cart
+	}*/
+
+	/**
+	 * Function unsets session variable
+	 *
+	 * @since    3.0
+	 */
+	function unset_session_id() {
+		//Removing stored ID value from WooCommerce Session
+		WC()->session->__unset('dplr_cart_session_id');
 	}
 
 }

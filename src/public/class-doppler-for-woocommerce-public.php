@@ -70,6 +70,7 @@ class Doppler_For_Woocommerce_Public {
 	 */
 	public function enqueue_scripts() {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/doppler-for-woocommerce-public.js', array( 'jquery' ), $this->version, false );
+		wp_localize_script( $this->plugin_name, 'dplrWooAjaxObj', array( 'ajaxurl' => admin_url( 'admin-ajax.php' )));
 	}
 
 	public function add_tracking_script() {

@@ -44,8 +44,6 @@ class Doppler_For_Woocommerce_Admin {
 
 	private $doppler_service;
 
-	//private $connectionStatus;
-
 	private $admin_notice;
 
 	private $success_message;
