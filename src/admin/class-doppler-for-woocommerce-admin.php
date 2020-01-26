@@ -814,4 +814,32 @@ class Doppler_For_Woocommerce_Admin {
 		}
 		wp_send_json_error();
 	}
+
+	/**
+	 * Define custom API endpoint
+	 */
+	public function dplrwoo_abandoned_endpoint( $controllers ) {
+		register_rest_route( 'wc/v3', 'abandoned-carts', array(
+			'methods' => 'GET',
+			'callback' => array($this, 'get_abandoned_carts')
+		));
+	}
+
+	/**
+	 * 
+	 */
+	function get_abandoned_carts() {
+		global $wpdb;
+		$result = $wpdb->get_row("SELECT consumer_secret FROM {$wpdb->prefix}woocommerce_api_keys WHERE description = 'Doppler App integration'");
+		if( !empty($result->consumer_secret) && !empty($_SERVER['PHP_AUTH_PW'])
+			&& ($_SERVER['PHP_AUTH_PW'] === $result->consumer_secret) ){
+				return $wpdb->get_results(
+					"SELECT id, name, lastname, email, phone, location, cart_contents, cart_total,
+					currency, time, session_id, other_fields
+					 FROM ". $wpdb->prefix . DOPPLER_ABANDONED_CART_TABLE
+				);
+		}else{
+			return array("code"=>"woocommerce_rest_cannot_view","message"=>"forbidden","data"=>array("status"=>401));
+		}
+	}
 }

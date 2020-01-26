@@ -136,6 +136,11 @@ class Doppler_For_Woocommerce {
 		 */
 		require_once plugin_dir_path( dirname(__FILE__) ) . 'includes/class-doppler-for-woocommerce-ac.php';
 
+		/**
+		 * The class responsible of defining the custom API endpoint to get abandoned carts data.
+		 */
+		//require_once plugin_dir_path( dirname(__FILE__) ) . 'includes/class-doppler-for-woocommerce-rest-controller.php';
+		
 		$this->loader = new Doppler_For_Woocommerce_Loader();
 
 	}
@@ -187,7 +192,9 @@ class Doppler_For_Woocommerce {
 		$this->loader->add_action( 'woocommerce_order_status_changed', $plugin_admin, 'dplrwoo_order_status_changed', 10, 4 );
 		$this->loader->add_action( 'user_register', $plugin_admin, 'dprwoo_after_register');
 		$this->loader->add_action( 'admin_notices', $plugin_admin, 'show_admin_notice' );
-		
+
+		//Custom API endpoint
+		$this->loader->add_action( 'rest_api_init', $plugin_admin, 'dplrwoo_abandoned_endpoint' );
 	}
 
 	/**
