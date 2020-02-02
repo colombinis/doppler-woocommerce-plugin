@@ -60,21 +60,6 @@
             require_once('mapping.php');
         break;
 
-        case 'hub':
-            if(isset($_POST['dplr_hub_script'])):
-                if( current_user_can('manage_options') && check_admin_referer('use-hub') ){
-                    if( $_POST['dplr_hub_script'] === '' || $this->validate_tracking_code($_POST['dplr_hub_script'])):
-                        update_option( 'dplr_hub_script', $this->sanitize_tracking_code($_POST['dplr_hub_script']));
-                        $this->set_success_message(__('On Site Tracking code saved successfully', 'doppler-for-woocommerce'));
-                    else:
-                        $this->set_error_message(__('Tracking code is invalid', 'doppler-for-woocommerce'));
-                    endif;
-                }
-            endif;
-            $dplr_hub_script = get_option('dplr_hub_script');
-            require_once('hub.php');
-        break;
-
         default:
             if( isset($_POST['dplr_subscribers_list']) && $this->validate_subscribers_list($_POST['dplr_subscribers_list']) && current_user_can('manage_options') && check_admin_referer('map-lists') ){
                 update_option( 'dplr_subscribers_list', $this->sanitize_subscribers_list($_POST['dplr_subscribers_list']) );

@@ -73,11 +73,4 @@ class Doppler_For_Woocommerce_Public {
 		wp_localize_script( $this->plugin_name, 'dplrWooAjaxObj', array( 'ajaxurl' => admin_url( 'admin-ajax.php' )));
 	}
 
-	public function add_tracking_script() {
-		$script = get_option('dplr_hub_script');
-		if(!empty($script)){
-			echo stripslashes(html_entity_decode($script));
-		}
-	}
-
 }

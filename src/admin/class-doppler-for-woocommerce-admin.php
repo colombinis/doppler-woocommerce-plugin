@@ -643,22 +643,6 @@ class Doppler_For_Woocommerce_Admin {
 	}
 	
 	/**
-	 * Validates on site tracking code.
-	 */
-	public function validate_tracking_code($code) {
-		return preg_match("/(<|%3C)script[\s\S]*?(>|%3E)[\s\S]*?(<|%3C)(\/|%2F)script[\s\S]*?(>|%3E)/", $code);
-	}
-	
-	/**
-	 * Sanitize on site tracking pasted code.
-	 */
-	public function sanitize_tracking_code($code) {
-		//Is valid to save empty value in this case.
-		if($code === '') return $code;
-		return sanitize_text_field(htmlentities(trim($code)));
-	}
-
-	/**
 	 * If want to show an admin message, 
 	 * set $this->admin_notice = array( $class, $text), 
 	 * where class is success, warning, etc.

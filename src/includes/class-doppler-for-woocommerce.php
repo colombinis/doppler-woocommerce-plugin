@@ -208,8 +208,6 @@ class Doppler_For_Woocommerce {
 		global $wpdb;
 		$plugin_public = new Doppler_For_Woocommerce_Public( $this->get_plugin_name(), $this->get_version() );
 		$doppler_abandoned_cart = new Doppler_For_Woocommerce_Abandoned_Cart( $wpdb->prefix . DOPPLER_ABANDONED_CART_TABLE );
-
-		$this->loader->add_action( 'wp_head', $plugin_public, 'add_tracking_script' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
 		//Abandoned cart public hooks.

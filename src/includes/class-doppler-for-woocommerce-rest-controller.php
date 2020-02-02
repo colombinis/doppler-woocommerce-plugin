@@ -1,5 +1,7 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 class WC_REST_Doppler_Controller {
 	/**
 	 * You can extend this class with
