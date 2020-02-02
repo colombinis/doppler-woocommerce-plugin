@@ -826,4 +826,13 @@ class Doppler_For_Woocommerce_Admin {
 			return array("code"=>"woocommerce_rest_cannot_view","message"=>"forbidden","data"=>array("status"=>401));
 		}
 	}
+
+	/**
+	 * Delete old abandoned carts registers.
+	 */
+	function dplrwoo_delete_carts() {
+		global $wpdb;
+		$result = $wpdb->query("DELETE FROM {$wpdb->prefix}dplrwoo_abandoned_cart 
+			WHERE time < NOW() - INTERVAL 1 DAY " );
+	}
 }

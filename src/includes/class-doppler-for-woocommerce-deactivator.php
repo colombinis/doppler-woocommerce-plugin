@@ -66,6 +66,12 @@ class Doppler_For_Woocommerce_Deactivator {
 				exit();
 			}
 		}
+
+		/**
+		 * Remove cron schedule.
+		 */
+		$timestamp = wp_next_scheduled( 'dplrwoo_cron_job' );
+   		wp_unschedule_event( $timestamp, 'dplrwoo_cron_job' );
 	
 	}
 

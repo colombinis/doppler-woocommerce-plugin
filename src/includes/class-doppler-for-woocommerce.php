@@ -87,6 +87,7 @@ class Doppler_For_Woocommerce {
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
+		$this->schedule_cron();
 
 	}
 
@@ -175,6 +176,7 @@ class Doppler_For_Woocommerce {
 
 		$plugin_admin = new Doppler_For_Woocommerce_Admin( $this->get_plugin_name(), $this->get_version(), $this->doppler_service );
 		
+		$this->loader->add_action( 'dplrwoo_cron_job', $plugin_admin, 'dplrwoo_delete_carts' );
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'dplrwoo_check_parent' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
@@ -270,6 +272,27 @@ class Doppler_For_Woocommerce {
 	 */
 	public function get_version() {
 		return $this->version;
+	}
+
+	public function schedule_cron() {
+		
+		/*
+		//in case we need another schedule
+		add_filter( 'cron_schedules', function() {
+			// Adds once every minute to the existing schedules.
+			$schedules['everyminute'] = array(
+				'interval' => 60,
+				'display' => __( 'Doppler Once Every Minute' )
+			);
+			return $schedules;
+		} );
+		*/
+		//houry, daily, twicedaily
+		add_action('wp', function() {
+			if( !wp_next_scheduled( 'dplrwoo_cron_job' ) ) {  
+				wp_schedule_event( time(), 'daily', 'dplrwoo_cron_job' );  
+			 }
+		});
 	}
 
 }
