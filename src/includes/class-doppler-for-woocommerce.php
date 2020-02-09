@@ -182,6 +182,7 @@ class Doppler_For_Woocommerce {
 		$plugin_admin = new Doppler_For_Woocommerce_Admin( $this->get_plugin_name(), $this->get_version(), $this->doppler_service );
 		
 		$this->loader->add_action( 'dplrwoo_cron_job', $plugin_admin, 'dplrwoo_delete_carts' );
+		$this->loader->add_action( 'dplrwoo_cron_clean_views', $plugin_admin, 'dplrwoo_delete_product_views' );
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'dplrwoo_check_parent' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
@@ -301,7 +302,10 @@ class Doppler_For_Woocommerce {
 		add_action('wp', function() {
 			if( !wp_next_scheduled( 'dplrwoo_cron_job' ) ) {  
 				wp_schedule_event( time(), 'daily', 'dplrwoo_cron_job' );  
-			 }
+			}
+			if( !wp_next_scheduled( 'dplrwoo_cron_clean_views' ) ) {  
+				wp_schedule_event( time(), 'daily', 'dplrwoo_cron_clean_views' );  
+			}
 		});
 	}
 

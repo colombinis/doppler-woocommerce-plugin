@@ -803,14 +803,20 @@ class Doppler_For_Woocommerce_Admin {
 	 * Define custom API endpoint
 	 */
 	public function dplrwoo_abandoned_endpoint( $controllers ) {
+		//Register abadoned cart endpoint.
 		register_rest_route( 'wc/v3', 'abandoned-carts', array(
 			'methods' => 'GET',
 			'callback' => array($this, 'get_abandoned_carts')
 		));
+		//Register product views endpoint.
+		register_rest_route( 'wc/v3', 'viewed-products', array(
+			'methods' => 'GET',
+			'callback' => array($this, 'get_viewed_products')
+		));
 	}
 
 	/**
-	 * 
+	 * Get abandoned carts.
 	 */
 	function get_abandoned_carts() {
 		global $wpdb;
@@ -828,11 +834,38 @@ class Doppler_For_Woocommerce_Admin {
 	}
 
 	/**
-	 * Delete old abandoned carts registers.
+	 * Get abandoned carts.
+	 */
+	function get_viewed_products() {
+		global $wpdb;
+		$result = $wpdb->get_row("SELECT consumer_secret FROM {$wpdb->prefix}woocommerce_api_keys WHERE description = 'Doppler App integration'");
+		if( !empty($result->consumer_secret) && !empty($_SERVER['PHP_AUTH_PW'])
+			&& ($_SERVER['PHP_AUTH_PW'] === $result->consumer_secret) ){
+				return $wpdb->get_results(
+					"SELECT id, user_id, user_name, user_lastname, user_email, product_id, product_name, 
+					product_slug, product_link, product_price, product_regular_price, currency, visited_time
+					 FROM ". $wpdb->prefix . DOPPLER_VISITED_PRODUCTS_TABLE
+				);
+		}else{
+			return array("code"=>"woocommerce_rest_cannot_view","message"=>"forbidden","data"=>array("status"=>401));
+		}
+	}
+
+	/**
+	 * Delete old abandoned carts registers. (older than 1 day).
 	 */
 	function dplrwoo_delete_carts() {
 		global $wpdb;
 		$result = $wpdb->query("DELETE FROM {$wpdb->prefix}dplrwoo_abandoned_cart 
 			WHERE time < NOW() - INTERVAL 1 DAY " );
+	}
+
+	/**
+	 * Delete old product views. (older than 7 days).
+	 */
+	function dplrwoo_delete_product_views() {
+		global $wpdb;
+		$result = $wpdb->query("DELETE FROM {$wpdb->prefix}dplrwoo_visited_products 
+			WHERE time < NOW() - INTERVAL 7 DAY " );
 	}
 }
