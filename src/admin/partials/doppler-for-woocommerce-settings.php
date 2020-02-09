@@ -38,7 +38,6 @@
     <h2 class="nav-tab-wrapper">
         <a href="?page=doppler_woocommerce_menu&tab=lists" class="nav-tab <?php echo $active_tab == 'lists' ? 'nav-tab-active' : ''; ?>"><?php _e('Lists to synchronize', 'doppler-for-woocommerce')?></a>
         <a href="?page=doppler_woocommerce_menu&tab=fields" class="nav-tab <?php echo $active_tab == 'fields' ? 'nav-tab-active' : ''; ?>"><?php _e('Fields Mapping', 'doppler-for-woocommerce')?></a>
-        <a href="?page=doppler_woocommerce_menu&tab=hub" class="nav-tab <?php echo $active_tab == 'hub' ? 'nav-tab-active' : ''; ?>"><?php _e('On-Site Tracking', 'doppler-for-woocommerce')?></a>
     </h2>
 
     <h1 class="screen-reader-text"></h1>
