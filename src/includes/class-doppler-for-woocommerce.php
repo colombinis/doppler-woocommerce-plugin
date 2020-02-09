@@ -138,6 +138,11 @@ class Doppler_For_Woocommerce {
 		require_once plugin_dir_path( dirname(__FILE__) ) . 'includes/class-doppler-for-woocommerce-ac.php';
 
 		/**
+		 * The class responsible of tracking the product views.
+		 */
+		require_once plugin_dir_path( dirname(__FILE__) ) . 'includes/class-doppler-for-woocommerce-visited-products.php';
+		
+		/**
 		 * The class responsible of defining the custom API endpoint to get abandoned carts data.
 		 */
 		//require_once plugin_dir_path( dirname(__FILE__) ) . 'includes/class-doppler-for-woocommerce-rest-controller.php';
@@ -208,8 +213,11 @@ class Doppler_For_Woocommerce {
 	 */
 	private function define_public_hooks() {
 		global $wpdb;
+	
 		$plugin_public = new Doppler_For_Woocommerce_Public( $this->get_plugin_name(), $this->get_version() );
 		$doppler_abandoned_cart = new Doppler_For_Woocommerce_Abandoned_Cart( $wpdb->prefix . DOPPLER_ABANDONED_CART_TABLE );
+		$doppler_visited_products = new Doppler_For_WooCommerce_Visited_Products( $wpdb->prefix . DOPPLER_VISITED_PRODUCTS_TABLE );
+
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
 		//Abandoned cart public hooks.
@@ -232,6 +240,8 @@ class Doppler_For_Woocommerce {
 		$this->loader->add_action( 'woocommerce_thankyou', $doppler_abandoned_cart, 'delete_cart_session', 30 ); //Retry if previous hook is not triggered.
 		//$this->loader->add_filter( 'woocommerce_checkout_fields', $doppler_abandoned_cart, 'dplr_restore_input_data', 1); //Restoring previous user input in Checkout form
 		
+		//Save visited product.
+		$this->loader->add_action( 'woocommerce_before_single_product', $doppler_visited_products, 'save_visited_product');
 	}
 
 	/**

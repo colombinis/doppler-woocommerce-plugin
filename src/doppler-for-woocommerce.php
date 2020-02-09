@@ -39,6 +39,7 @@ define( 'DOPPLER_FOR_WOOCOMMERCE_URL', plugin_dir_url(__FILE__));
 define( 'DOPPLER_FOR_WOOCOMMERCE_PLUGIN', plugin_basename( __FILE__ ));
 if(!defined( 'DOPPLER_PLUGINS_PATH' )) define('DOPPLER_PLUGINS_PATH', plugin_dir_path(__DIR__));
 if(!defined( 'DOPPLER_ABANDONED_CART_TABLE')) define('DOPPLER_ABANDONED_CART_TABLE', 'dplrwoo_abandoned_cart');
+if(!defined( 'DOPPLER_VISITED_PRODUCTS_TABLE')) define('DOPPLER_VISITED_PRODUCTS_TABLE', 'dplrwoo_visited_products');
 //if(!defined( 'DOPPLER_WOO_API_URL' )) define('DOPPLER_WOO_API_URL', 'https://restapi.fromdoppler.com/');
 if(!defined( 'DOPPLER_WOO_API_URL' )) define('DOPPLER_WOO_API_URL', 'http://newapiqa.fromdoppler.net/');
 if(!defined( 'DOPPLER_FOR_WOOCOMMERCE_ORIGIN' )) define('DOPPLER_FOR_WOOCOMMERCE_ORIGIN', 'WooCommerce');

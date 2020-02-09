@@ -59,6 +59,28 @@ class Doppler_For_Woocommerce_Activator {
 		$sql ="ALTER TABLE $table_name AUTO_INCREMENT = 1";
 		dbDelta( $sql );
 
+		$table_name = $wpdb->prefix . DOPPLER_VISITED_PRODUCTS_TABLE;
+		$charset_collate = $wpdb->get_charset_collate();
+		$sql = "CREATE TABLE $table_name (
+			    id BIGINT(20) NOT NULL AUTO_INCREMENT,
+				user_id BIGINT(20),
+				user_name VARCHAR(60),
+				user_lastname VARCHAR(60),
+				user_email VARCHAR(200),
+			    product_id BIGINT(20),
+			    product_name VARCHAR(200),
+			    product_slug VARCHAR(200),
+				product_link VARCHAR(200),
+			    product_price DECIMAL(10,2),
+				product_regular_price DECIMAL(10,2),
+			    currency VARCHAR(10),
+			    visited_time DATETIME DEFAULT '0000-00-00 00:00:00',
+			    PRIMARY KEY  (id)
+		) $charset_collate;";
+		  
+		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+		dbDelta( $sql );
+
 		//Saves plugin version.
 		update_option('dplrwoo_version', DOPPLER_FOR_WOOCOMMERCE_VERSION);
 
