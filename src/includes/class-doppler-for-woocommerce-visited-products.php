@@ -66,7 +66,7 @@ class Doppler_For_WooCommerce_Visited_Products {
                         sanitize_text_field( $product_slug ),
                         sanitize_text_field( $product_link ),
                         sanitize_text_field( $product_price ),
-                        sanitize_text_field( $product_regular_price ),
+                        sanitize_text_field( $regular_price ),
                         sanitize_text_field( $currency ),
                         sanitize_text_field( $current_time )                    
                     ) 
