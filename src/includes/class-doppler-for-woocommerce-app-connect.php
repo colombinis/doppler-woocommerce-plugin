@@ -86,8 +86,7 @@ class Doppler_For_WooCommerce_App_Connect {
 		
 		if(empty($account) || empty($api_url)) return false;
 		
-		$url = $api_url . '/'. $account. '/' . self::INTEGRATION;
-
+		$url = $api_url . 'accounts/'. $account. '/integrations/' . self::INTEGRATION;
 		 return wp_remote_request($url, array(
 			'method' => $method,
 			'headers'=> $this->set_request_header(),
@@ -107,7 +106,7 @@ class Doppler_For_WooCommerce_App_Connect {
 		$keys = $this->generate_WC_Api_keys();
 		if(!$keys) return false;
 		$body = array(
-			'accessToken'=> $keys['consumer_key_ori'], 
+			'accessToken'=> $keys['consumer_key'], 
 			'accountName' => get_site_url(), 
 			'refreshToken' => $keys['consumer_secret']
 		);

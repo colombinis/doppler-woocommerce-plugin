@@ -787,6 +787,7 @@ class Doppler_For_Woocommerce_Admin {
 				);
 
 				$response = $app_connect->connect();
+				//print_r($response);
 				if($response['response']['code'] === 200){
 					update_option('dplrwoo_api_connected', array(
 						'account' => $options['dplr_option_useraccount'],

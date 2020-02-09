@@ -103,7 +103,7 @@ class Doppler_For_Woocommerce_Activator {
 			);
 			//TODO: On fail through warning, but goes on with the activation.
 			//TODO: Display onscreen status somewhere. 
-			$DopplerAppConnect->connect();
+			$response = $DopplerAppConnect->connect();
 		}
 	}
 
