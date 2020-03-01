@@ -880,7 +880,7 @@ class Doppler_For_Woocommerce_Admin {
 	function dplrwoo_delete_carts() {
 		global $wpdb;
 		$result = $wpdb->query("DELETE FROM {$wpdb->prefix}dplrwoo_abandoned_cart 
-			WHERE time < NOW() - INTERVAL 1 DAY " );
+			WHERE time < NOW() - INTERVAL 7 DAY " );
 	}
 
 	/**
