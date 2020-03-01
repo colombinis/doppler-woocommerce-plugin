@@ -34,7 +34,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 		$cart_total = WC()->cart->total;
 		$cart_currency = get_woocommerce_currency();
-        $current_time = current_time( 'mysql', false );
+        $current_time = current_time( 'mysql', true ); //work with GMT time.
         
 		//Retrieving customer ID from WooCommerce sessions variable in order to use it as a session_id value	
 		$session_id = WC()->session->get_customer_id();

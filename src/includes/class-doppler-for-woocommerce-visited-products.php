@@ -45,7 +45,7 @@ class Doppler_For_WooCommerce_Visited_Products {
             $regular_price = $product->get_regular_price();
             $product_price = $product->get_price();
             $currency = get_woocommerce_currency();
-            $current_time = date('Y-m-d H:i:s');
+            $current_time = gmdate('Y-m-d H:i:s');
     
             $wpdb->query(
                 $wpdb->prepare(
