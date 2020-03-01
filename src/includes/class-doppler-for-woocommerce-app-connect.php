@@ -110,7 +110,8 @@ class Doppler_For_WooCommerce_App_Connect {
 			'accountName' => get_site_url(), 
 			'refreshToken' => $keys['consumer_secret']
 		);
-		return $this->do_request($body, 'PUT');
+		$response = $this->do_request($body, 'PUT');
+		return $response;
     }
 
 	/**
