@@ -294,6 +294,16 @@ class Doppler_For_Woocommerce_Admin {
 		wp_die();
 	}
 
+	/*
+	* Validate date formats
+	*/
+	function validateDate($date, $format = 'Y-m-d H:i:s') {
+		// Create the format date
+		$d = DateTime::createFromFormat($format, $date);
+		// Return the comparison    
+		return $d && $d->format($format) === $date;
+	}
+
 	/**
 	 * Saves new Doppler List.
 	 */
@@ -824,11 +834,16 @@ class Doppler_For_Woocommerce_Admin {
 		$result = $wpdb->get_row("SELECT consumer_secret FROM {$wpdb->prefix}woocommerce_api_keys WHERE description = 'Doppler App integration'");
 		if( !empty($result->consumer_secret) && !empty($_SERVER['PHP_AUTH_PW'])
 			&& ($_SERVER['PHP_AUTH_PW'] === $result->consumer_secret) ){
-				return $wpdb->get_results(
-					"SELECT id, name, lastname, email, phone, location, cart_contents, cart_total,
-					currency, time, session_id, other_fields
-					 FROM ". $wpdb->prefix . DOPPLER_ABANDONED_CART_TABLE
-				);
+				if(empty($_GET['from']) || empty($_GET['to'])){
+					return array("code"=>"woocommerce_rest_wrong_parameter_count","message"=>"Wrong parameter count","data"=>array("status"=>400));
+				}
+				if(!$this->validateDate($_GET['from']) || !$this->validateDate($_GET['to'])){
+					return array("code"=>"woocommerce_rest_wrong_parameter_count","message"=>"Invalid parameter","data"=>array("status"=>400));
+				}
+				return $wpdb->get_results( $wpdb->prepare("SELECT id, name, lastname, email, phone, location, cart_contents, cart_total,
+				currency, time, session_id, other_fields
+				FROM ". $wpdb->prefix . DOPPLER_ABANDONED_CART_TABLE . 
+				" WHERE time BETWEEN '%s' AND '%s' ", $_GET['from'], $_GET['to']));
 		}else{
 			return array("code"=>"woocommerce_rest_cannot_view","message"=>"forbidden","data"=>array("status"=>401));
 		}
@@ -842,10 +857,17 @@ class Doppler_For_Woocommerce_Admin {
 		$result = $wpdb->get_row("SELECT consumer_secret FROM {$wpdb->prefix}woocommerce_api_keys WHERE description = 'Doppler App integration'");
 		if( !empty($result->consumer_secret) && !empty($_SERVER['PHP_AUTH_PW'])
 			&& ($_SERVER['PHP_AUTH_PW'] === $result->consumer_secret) ){
-				return $wpdb->get_results(
+				if(empty($_GET['from']) || empty($_GET['to'])){
+					return array("code"=>"woocommerce_rest_wrong_parameter_count","message"=>"Wrong parameter count","data"=>array("status"=>400));
+				}
+				if(!$this->validateDate($_GET['from']) || !$this->validateDate($_GET['to'])){
+					return array("code"=>"woocommerce_rest_wrong_parameter_count","message"=>"Invalid parameter","data"=>array("status"=>400));
+				}
+				return $wpdb->get_results( $wpdb->prepare(
 					"SELECT id, user_id, user_name, user_lastname, user_email, product_id, product_name, 
 					product_slug, product_link, product_price, product_regular_price, currency, visited_time
-					 FROM ". $wpdb->prefix . DOPPLER_VISITED_PRODUCTS_TABLE
+					FROM ". $wpdb->prefix . DOPPLER_VISITED_PRODUCTS_TABLE
+					" WHERE time BETWEEN '%s' AND '%s' ", $_GET['from'], $_GET['to']));
 				);
 		}else{
 			return array("code"=>"woocommerce_rest_cannot_view","message"=>"forbidden","data"=>array("status"=>401));
