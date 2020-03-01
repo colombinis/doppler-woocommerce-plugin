@@ -70,6 +70,8 @@ class Doppler_For_Woocommerce_Activator {
 			    product_id BIGINT(20),
 			    product_name VARCHAR(200),
 			    product_slug VARCHAR(200),
+				product_description TEXT,
+				product_image TEXT,
 				product_link VARCHAR(200),
 			    product_price DECIMAL(10,2),
 				product_regular_price DECIMAL(10,2),
