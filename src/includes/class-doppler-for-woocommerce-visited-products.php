@@ -41,6 +41,8 @@ class Doppler_For_WooCommerce_Visited_Products {
             $product = wc_get_product( $product_id );
             $product_name = $product->get_name();
             $product_slug = $product->get_slug();
+            $product_description = $product->get_description();
+            $product_image = wp_get_attachment_url($product->get_image_id());
             $product_link = $product->get_permalink();
             $regular_price = $product->get_regular_price();
             $product_price = $product->get_price();
@@ -51,10 +53,10 @@ class Doppler_For_WooCommerce_Visited_Products {
                 $wpdb->prepare(
                     "INSERT INTO ". $table_name ."
                     ( user_id, user_email, user_name, user_lastname, product_id,
-                     product_name, product_slug, product_link, product_price, product_regular_price,
+                     product_name, product_slug, product_description, product_image, product_link, product_price, product_regular_price,
                      currency, visited_time )
                     VALUES ( %d, %s, %s, %s, %d,
-                     %s, %s, %s, %0.2f, %0.2f, 
+                     %s, %s, %s, %s, %s, %0.2f, %0.2f, 
                      %s, %s)",
                     array(
                         filter_var($user_id, FILTER_SANITIZE_NUMBER_INT),
@@ -64,6 +66,8 @@ class Doppler_For_WooCommerce_Visited_Products {
                         filter_var($product_id, FILTER_SANITIZE_NUMBER_INT),
                         sanitize_text_field( $product_name ),
                         sanitize_text_field( $product_slug ),
+                        sanitize_text_field( $product_description ),
+                        sanitize_text_field( $product_image ),
                         sanitize_text_field( $product_link ),
                         sanitize_text_field( $product_price ),
                         sanitize_text_field( $regular_price ),
