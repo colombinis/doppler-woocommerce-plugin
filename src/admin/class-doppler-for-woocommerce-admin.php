@@ -865,9 +865,9 @@ class Doppler_For_Woocommerce_Admin {
 				}
 				return $wpdb->get_results( $wpdb->prepare(
 					"SELECT id, user_id, user_name, user_lastname, user_email, product_id, product_name, 
-					product_slug, product_link, product_price, product_regular_price, currency, visited_time
+					product_slug, product_link, product_price, product_regular_price, product_description, currency, visited_time, product_image
 					FROM ". $wpdb->prefix . DOPPLER_VISITED_PRODUCTS_TABLE .
-					" WHERE time BETWEEN '%s' AND '%s' ", $_GET['from'], $_GET['to']));
+					" WHERE visited_time BETWEEN '%s' AND '%s' ", $_GET['from'], $_GET['to']));
 		}else{
 			return array("code"=>"woocommerce_rest_cannot_view","message"=>"forbidden","data"=>array("status"=>401));
 		}
