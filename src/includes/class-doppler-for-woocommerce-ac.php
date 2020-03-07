@@ -47,6 +47,9 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			$item = wc_get_product($product['data']->get_id());
 
 			$product_title = $item->get_title();
+			$product_image = wp_get_attachment_url($item->get_image_id());
+			$product_description = $item->get_description();
+			$product_link = $item->get_permalink();
 			$product_quantity = $product['quantity'];
 			$product_variation_price = $product['line_total'];
 			
@@ -68,7 +71,9 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				'quantity' => $product_quantity,
 				'product_id' => $product['product_id'],
 				'product_variation_id' => $product_variation_id,
-				'product_variation_price' => $product_variation_price
+				'product_variation_price' => $product_variation_price,
+				'product_image' => $product_image,
+				'product_description' => $product_description,
 			);
 		}
 
@@ -149,7 +154,8 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
         if(!is_user_logged_in()) return false;
         
         global $wpdb;
-        $table_name = $this->get_cart_session_table();
+		$table_name = $this->get_cart_session_table();
+		$cart_url = wc_get_cart_url();
 
         //Retrieving cart array consisting of currency, cart total, time, session id and products and their quantities
         $cart_data = $this->get_cart();
@@ -169,20 +175,21 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
         $abandoned_cart = '';
 
-        //Check in the database if the current user has got an abandoned cart already
+		//Check in the database if the current user has got an abandoned cart already
         if( $dplr_cart_session_id === NULL ){
             $abandoned_cart = $wpdb->get_row($wpdb->prepare(
                 "SELECT session_id FROM ". $table_name ."
                 WHERE session_id = %d", get_current_user_id())
-            );
+			);
+			$dplr_cart_session_id = $abandoned_cart->session_id;
         }
 
         $current_session_exist_in_db = $this->current_session_exist_in_db($dplr_cart_session_id);
-        //If the current user has got an abandoned cart already 
+		
+		//If the current user has got an abandoned cart already 
         //or if we have already inserted the Users session ID in Session variable and it is not NULL 
         //and already inserted the Users session ID in Session variable we update the abandoned cart row
         if( $current_session_exist_in_db && (!empty($abandoned_cart) || $dplr_cart_session_id !== NULL )){
-
             //If the user has got an abandoned cart previously, we set session ID back
             if(!empty($abandoned_cart)){
                 $session_id = $abandoned_cart->session_id;
@@ -202,10 +209,11 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                         'cart_contents'	=>	serialize($product_array),
                         'cart_total'	=>	sanitize_text_field( $cart_total ),
                         'currency'		=>	sanitize_text_field( $cart_currency ),
-                        'time'			=>	sanitize_text_field( $current_time )
+						'time'			=>	sanitize_text_field( $current_time ),
+						'cart_url'		=>  $cart_url,
                     ),
                     array('session_id' => $session_id),
-                    array('%s', '%0.2f', '%s', '%s'),
+                    array('%s', '%0.2f', '%s', '%s', '%s'),
                     array('%s')
                 )
             );
@@ -239,8 +247,8 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
             $wpdb->query(
                 $wpdb->prepare(
                     "INSERT INTO ". $table_name ."
-                    ( name, lastname, email, phone, location, cart_contents, cart_total, currency, time, session_id )
-                    VALUES ( %s, %s, %s, %s, %s, %s, %0.2f, %s, %s, %s)",
+                    ( name, lastname, email, phone, location, cart_contents, cart_total, currency, time, session_id, cart_url )
+                    VALUES ( %s, %s, %s, %s, %s, %s, %0.2f, %s, %s, %s, %s)",
                     array(
                         sanitize_text_field( $name ),
                         sanitize_text_field( $surname ),
@@ -251,7 +259,8 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                         sanitize_text_field( $cart_total ),
                         sanitize_text_field( $cart_currency ),
                         sanitize_text_field( $current_time ),
-                        sanitize_text_field( $session_id )
+						sanitize_text_field( $session_id ),
+						$cart_url
                     ) 
                 )
             );
@@ -274,6 +283,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 		if ( isset( $_POST["dplrwoo_email"] ) ) {
 			global $wpdb;
 			$table_name = $this->get_cart_session_table();
+			$cart_url = wc_get_cart_url();
 
 			$cart_data = $this->get_cart();
 			$cart_total = $cart_data['cart_total'];
@@ -351,10 +361,11 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 							'cart_total'	=>	sanitize_text_field( $cart_total ),
 							'currency'		=>	sanitize_text_field( $cart_currency ),
 							'time'			=>	sanitize_text_field( $current_time ),
-							'other_fields'	=>	sanitize_text_field( serialize($other_fields) )
+							'other_fields'	=>	sanitize_text_field( serialize($other_fields) ),
+							'cart_url '=> $cart_url,
 						),
 						array('session_id' => $dplr_cart_session_id),
-						array('%s', '%s', '%s', '%s', '%s', '%s', '%0.2f', '%s', '%s', '%s'),
+						array('%s', '%s', '%s', '%s', '%s', '%s', '%0.2f', '%s', '%s', '%s', '%s'),
 						array('%s')
 					)
 				);
@@ -364,8 +375,8 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				$wpdb->query(
 					$wpdb->prepare(
 						"INSERT INTO ". $table_name ."
-						( name, lastname, email, phone, location, cart_contents, cart_total, currency, time, session_id, other_fields )
-						VALUES ( %s, %s, %s, %s, %s, %s, %0.2f, %s, %s, %s, %s)",
+						( name, lastname, email, phone, location, cart_contents, cart_total, currency, time, session_id, other_fields, cart_url )
+						VALUES ( %s, %s, %s, %s, %s, %s, %0.2f, %s, %s, %s, %s, %s)",
 						array(
 							sanitize_text_field( $name ),
 							sanitize_text_field( $surname ),
@@ -377,8 +388,9 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 							sanitize_text_field( $cart_currency ),
 							sanitize_text_field( $current_time ),
 							sanitize_text_field( $session_id ),
-							sanitize_text_field( serialize($other_fields) )
-						) 
+							sanitize_text_field( serialize($other_fields) ),
+							$cart_url,
+						)
 					)
 				);
 				

@@ -50,6 +50,7 @@ class Doppler_For_Woocommerce_Activator {
 			    time DATETIME DEFAULT '0000-00-00 00:00:00',
 			    session_id VARCHAR(60),
 			    other_fields LONGTEXT,
+				cart_url TEXT,
 			    PRIMARY KEY  (id)
 		) $charset_collate;";
 		  
