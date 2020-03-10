@@ -206,8 +206,7 @@ class Doppler_For_Woocommerce_Admin {
 	 */
 	private function set_credentials() {
 		$options = get_option('dplr_settings');
-		if(empty($options))  return;
-
+		if( empty($options['dplr_option_apikey']) || empty($options['dplr_option_useraccount']) )  return;
 		$this->doppler_service->setCredentials(array(	
 			'api_key' => $options['dplr_option_apikey'], 
 			'user_account' => $options['dplr_option_useraccount'])
@@ -225,6 +224,7 @@ class Doppler_For_Woocommerce_Admin {
 	private function check_current_account() {
 		if(is_admin()){
 			$options = get_option('dplr_settings');
+			if( empty($options['dplr_option_apikey']) || empty($options['dplr_option_useraccount']) )  return;
 			//If status is empty, api is not connected.
 			$status = get_option('dplrwoo_api_connected');
 			if( !empty($status) && !empty($options) && 
@@ -888,6 +888,6 @@ class Doppler_For_Woocommerce_Admin {
 	function dplrwoo_delete_product_views() {
 		global $wpdb;
 		$result = $wpdb->query("DELETE FROM {$wpdb->prefix}dplrwoo_visited_products 
-			WHERE time < NOW() - INTERVAL 7 DAY " );
+			WHERE visited_time < NOW() - INTERVAL 7 DAY " );
 	}
 }
