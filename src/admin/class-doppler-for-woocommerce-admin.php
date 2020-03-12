@@ -841,7 +841,7 @@ class Doppler_For_Woocommerce_Admin {
 					return array("code"=>"woocommerce_rest_wrong_parameter_count","message"=>"Invalid parameter","data"=>array("status"=>400));
 				}
 				return $wpdb->get_results( $wpdb->prepare("SELECT id, name, lastname, email, phone, location, cart_contents, cart_total,
-				currency, time, session_id, other_fields
+				currency, time, session_id, other_fields, cart_url 
 				FROM ". $wpdb->prefix . DOPPLER_ABANDONED_CART_TABLE . 
 				" WHERE time BETWEEN '%s' AND '%s' ", $_GET['from'], $_GET['to']));
 		}else{
