@@ -569,20 +569,16 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 	}
 
 	/**
-	 * TODO: Validate token 
-	 */
-	function is_token_valid() {
-		return true;
-	}
-
-	/**
 	 * Returns cart items from abandoned cart.
+	 * Validates if token is valid.
 	 * @return array | array of cart items.
 	 */
-	private function get_cart_contents_from_session( $session_id ) {
+	private function get_cart_contents_from_session( $session_id, $token ) {
 		global $wpdb;
 		$main_table = $this->get_cart_session_table();
-		return $wpdb->get_var( $wpdb->prepare("SELECT cart_contents FROM {$main_table} WHERE session_id = %d", $session_id));
+		$response = $wpdb->get_row( $wpdb->prepare("SELECT cart_contents, token FROM {$main_table} WHERE session_id = %d", $session_id));
+		if( $response->token !== $token ) return false;
+		return unserialize($response->cart_contents);
 	}
 
 	/**
@@ -590,25 +586,31 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 	 * restore the cart items from the session id.
 	 */
 	public function restore_cart() {
+		global $wpdb;
+
 		if(empty($_GET['cart_session']) && empty($_GET['token']) ) return false;
 		//TODO: Validate token.
-		if( $this->is_token_valid() && ( is_page( 'cart' ) || is_cart()) ){
+		if( is_page( 'cart' ) || is_cart() ){
 			
+			$items = $this->get_cart_contents_from_session($_GET['cart_session'], $_GET['token']);
+			if( empty( $items ) ) return false;
+
 			//Clear cart
 			WC()->cart->empty_cart();
 			
-			//Get cart items from session.
-			if( empty( $items = $this->get_cart_contents_from_session($_GET['cart_session']) ) ) return false;
-
-			$items = unserialize($items);
 			if(count($items)>0){
 				foreach($items as $item){
 					WC()->cart->add_to_cart( $item['product_id'], $item['quantity'], 
 					$item['product_variation_id'], $item['product_variation_data']);
 				}
 			}
-		}
 
+			$wpdb->update( 
+				$this->get_cart_session_table(), 
+				array("restored"=>1), 
+				array("session_id"=> $_GET['cart_session']) 
+			);
+		}
 	}
 
 }

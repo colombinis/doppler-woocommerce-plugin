@@ -51,7 +51,8 @@ class Doppler_For_Woocommerce_Activator {
 			    session_id VARCHAR(60),
 			    other_fields LONGTEXT,
 				cart_url TEXT,
-				token TEXT
+				token TEXT,
+				restored SMALLINT DEFAULT 0
 			    PRIMARY KEY  (id)
 		) $charset_collate;";
 		  
