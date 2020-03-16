@@ -242,6 +242,9 @@ class Doppler_For_Woocommerce {
 		
 		//Save visited product.
 		$this->loader->add_action( 'woocommerce_before_single_product', $doppler_visited_products, 'save_visited_product');
+		
+		//Restore cart from URL
+		$this->loader->add_action( 'template_redirect', $doppler_abandoned_cart, 'restore_cart' );
 	}
 
 	/**

@@ -45,7 +45,6 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				
 		foreach($products as $product){
 			$item = wc_get_product($product['data']->get_id());
-
 			$product_title = $item->get_title();
 			$product_image = wp_get_attachment_url($item->get_image_id());
 			$product_description = $item->get_description();
@@ -56,13 +55,14 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			// Handling product variations
 			if($product['variation_id']){ //If user has chosen a variation
 				$single_variation = new WC_Product_Variation($product['variation_id']);
-		
+				$variation_data  = $product['variation'];            
 				//Handling variable product title output with attributes
 				$product_attributes = $this->attribute_slug_to_title($single_variation->get_variation_attributes());
 				$product_variation_id = $product['variation_id'];
 			}else{
 				$product_attributes = false;
 				$product_variation_id = '';
+				$variation_data = false;
 			}
 
 			//Inserting Product title, Variation and Quantity into array
@@ -72,6 +72,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				'product_id' => $product['product_id'],
 				'product_variation_id' => $product_variation_id,
 				'product_variation_price' => $product_variation_price,
+				'product_variation_data' => $variation_data,
 				'product_image' => $product_image,
 				'product_description' => $product_description,
 			);
@@ -155,6 +156,8 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
         
         global $wpdb;
 		$table_name = $this->get_cart_session_table();
+		$token = openssl_random_pseudo_bytes(16);
+		$token = bin2hex($token);
 		$cart_url = wc_get_cart_url();
 
         //Retrieving cart array consisting of currency, cart total, time, session id and products and their quantities
@@ -247,8 +250,8 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
             $wpdb->query(
                 $wpdb->prepare(
                     "INSERT INTO ". $table_name ."
-                    ( name, lastname, email, phone, location, cart_contents, cart_total, currency, time, session_id, cart_url )
-                    VALUES ( %s, %s, %s, %s, %s, %s, %0.2f, %s, %s, %s, %s)",
+                    ( name, lastname, email, phone, location, cart_contents, cart_total, currency, time, session_id, cart_url, token )
+                    VALUES ( %s, %s, %s, %s, %s, %s, %0.2f, %s, %s, %s, %s, %s)",
                     array(
                         sanitize_text_field( $name ),
                         sanitize_text_field( $surname ),
@@ -260,7 +263,8 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                         sanitize_text_field( $cart_currency ),
                         sanitize_text_field( $current_time ),
 						sanitize_text_field( $session_id ),
-						$cart_url
+						$cart_url,
+						$token
                     ) 
                 )
             );
@@ -284,6 +288,9 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			global $wpdb;
 			$table_name = $this->get_cart_session_table();
 			$cart_url = wc_get_cart_url();
+			//Generate a random string.
+			$token = openssl_random_pseudo_bytes(16);
+			$token = bin2hex($token);
 
 			$cart_data = $this->get_cart();
 			$cart_total = $cart_data['cart_total'];
@@ -375,8 +382,8 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				$wpdb->query(
 					$wpdb->prepare(
 						"INSERT INTO ". $table_name ."
-						( name, lastname, email, phone, location, cart_contents, cart_total, currency, time, session_id, other_fields, cart_url )
-						VALUES ( %s, %s, %s, %s, %s, %s, %0.2f, %s, %s, %s, %s, %s)",
+						( name, lastname, email, phone, location, cart_contents, cart_total, currency, time, session_id, other_fields, cart_url, token )
+						VALUES ( %s, %s, %s, %s, %s, %s, %0.2f, %s, %s, %s, %s, %s, %s)",
 						array(
 							sanitize_text_field( $name ),
 							sanitize_text_field( $surname ),
@@ -390,6 +397,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 							sanitize_text_field( $session_id ),
 							sanitize_text_field( serialize($other_fields) ),
 							$cart_url,
+							$token
 						)
 					)
 				);
@@ -558,6 +566,49 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 	function unset_session_id() {
 		//Removing stored ID value from WooCommerce Session
 		WC()->session->__unset('dplr_cart_session_id');
+	}
+
+	/**
+	 * TODO: Validate token 
+	 */
+	function is_token_valid() {
+		return true;
+	}
+
+	/**
+	 * Returns cart items from abandoned cart.
+	 * @return array | array of cart items.
+	 */
+	private function get_cart_contents_from_session( $session_id ) {
+		global $wpdb;
+		$main_table = $this->get_cart_session_table();
+		return $wpdb->get_var( $wpdb->prepare("SELECT cart_contents FROM {$main_table} WHERE session_id = %d", $session_id));
+	}
+
+	/**
+	 * When recieving a session id from Doppler we can 
+	 * restore the cart items from the session id.
+	 */
+	public function restore_cart() {
+		if(empty($_GET['cart_session']) && empty($_GET['token']) ) return false;
+		//TODO: Validate token.
+		if( $this->is_token_valid() && ( is_page( 'cart' ) || is_cart()) ){
+			
+			//Clear cart
+			WC()->cart->empty_cart();
+			
+			//Get cart items from session.
+			if( empty( $items = $this->get_cart_contents_from_session($_GET['cart_session']) ) ) return false;
+
+			$items = unserialize($items);
+			if(count($items)>0){
+				foreach($items as $item){
+					WC()->cart->add_to_cart( $item['product_id'], $item['quantity'], 
+					$item['product_variation_id'], $item['product_variation_data']);
+				}
+			}
+		}
+
 	}
 
 }
