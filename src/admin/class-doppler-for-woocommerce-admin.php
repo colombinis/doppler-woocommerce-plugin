@@ -73,6 +73,7 @@ class Doppler_For_Woocommerce_Admin {
 		$this->origin = $this->set_origin();
 		$this->set_credentials();
 		$this->check_current_account();
+		$this->update_database();
 	}
 
 	/**
@@ -797,7 +798,6 @@ class Doppler_For_Woocommerce_Admin {
 				);
 
 				$response = $app_connect->connect();
-				//print_r($response);
 				if($response['response']['code'] === 200){
 					update_option('dplrwoo_api_connected', array(
 						'account' => $options['dplr_option_useraccount'],
@@ -841,7 +841,7 @@ class Doppler_For_Woocommerce_Admin {
 					return array("code"=>"woocommerce_rest_wrong_parameter_count","message"=>"Invalid parameter","data"=>array("status"=>400));
 				}
 				return $wpdb->get_results( $wpdb->prepare("SELECT id, name, lastname, email, phone, location, cart_contents, cart_total,
-				currency, time, session_id, other_fields, cart_url 
+				currency, time, session_id, other_fields, cart_url, restored 
 				FROM ". $wpdb->prefix . DOPPLER_ABANDONED_CART_TABLE . 
 				" WHERE time BETWEEN '%s' AND '%s' ", $_GET['from'], $_GET['to']));
 		}else{
@@ -889,5 +889,18 @@ class Doppler_For_Woocommerce_Admin {
 		global $wpdb;
 		$result = $wpdb->query("DELETE FROM {$wpdb->prefix}dplrwoo_visited_products 
 			WHERE visited_time < NOW() - INTERVAL 7 DAY " );
+	}
+
+	/**
+	 * Check database version, update if necessary.
+	 * This is done to update db older than version 1.0.2
+	 */
+	private function update_database() {
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'dplrwoo_abandoned_cart';
+		if(!$wpdb->get_var("SHOW TABLES LIKE '$table_name'") == $table_name){
+			require_once DOPPLER_FOR_WOOCOMMERCE_PLUGIN_DIR_PATH . 'includes/class-doppler-for-woocommerce-activator.php';
+			Doppler_For_Woocommerce_Activator::activate();
+		}
 	}
 }
