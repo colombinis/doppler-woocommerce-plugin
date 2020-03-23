@@ -123,3 +123,8 @@ if ( ! current_user_can( 'manage_options' ) ) {
     </form>
                
 </div>
+
+<!--
+Connection with Doppler status:
+<?php print_r(get_option('dplrwoo_api_connected')) ?>
+-->
