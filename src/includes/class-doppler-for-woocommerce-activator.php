@@ -47,12 +47,12 @@ class Doppler_For_Woocommerce_Activator {
 			    cart_contents LONGTEXT,
 			    cart_total DECIMAL(10,2),
 			    currency VARCHAR(10),
-			    time DATETIME DEFAULT '0000-00-00 00:00:00',
+			    time DATETIME DEFAULT NULL,
 			    session_id VARCHAR(60),
 			    other_fields LONGTEXT,
 				cart_url TEXT,
 				token TEXT,
-				restored SMALLINT DEFAULT 0
+				restored SMALLINT DEFAULT 0,
 			    PRIMARY KEY  (id)
 		) $charset_collate;";
 		  
@@ -79,7 +79,7 @@ class Doppler_For_Woocommerce_Activator {
 			    product_price DECIMAL(10,2),
 				product_regular_price DECIMAL(10,2),
 			    currency VARCHAR(10),
-			    visited_time DATETIME DEFAULT '0000-00-00 00:00:00',
+			    visited_time DATETIME DEFAULT NULL,
 			    PRIMARY KEY  (id)
 		) $charset_collate;";
 		  
@@ -108,7 +108,9 @@ class Doppler_For_Woocommerce_Activator {
 			);
 			//TODO: On fail through warning, but goes on with the activation.
 			//TODO: Display onscreen status somewhere. 
+			//TODO: sould disconnect?
 			$response = $DopplerAppConnect->connect();
+			//check $response['response']['code']==200
 		}
 	}
 
