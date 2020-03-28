@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  */
 class Doppler_For_WooCommerce_App_Connect {
 
-	const INTEGRATION = 'magento';
+	const INTEGRATION = 'woocommerce';
 	const DEBUG_MODE = true;
 	private $api_account;
 	private $api_key;
