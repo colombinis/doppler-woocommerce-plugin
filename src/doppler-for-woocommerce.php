@@ -61,9 +61,6 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-doppler-for-woocommerce-ap
  */
 function activate_doppler_for_woocommerce() {
 	
-	if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-		include_once( ABSPATH . '/wp-admin/includes/plugin.php' );
-	}
 	if ( current_user_can( 'activate_plugins' ) && ! class_exists( 'WooCommerce' ) ) {
 		// Deactivate the plugin.
 		deactivate_plugins( plugin_basename( __FILE__ ) );
