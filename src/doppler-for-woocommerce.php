@@ -45,6 +45,15 @@ if(!defined( 'DOPPLER_VISITED_PRODUCTS_TABLE')) define('DOPPLER_VISITED_PRODUCTS
 if(!defined( 'DOPPLER_WOO_API_URL' )) define('DOPPLER_WOO_API_URL', 'http://newapiqa.fromdoppler.net/');
 if(!defined( 'DOPPLER_FOR_WOOCOMMERCE_ORIGIN' )) define('DOPPLER_FOR_WOOCOMMERCE_ORIGIN', 'WooCommerce');
 
+if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+	include_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+}
+if ( is_admin() && !is_plugin_active( 'doppler-form/doppler-form.php' ) )  {
+	$error_message = '<p style="font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Oxygen-Sans,Ubuntu,Cantarell,\'Helvetica Neue\',sans-serif;font-size: 13px;line-height: 1.5;color:#444;">' . esc_html__( 'This plugin requires ', 'doppler-for-woocommerce' ) . '<a href="' . esc_url( 'https://wordpress.org/plugins/doppler-form/' ) . '" target="_blank">Doppler Forms</a>' . esc_html__( ' plugin to be active.', 'doppler-for-woocommerce' ) . '</p>';
+	deactivate_plugins( plugin_basename( __FILE__ ) );
+	die( $error_message ); // WPCS: XSS ok.
+}
+
 /**
  * Class for displaying admin notices through redirects.
  */
