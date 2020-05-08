@@ -319,6 +319,7 @@ class Doppler_For_Woocommerce_Admin {
 	 * by a given name.
 	 */
 	private function find_list_by_name($list_name, $lists) {
+		if(empty($lists)) return false;
 		$resp = array_filter($lists, function($var) use($list_name){
 			return $var['name'] == $list_name;
 		});
@@ -424,10 +425,11 @@ class Doppler_For_Woocommerce_Admin {
 	 * Get lists
 	 */
 	public function get_alpha_lists() {
+		$dplr_lists_arr = array();
 		$list_resource = $this->doppler_service->getResource('lists');
 		$this->set_origin();
 		$dplr_lists = $list_resource->getAllLists();
-		if(is_array($dplr_lists)){
+		if(is_array($dplr_lists) && !empty($dplr_lists)){
 			foreach($dplr_lists as $k=>$v){
 			  if(is_array($v)):
 				foreach($v as $i=>$j){
