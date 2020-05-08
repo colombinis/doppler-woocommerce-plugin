@@ -145,6 +145,9 @@ class Doppler_For_WooCommerce_App_Connect {
 	 */
 	private function generate_WC_Api_keys() {
 		global $wpdb;
+		if( ! function_exists('wp_current_user_can') ){
+			include_once(ABSPATH . 'wp-includes/pluggable.php');
+		}
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			return false;
 		}
@@ -162,14 +165,14 @@ class Doppler_For_WooCommerce_App_Connect {
 				}
 			}
 			
-			$consumer_key    = 'ck_' . wc_rand_hash();
-			$consumer_secret = 'cs_' . wc_rand_hash();
+			$consumer_key    = 'ck_' . $this->rand_hash();
+			$consumer_secret = 'cs_' . $this->rand_hash();
 
 			$data = array(
 				'user_id'         => $user_id,
 				'description'     => $description,
 				'permissions'     => $permissions,
-				'consumer_key'    => wc_api_hash( $consumer_key ),
+				'consumer_key'    => $this->api_hash( $consumer_key ),
 				'consumer_secret' => $consumer_secret,
 				'truncated_key'   => substr( $consumer_key, -7 ),
 			);
@@ -201,6 +204,19 @@ class Doppler_For_WooCommerce_App_Connect {
 		}
 
 		return $response;
+	}
+
+	private function rand_hash(){
+		
+		if ( ! function_exists( 'openssl_random_pseudo_bytes' ) ) {
+			return sha1( wp_rand() );
+		}
+
+		return bin2hex( openssl_random_pseudo_bytes( 20 ) ); // @codingStandardsIgnoreLine
+	}
+
+	private function api_hash( $data ) {
+		return hash_hmac( 'sha256', $data, 'wc-api' );
 	}
 
 
