@@ -103,6 +103,8 @@ class Doppler_For_WooCommerce_App_Connect {
 	 * @return array|object
 	 */
     public function connect() {
+		//just in case, remove previous keys.
+		$this->remove_keys();
 		$keys = $this->generate_WC_Api_keys();
 		if(!$keys) return false;
 		$body = array(
@@ -122,6 +124,14 @@ class Doppler_For_WooCommerce_App_Connect {
 	 * @return array|object
 	 */
     public function disconnect(){
+		return $this->do_request([], 'DELETE');		
+	}
+
+	/**
+	 * Delete current keys. 
+	 *  @since 1.1.0
+	 */
+	public function remove_keys() {
 		global $wpdb;
 		try{
 			$wpdb->DELETE(
@@ -134,7 +144,6 @@ class Doppler_For_WooCommerce_App_Connect {
 		catch( Exception $e ){
 			return false;
 		}
-		return $this->do_request([], 'DELETE');		
 	}
 
     /**
