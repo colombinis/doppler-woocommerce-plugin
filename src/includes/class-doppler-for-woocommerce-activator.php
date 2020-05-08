@@ -101,14 +101,14 @@ class Doppler_For_Woocommerce_Activator {
 		 * 
 		 */
 		$options = get_option('dplr_settings');
-		if(!empty(get_option('dplrwoo_api_connected'))){
+		if( !empty(get_option('dplrwoo_api_connected')) && !empty($options['dplr_option_useraccount']) && !empty($options['dplr_option_apikey']) ){
 			$DopplerAppConnect = new Doppler_For_WooCommerce_App_Connect(
 				$options['dplr_option_useraccount'], $options['dplr_option_apikey'],
 				DOPPLER_WOO_API_URL, DOPPLER_FOR_WOOCOMMERCE_ORIGIN
 			);
 			//TODO: On fail through warning, but goes on with the activation.
 			//TODO: Display onscreen status somewhere. 
-			//TODO: sould disconnect?
+			//TODO: should disconnect?
 			$response = $DopplerAppConnect->connect();
 			//check $response['response']['code']==200
 		}
