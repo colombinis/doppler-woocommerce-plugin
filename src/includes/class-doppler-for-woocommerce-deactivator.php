@@ -67,6 +67,9 @@ class Doppler_For_Woocommerce_Deactivator {
 			}
 		}
 
+		//delete keys
+		$doppler_app_connect->remove_keys();
+
 		/**
 		 * Remove cron schedule.
 		 */
