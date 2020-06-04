@@ -49,23 +49,8 @@ class Doppler_For_Woocommerce_Deactivator {
 			DOPPLER_WOO_API_URL, DOPPLER_FOR_WOOCOMMERCE_ORIGIN
 		);
 
-		$response = $doppler_app_connect->disconnect();
-		
-		if($response['response']['code'] == 400){
-			$body = json_decode(wp_remote_retrieve_body($response));
-			//If integration doesn't exists go on with deactivation...
-			if($body->errorCode != 41){
-				$err_message = '';
-				if($body->errorCode == 40){
-					$err_message = _('Please delete associated campaings in Doppler before deactivating.', 'doppler-for-woocommerce');
-				}
-				Doppler_For_WooCommerce_Admin_Notice::display_error(
-					__("<strong>Doppler For WooCommerce wasn't deactivated.</strong>".$err_message, "doppler-for-woocommerce")
-				);
-				header("Location: ".admin_url('plugins.php'));
-				exit();
-			}
-		}
+		//Disconnect integration from App.
+		$doppler_app_connect->disconnect();
 
 		//delete keys
 		$doppler_app_connect->remove_keys();
