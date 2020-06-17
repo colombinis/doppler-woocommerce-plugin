@@ -180,6 +180,7 @@ class Doppler_For_Woocommerce {
 
 		$plugin_admin = new Doppler_For_Woocommerce_Admin( $this->get_plugin_name(), $this->get_version(), $this->doppler_service );
 		
+		$this->loader->add_action( 'dplrwoo_synch_cron', $plugin_admin, 'dplrwoo_synch_cron_func' );
 		$this->loader->add_action( 'dplrwoo_cron_job', $plugin_admin, 'dplrwoo_delete_carts' );
 		$this->loader->add_action( 'dplrwoo_cron_clean_views', $plugin_admin, 'dplrwoo_delete_product_views' );
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'dplrwoo_check_parent' );
@@ -196,6 +197,7 @@ class Doppler_For_Woocommerce {
 		$this->loader->add_action( 'woocommerce_order_status_changed', $plugin_admin, 'dplrwoo_order_status_changed', 10, 4 );
 		$this->loader->add_action( 'user_register', $plugin_admin, 'dprwoo_after_register');
 		$this->loader->add_action( 'admin_notices', $plugin_admin, 'show_admin_notice' );
+		$this->loader->add_action( 'admin_footer-plugins.php', $plugin_admin, 'display_deactivation_confirm_html' );
 
 		//Custom API endpoint
 		$this->loader->add_action( 'rest_api_init', $plugin_admin, 'dplrwoo_abandoned_endpoint' );
@@ -286,17 +288,23 @@ class Doppler_For_Woocommerce {
 
 	public function schedule_cron() {
 		
-		/*
-		//in case we need another schedule
 		add_filter( 'cron_schedules', function() {
 			// Adds once every minute to the existing schedules.
-			$schedules['everyminute'] = array(
-				'interval' => 60,
-				'display' => __( 'Doppler Once Every Minute' )
+			$schedules['15min'] = array(
+				'interval' => 15*60,
+				'display' => __( 'Doppler Once Every 15 Minutes' )
+			);
+			$schedules['2min'] = array(
+				'interval' => 2*60,
+				'display' => __( 'Doppler Once Every 2 Minutes' )
+			);
+			$schedules['5min'] = array(
+				'interval' => 5*60,
+				'display' => __( 'Doppler Once Every 5 Minutes' )
 			);
 			return $schedules;
 		} );
-		*/
+		
 		//houry, daily, twicedaily
 		add_action('wp', function() {
 			if( !wp_next_scheduled( 'dplrwoo_cron_job' ) ) {  
@@ -304,6 +312,9 @@ class Doppler_For_Woocommerce {
 			}
 			if( !wp_next_scheduled( 'dplrwoo_cron_clean_views' ) ) {  
 				wp_schedule_event( time(), 'daily', 'dplrwoo_cron_clean_views' );  
+			}
+			if( !wp_next_scheduled( 'dplrwoo_synch_cron' ) ) {  
+				wp_schedule_event( time(), '2min', 'dplrwoo_synch_cron' );  
 			}
 		});
 	}

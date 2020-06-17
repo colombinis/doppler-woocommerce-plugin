@@ -75,6 +75,13 @@
 			$.post(ajaxurl, {action: 'dplrwoo_ajax_synch', list_type: 'contacts', list_id: contactsList});
 		}
 
+		var synchLists = function(buyersList,contactsList){
+			console.log(buyersList);
+			console.log(contactsList);
+			if(contactsList==='' || buyersList==='') return false;
+			$.post(ajaxurl, {action: 'dplrwoo_ajax_synch', buyers_list: buyersList, contacts_list : contactsList});
+		}
+
 		syncListsButton.click(function(e){
 			e.preventDefault();
 			verifyKeys().then(syncrhonizeLists);
@@ -87,11 +94,11 @@
 		}
 
 		function syncrhonizeLists(resp){
-			//check resp.success if needed.
+			console.log(resp.success);
 			var buyersList = buyersListSelect.val();
 			var contactsList = contactListSelect.val();
 			$.when(createDefaultList(buyersList, 'buyers'), createDefaultList(contactsList, 'contacts')).done(function(bl,cl){
-				$.when(synchBuyers(bl),synchContacts(cl)).done(function(){
+				$.when(synchLists(bl,cl)).done(function(){
 					listsForm.submit();
 				});
 			});
@@ -131,6 +138,27 @@
 				}
 				button.removeAttr('disabled').removeClass("button--loading");
 			})
+		});
+
+		$('.deactivate a').click(function (e) {
+			if($(this).closest('tr').attr('data-plugin') == 'doppler-for-woocommerce/doppler-for-woocommerce.php'){
+				var href = $(this).attr('href');
+				e.preventDefault();
+				$( "#dplrwoo-dialog" ).dialog({
+					resizable: false,
+					height: "auto",
+					width: 400,
+					modal: true,
+					buttons: {
+					  "Confirm": function() {
+						  window.location = href;
+					  },
+					  Cancel: function() {
+						$( this ).dialog( "close" );
+					  }
+					}
+				});
+			}
 		});
 		
 	});

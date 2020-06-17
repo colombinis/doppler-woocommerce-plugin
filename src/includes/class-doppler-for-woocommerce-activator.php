@@ -33,6 +33,10 @@ class Doppler_For_Woocommerce_Activator {
 	 * @since    1.0.0
 	 */
 	public static function activate() {
+
+		//Creates abandoned cart table
+		//Creates visited products table
+		//If account has changed, connects.
 		
 		global $wpdb;
 		$table_name = $wpdb->prefix . DOPPLER_ABANDONED_CART_TABLE;

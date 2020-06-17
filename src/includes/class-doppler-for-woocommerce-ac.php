@@ -184,7 +184,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                 "SELECT session_id FROM ". $table_name ."
                 WHERE session_id = %d", get_current_user_id())
 			);
-			$dplr_cart_session_id = $abandoned_cart->session_id;
+			if(!empty($abandoned_cart->session_id)) $dplr_cart_session_id = $abandoned_cart->session_id;
         }
 
         $current_session_exist_in_db = $this->current_session_exist_in_db($dplr_cart_session_id);

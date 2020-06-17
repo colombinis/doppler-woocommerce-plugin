@@ -59,10 +59,13 @@ class Doppler_For_Woocommerce_Deactivator {
 		 * Remove cron schedule.
 		 */
 		$timestamp = wp_next_scheduled( 'dplrwoo_cron_job' );
-		   wp_unschedule_event( $timestamp, 'dplrwoo_cron_job' );
+		wp_unschedule_event( $timestamp, 'dplrwoo_cron_job' );
 		   
 		$timestamp = wp_next_scheduled( 'dplrwoo_cron_clean_views' );
-   		wp_unschedule_event( $timestamp, 'dplrwoo_cron_clean_views' );
+		wp_unschedule_event( $timestamp, 'dplrwoo_cron_clean_views' );
+		   
+		$timestamp = wp_next_scheduled( 'dplrwoo_synch_cron' );
+   		wp_unschedule_event( $timestamp, 'dplrwoo_synch_cron' );
 	
 	}
 
