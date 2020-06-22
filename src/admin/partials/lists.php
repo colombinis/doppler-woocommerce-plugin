@@ -127,10 +127,12 @@ if ( ! current_user_can( 'manage_options' ) ) {
         </p>
 
     </form>
+
+    <?php 
+    $display_status = get_option('dplrwoo_api_connected');
+    if(!empty($display_status)){
+        echo '<p><small>Connected account: '.$display_status['account'].'</small></p>';
+    }
+    ?>
                
 </div>
-
-<!--
-Connection with Doppler status:
-<?php print_r(get_option('dplrwoo_api_connected')) ?>
--->

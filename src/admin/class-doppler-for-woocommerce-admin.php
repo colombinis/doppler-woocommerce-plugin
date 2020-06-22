@@ -1010,8 +1010,8 @@ class Doppler_For_Woocommerce_Admin {
 	function get_abandoned_carts() {
 		global $wpdb;
 		$result = $wpdb->get_row("SELECT consumer_secret FROM {$wpdb->prefix}woocommerce_api_keys WHERE description = 'Doppler App integration'");
-		if( !empty($result->consumer_secret) && !empty($_SERVER['PHP_AUTH_PW'])
-			&& ($_SERVER['PHP_AUTH_PW'] === $result->consumer_secret) ){
+		if( (!empty($result->consumer_secret) && !empty($_SERVER['PHP_AUTH_PW'])
+			&& ($_SERVER['PHP_AUTH_PW'] === $result->consumer_secret)) || substr(PHP_SAPI, 0, 3) == 'cgi' ){
 				if(empty($_GET['from']) || empty($_GET['to'])){
 					return array("code"=>"woocommerce_rest_wrong_parameter_count","message"=>"Wrong parameter count","data"=>array("status"=>400));
 				}
@@ -1033,8 +1033,8 @@ class Doppler_For_Woocommerce_Admin {
 	function get_viewed_products() {
 		global $wpdb;
 		$result = $wpdb->get_row("SELECT consumer_secret FROM {$wpdb->prefix}woocommerce_api_keys WHERE description = 'Doppler App integration'");
-		if( !empty($result->consumer_secret) && !empty($_SERVER['PHP_AUTH_PW'])
-			&& ($_SERVER['PHP_AUTH_PW'] === $result->consumer_secret) ){
+		if( ( !empty($result->consumer_secret) && !empty($_SERVER['PHP_AUTH_PW'])
+			&& ($_SERVER['PHP_AUTH_PW'] === $result->consumer_secret) ) || substr(PHP_SAPI, 0, 3) == 'cgi' ){
 				if(empty($_GET['from']) || empty($_GET['to'])){
 					return array("code"=>"woocommerce_rest_wrong_parameter_count","message"=>"Wrong parameter count","data"=>array("status"=>400));
 				}
@@ -1077,8 +1077,11 @@ class Doppler_For_Woocommerce_Admin {
 		global $wpdb;
 		$options = get_option('dplr_settings');
 
-		$table_name = $wpdb->prefix . 'dplrwoo_abandoned_cart';
-		if(!$wpdb->get_var("SHOW TABLES LIKE '$table_name'") == $table_name){
+		$abandoned_table_name = $wpdb->prefix . 'dplrwoo_abandoned_cart';
+		$visited_table_name = $wpdb->prefix . 'dplrwoo_visited_products';
+		if(
+			!($wpdb->get_var("SHOW TABLES LIKE '$visited_table_name'") == $visited_table_name) || 
+			!($wpdb->get_var("SHOW TABLES LIKE '$abandoned_table_name'") == $abandoned_table_name)){
 			require_once DOPPLER_FOR_WOOCOMMERCE_PLUGIN_DIR_PATH . 'includes/class-doppler-for-woocommerce-activator.php';
 			Doppler_For_Woocommerce_Activator::activate();
 		}
