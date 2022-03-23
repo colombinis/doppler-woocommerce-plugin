@@ -16,7 +16,7 @@
  * Plugin Name:       Doppler for WooCommerce
  * Plugin URI:        https://www.fromdoppler.com/
  * Description:       Connect your WooCommerce customers with your Doppler Lists.
- * Version:           1.0.1
+ * Version:           1.1.3
  * Author:            Doppler LLC
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
@@ -34,11 +34,36 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'DOPPLER_FOR_WOOCOMMERCE_VERSION', '1.0.0' );
+define( 'DOPPLER_FOR_WOOCOMMERCE_VERSION', '1.1.3' );
 define( 'DOPPLER_FOR_WOOCOMMERCE_URL', plugin_dir_url(__FILE__));
+define( 'DOPPLER_FOR_WOOCOMMERCE_PLUGIN_DIR_PATH', plugin_dir_path( __FILE__ ));
 define( 'DOPPLER_FOR_WOOCOMMERCE_PLUGIN', plugin_basename( __FILE__ ));
-if(!defined( 'DOPPLER_PLUGINS_PATH' )) define( 'DOPPLER_PLUGINS_PATH', plugin_dir_path(__DIR__));
+if(!defined( 'DOPPLER_PLUGINS_PATH' )) define('DOPPLER_PLUGINS_PATH', plugin_dir_path(__DIR__));
 if(!defined( 'DOPPLER_ABANDONED_CART_TABLE')) define('DOPPLER_ABANDONED_CART_TABLE', 'dplrwoo_abandoned_cart');
+if(!defined( 'DOPPLER_VISITED_PRODUCTS_TABLE')) define('DOPPLER_VISITED_PRODUCTS_TABLE', 'dplrwoo_visited_products');
+if(!defined( 'DOPPLER_WOO_API_URL' )) define('DOPPLER_WOO_API_URL', 'https://restapi.fromdoppler.com/');
+//if(!defined( 'DOPPLER_WOO_API_URL' )) define('DOPPLER_WOO_API_URL', 'http://newapiqa.fromdoppler.net/');
+if(!defined( 'DOPPLER_FOR_WOOCOMMERCE_ORIGIN' )) define('DOPPLER_FOR_WOOCOMMERCE_ORIGIN', 'WooCommerce');
+
+/*
+if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+	include_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+}
+if ( is_admin() && !is_plugin_active( 'doppler-form/doppler-form.php' ) )  {
+	$error_message = '<p style="font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Oxygen-Sans,Ubuntu,Cantarell,\'Helvetica Neue\',sans-serif;font-size: 13px;line-height: 1.5;color:#444;">' . esc_html__( 'This plugin requires ', 'doppler-for-woocommerce' ) . '<a href="' . esc_url( 'https://wordpress.org/plugins/doppler-form/' ) . '" target="_blank">Doppler Forms</a>' . esc_html__( ' plugin to be active.', 'doppler-for-woocommerce' ) . '</p>';
+	deactivate_plugins( plugin_basename( __FILE__ ) );
+	die( $error_message ); // WPCS: XSS ok.
+}*/
+
+/**
+ * Class for displaying admin notices through redirects.
+ */
+require plugin_dir_path( __FILE__ ) . 'includes/class-doppler-for-woocommerce-admin-notice.php';
+
+/**
+ * Class that handle's integration with app trough api.
+ */
+require plugin_dir_path( __FILE__ ) . 'includes/class-doppler-for-woocommerce-app-connect.php';
 
 /**
  * The code that runs during plugin activation.
@@ -46,9 +71,6 @@ if(!defined( 'DOPPLER_ABANDONED_CART_TABLE')) define('DOPPLER_ABANDONED_CART_TAB
  */
 function activate_doppler_for_woocommerce() {
 	
-	if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-		include_once( ABSPATH . '/wp-admin/includes/plugin.php' );
-	}
 	if ( current_user_can( 'activate_plugins' ) && ! class_exists( 'WooCommerce' ) ) {
 		// Deactivate the plugin.
 		deactivate_plugins( plugin_basename( __FILE__ ) );
@@ -70,6 +92,7 @@ function deactivate_doppler_for_woocommerce() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-doppler-for-woocommerce-deactivator.php';
 	Doppler_For_Woocommerce_Deactivator::deactivate();
 }
+
 
 register_activation_hook( __FILE__, 'activate_doppler_for_woocommerce' );
 register_deactivation_hook( __FILE__, 'deactivate_doppler_for_woocommerce' );
@@ -95,4 +118,12 @@ function run_doppler_for_woocommerce() {
 	$plugin->run();
 
 }
-run_doppler_for_woocommerce();
+
+require plugin_dir_path( __FILE__ ) . 'includes/class-doppler-for-woocommerce-dependency-check.php';
+$dependency_checker = new DPLRWOO_Dependecy_Checker();
+
+if($dependency_checker->check()){
+	run_doppler_for_woocommerce();
+}else{
+	$dependency_checker->display_warning();
+}

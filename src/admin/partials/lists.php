@@ -82,6 +82,9 @@ if ( ! current_user_can( 'manage_options' ) ) {
                 }   
                 ?>
             </select>
+            <?php if(empty($subscribers_lists['buyers'])): ?>
+                <span class="dplrwoo-warning"><?php _e('Currently there is no Buyers list selected. Press synchronize to create and syncrhonize default Buyers List.',  'doppler-for-woocommerce') ?></span>
+            <?php endif; ?>
         </p>
 
         <p>
@@ -106,6 +109,9 @@ if ( ! current_user_can( 'manage_options' ) ) {
                     }
                 ?>
             </select>
+            <?php if(empty($subscribers_lists['buyers'])): ?>
+                <span class="dplrwoo-warning"><?php _e('Currently there is no Contacts list selected. Press synchronize to create and syncrhonize default Contacts List.',  'doppler-for-woocommerce') ?></span>
+            <?php endif; ?>
         </p>  
         
         <p class="d-flex justify-end">
@@ -121,5 +127,12 @@ if ( ! current_user_can( 'manage_options' ) ) {
         </p>
 
     </form>
+
+    <?php 
+    $display_status = get_option('dplrwoo_api_connected');
+    if(!empty($display_status)){
+        echo '<p><small>Connected account: '.$display_status['account'].'</small></p>';
+    }
+    ?>
                
 </div>

@@ -70,13 +70,7 @@ class Doppler_For_Woocommerce_Public {
 	 */
 	public function enqueue_scripts() {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/doppler-for-woocommerce-public.js', array( 'jquery' ), $this->version, false );
-	}
-
-	public function add_tracking_script() {
-		$script = get_option('dplr_hub_script');
-		if(!empty($script)){
-			echo stripslashes(html_entity_decode($script));
-		}
+		wp_localize_script( $this->plugin_name, 'dplrWooAjaxObj', array( 'ajaxurl' => admin_url( 'admin-ajax.php' )));
 	}
 
 }

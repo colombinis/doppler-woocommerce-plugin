@@ -38,7 +38,6 @@
     <h2 class="nav-tab-wrapper">
         <a href="?page=doppler_woocommerce_menu&tab=lists" class="nav-tab <?php echo $active_tab == 'lists' ? 'nav-tab-active' : ''; ?>"><?php _e('Lists to synchronize', 'doppler-for-woocommerce')?></a>
         <a href="?page=doppler_woocommerce_menu&tab=fields" class="nav-tab <?php echo $active_tab == 'fields' ? 'nav-tab-active' : ''; ?>"><?php _e('Fields Mapping', 'doppler-for-woocommerce')?></a>
-        <a href="?page=doppler_woocommerce_menu&tab=hub" class="nav-tab <?php echo $active_tab == 'hub' ? 'nav-tab-active' : ''; ?>"><?php _e('On-Site Tracking', 'doppler-for-woocommerce')?></a>
     </h2>
 
     <h1 class="screen-reader-text"></h1>
@@ -58,21 +57,6 @@
             $dplr_fields = isset($dplr_fields->items) ? $dplr_fields->items : [];
             $maps = get_option('dplrwoo_mapping');
             require_once('mapping.php');
-        break;
-
-        case 'hub':
-            if(isset($_POST['dplr_hub_script'])):
-                if( current_user_can('manage_options') && check_admin_referer('use-hub') ){
-                    if( $_POST['dplr_hub_script'] === '' || $this->validate_tracking_code($_POST['dplr_hub_script'])):
-                        update_option( 'dplr_hub_script', $this->sanitize_tracking_code($_POST['dplr_hub_script']));
-                        $this->set_success_message(__('On Site Tracking code saved successfully', 'doppler-for-woocommerce'));
-                    else:
-                        $this->set_error_message(__('Tracking code is invalid', 'doppler-for-woocommerce'));
-                    endif;
-                }
-            endif;
-            $dplr_hub_script = get_option('dplr_hub_script');
-            require_once('hub.php');
         break;
 
         default:

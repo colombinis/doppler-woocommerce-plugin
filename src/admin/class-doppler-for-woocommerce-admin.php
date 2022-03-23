@@ -44,8 +44,6 @@ class Doppler_For_Woocommerce_Admin {
 
 	private $doppler_service;
 
-	private $connectionStatus;
-
 	private $admin_notice;
 
 	private $success_message;
@@ -74,6 +72,8 @@ class Doppler_For_Woocommerce_Admin {
 		$this->required_doppler_version = '2.1.5';
 		$this->origin = $this->set_origin();
 		$this->set_credentials();
+		$this->check_current_account();
+		$this->update_database();
 	}
 
 	/**
@@ -102,12 +102,12 @@ class Doppler_For_Woocommerce_Admin {
 		return $this->success_message;
 	}
 
-	public function get_required_doppler_version(){
+	public function get_required_doppler_version() {
 		return $this->required_doppler_version;
 	}
 
-	public function set_origin(){
-		$this->doppler_service->set_origin('WooCommerce');
+	public function set_origin() {
+		$this->doppler_service->set_origin(DOPPLER_FOR_WOOCOMMERCE_ORIGIN);
 	}
 
 	public function display_error_message() {
@@ -186,7 +186,7 @@ class Doppler_For_Woocommerce_Admin {
 		}
 	}
 
-	private function deactivate(){
+	private function deactivate() {
 		deactivate_plugins( DOPPLER_FOR_WOOCOMMERCE_PLUGIN ); 
 		if ( isset( $_GET['activate'] ) ) {
 			unset( $_GET['activate'] );
@@ -205,17 +205,52 @@ class Doppler_For_Woocommerce_Admin {
 	 * Set the credentials to doppler service
 	 * before running api calls.
 	 */
-	private function set_credentials(){
+	private function set_credentials() {
 		$options = get_option('dplr_settings');
-		if ( empty($options) ) {
-			return;
-		}
+		if( empty($options['dplr_option_apikey']) || empty($options['dplr_option_useraccount']) )  return;
 		$this->doppler_service->setCredentials(array(	
 			'api_key' => $options['dplr_option_apikey'], 
 			'user_account' => $options['dplr_option_useraccount'])
 		);
 	}
 
+	/**
+	 * Check if connected Doppler account
+	 * matches the account used to integrate with
+	 * the App.
+	 * If not, create keys and activate integration.
+	 * 
+	 * @since 1.0.2
+	 */
+	private function check_current_account() {
+		if(is_admin()){
+			$options = get_option('dplr_settings');
+			if( empty($options['dplr_option_apikey']) || empty($options['dplr_option_useraccount']) )  return;
+			//If status is empty, api is not connected.
+			$status = get_option('dplrwoo_api_connected');
+			if( !empty($status) && !empty($options) && 
+				($options['dplr_option_useraccount'] != $status['account']) )
+				{
+					$dplr_app_connect = new Doppler_For_WooCommerce_App_Connect(
+						$options['dplr_option_useraccount'],
+						$options['dplr_option_apikey'],
+						DOPPLER_WOO_API_URL,
+						DOPPLER_FOR_WOOCOMMERCE_ORIGIN
+					);
+					//delete previous keys.
+					$dplr_app_connect->disconnect();
+					//generate new keys, associates it in Doppler with request account.
+					$connect_response = $dplr_app_connect->connect();
+					if($connect_response['response']['code'] === 200){
+						//save flag with current account.
+						update_option('dplrwoo_api_connected', array(
+							'account' => $options['dplr_option_useraccount'],
+							'status' => 'on'
+						));
+					}
+				}
+		}
+	}
 
 	/**
 	 * Registers the admin menu
@@ -242,10 +277,13 @@ class Doppler_For_Woocommerce_Admin {
 
 	/**
 	 * Display the Fields Mapping screen
+	 * deprecated
 	 */
+	/*
 	public function dplrwoo_mapping_page() {
 		$fields = $this->get_checkout_fields();
 	}
+	*/
 
 	/**
 	 * Sanitizes & validate before saving new Doppler List.
@@ -255,6 +293,16 @@ class Doppler_For_Woocommerce_Admin {
 			echo $this->create_list(sanitize_text_field($_POST['listName']));
 		}
 		wp_die();
+	}
+
+	/*
+	* Validate date formats
+	*/
+	function validateDate($date, $format = 'Y-m-d H:i:s') {
+		// Create the format date
+		$d = DateTime::createFromFormat($format, $date);
+		// Return the comparison    
+		return $d && $d->format($format) === $date;
 	}
 
 	/**
@@ -271,6 +319,7 @@ class Doppler_For_Woocommerce_Admin {
 	 * by a given name.
 	 */
 	private function find_list_by_name($list_name, $lists) {
+		if(empty($lists)) return false;
 		$resp = array_filter($lists, function($var) use($list_name){
 			return $var['name'] == $list_name;
 		});
@@ -376,10 +425,11 @@ class Doppler_For_Woocommerce_Admin {
 	 * Get lists
 	 */
 	public function get_alpha_lists() {
+		$dplr_lists_arr = array();
 		$list_resource = $this->doppler_service->getResource('lists');
 		$this->set_origin();
 		$dplr_lists = $list_resource->getAllLists();
-		if(is_array($dplr_lists)){
+		if(is_array($dplr_lists) && !empty($dplr_lists)){
 			foreach($dplr_lists as $k=>$v){
 			  if(is_array($v)):
 				foreach($v as $i=>$j){
@@ -418,7 +468,7 @@ class Doppler_For_Woocommerce_Admin {
 	 * Subscribe customer after registering
 	 * from my-account.
 	 */
-	public function dprwoo_after_register( $user_id ){
+	public function dprwoo_after_register( $user_id ) {
 		$list_id = get_option('dplr_subscribers_list')['contacts'];
 		$user_info = get_userdata($user_id);
 		if(empty($list_id) || empty($user_id) || empty($user_info->user_email)) return false;
@@ -485,7 +535,7 @@ class Doppler_For_Woocommerce_Admin {
 	/**
 	 * Get Doppler mapped fields from WC user fields
 	 */
-	function extract_meta_from_user( $fields_map, $meta_fields ){
+	function extract_meta_from_user( $fields_map, $meta_fields ) {
 		$fields = array();
 		if(!empty($fields_map)){
 			foreach($fields_map as $k=>$v){
@@ -507,9 +557,10 @@ class Doppler_For_Woocommerce_Admin {
 	 * Synch trhough ajax.
 	 */
 	public function dplrwoo_ajax_synch() {
-		if( empty($_POST['list_id']) || empty($_POST['list_type']) ) return false;
-		echo $this->dplrwoo_synch( $_POST['list_id'], $_POST['list_type']);
+		if( empty($_POST['buyers_list']) || empty($_POST['contacts_list']) ) return false;
+		echo $this->dplrwoo_synch( $_POST['buyers_list'], $_POST['contacts_list']);
 	}
+
 
 	/**
 	 * Syncrhonizes "Contacts" or "Buyers"
@@ -519,7 +570,10 @@ class Doppler_For_Woocommerce_Admin {
 	 * Buyers are users who has orders that
 	 * have been completed.
 	 * 
+	 * DEPRECATED old method.
+	 * 
 	 */
+	/*
 	public function dplrwoo_synch( $list_id , $list_type) {
 
 		$orders_by_email = array();
@@ -567,12 +621,184 @@ class Doppler_For_Woocommerce_Admin {
 		return $subscriber_resource->importSubscribers($list_id, $subscribers)['body'];
 		wp_die();
 
+	}*/
+
+	public function dplrwoo_synch( $buyers_list , $contacts_list) {
+
+		//Save chosen lists
+		update_option('dplr_subscribers_list', 
+			array('buyers'=>$buyers_list, 'contacts'=>$contacts_list));
+
+		wp_die();
+
+	}
+
+	/**
+	 * Goes through complete orders
+	 * and upload emails to Buyers list
+	 */
+	private function dplrwoo_synch_buyers_cron(){
+		global $wpdb;
+		$log = '';
+		//Get list.
+		$list_id = get_option('dplr_subscribers_list')['buyers'];
+		if(empty($list_id)) return false;
+
+		$last_id = 0;
+		$condition = '';
+		
+		$fields_map = get_option('dplrwoo_mapping');
+		
+		//Get last synch info.
+		$last_synch = get_option('dplrwoo_last_synch');
+		
+		//Synch!
+		// if(!empty($last_synch) && isset($last_synch['buyers'][$list_id])){
+		// 	//synch orders from the beginning
+		// 	$condition.=" AND id > ".$last_synch['buyers'][$list_id]." ";
+		// }
+
+		//get registered users
+		$registered_users = $this->get_registered_users();
+		
+		//get completed orders
+		$query = "SELECT p.ID, pm.meta_value as email FROM ".$wpdb->prefix."posts p ";
+		$query.= "JOIN ".$wpdb->prefix."postmeta pm ON p.ID = pm.post_id ";
+		$query.= "WHERE post_type = 'shop_order' AND p.post_status='wc-completed' AND pm.meta_key = '_billing_email' AND pm.meta_value != '' ";
+		$query.= $condition;
+		$query.= "ORDER BY p.ID ASC LIMIT 200";
+		$response = $wpdb->get_results($query);
+
+		if(!empty($response)){
+			foreach($response as $k=>$v){
+				$order = wc_get_order( $v->ID );
+				$completed_orders_by_email[$v->email] = $this->get_mapped_fields($order);
+				$last_id = $v->ID;
+			}
+		}
+
+		$subscribers['items'] =  array();
+		$subscribers['fields'] =  array();
+
+		if(empty($completed_orders_by_email)){
+			wp_die();
+		};
+
+		foreach($completed_orders_by_email as $email=>$fields){
+			$subscribers['items'][] = array('email'=>$email, 'fields'=>$fields);
+		}
+	
+		$subscriber_resource = $this->doppler_service->getResource( 'subscribers' );
+		$this->set_origin();
+		$response = json_decode($subscriber_resource->importSubscribers($list_id, $subscribers)['body']);
+		if(!empty($response->createdResourceId)){
+			if(!empty($last_id)){
+				$last_synch['buyers'][$list_id] = $last_id;	
+			}
+			update_option('dplrwoo_last_synch', $last_synch);
+		}
+	}
+
+	/**
+	 * Goes through complete orders and users (subscribers + customers)
+	 * and upload emails to Contact list
+	 */
+	public function dplrwoo_synch_contacts_cron(){
+		global $wpdb;
+
+		//Get list.
+		$list_id = get_option('dplr_subscribers_list')['contacts'];
+		if(empty($list_id)) return false;
+
+		$last_user_id = 0;
+		$last_order_id = 0;
+		$condition_users = '';
+		$condition_orders = '';
+		$orders_by_email = array();
+		$registered_users = array();		
+		
+		$fields_map = get_option('dplrwoo_mapping');
+		
+		//Get last synch info.
+		$last_synch = get_option('dplrwoo_last_synch');
+		
+		//Synch!
+		if(!empty($last_synch) && isset($last_synch['contacts'][$list_id])){
+			//synch orders from the beginning
+			$condition_orders.=" AND id > ".$last_synch['contacts'][$list_id]['orders']." ";
+			$condition_users.= " AND id > ".$last_synch['contacts'][$list_id]['users']." ";
+		}
+		
+		//get users
+		$query = "SELECT u.ID, u.user_email FROM ".$wpdb->prefix."users u ";
+		$query.= "JOIN ".$wpdb->prefix."usermeta um ON u.ID = um.user_id WHERE um.meta_key = 'wp_capabilities' ";
+		$query.= $condition_users;
+		$query.= "AND ( um.meta_value LIKE '%customer%' OR um.meta_value LIKE '%subscriber%' ) ";
+		$query.= "ORDER BY u.ID ASC LIMIT 150";
+		$response = $wpdb->get_results($query);
+		if(!empty($response)){
+			foreach($response as $k=>$v){
+				$meta_fields = get_user_meta($v->ID);
+				$fields = $this->extract_meta_from_user($fields_map, $meta_fields);
+				if(isset($meta_fields['billing_email']) && !empty($meta_fields['billing_email'])){
+					$aux = array_values($meta_fields['billing_email']);
+					$email = array_shift($aux);
+					$registered_users[$email] = $fields;
+				}
+				$last_user_id = $v->ID;
+			}
+		}
+
+		//get uncomplete orders
+		$query = "SELECT p.ID, pm.meta_value as email FROM ".$wpdb->prefix."posts p ";
+		$query.= "JOIN ".$wpdb->prefix."postmeta pm ON p.ID = pm.post_id ";
+		$query.= "WHERE post_type = 'shop_order' AND p.post_status!='wc-completed' AND pm.meta_key = '_billing_email' AND pm.meta_value != '' ";
+		$query.= $condition_orders;
+		$query.= "ORDER BY p.ID ASC LIMIT 150";
+		$response = $wpdb->get_results($query);
+		if(!empty($response)){
+			foreach($response as $k=>$v){
+				$order = wc_get_order( $v->ID );
+				$orders_by_email[$v->email] = $this->get_mapped_fields($order);
+				$last_order_id = $v->ID;
+			}
+		}
+
+		$users = array_merge($registered_users,$orders_by_email);
+
+		$subscribers['items'] =  array();
+		$subscribers['fields'] =  array();
+
+		if(empty($users) || empty($list_id)){
+			echo '0';
+			wp_die();
+		};
+
+		foreach($users as $email=>$fields){
+			$subscribers['items'][] = array('email'=>$email, 'fields'=>$fields);
+		}
+	
+		$subscriber_resource = $this->doppler_service->getResource( 'subscribers' );
+		$this->set_origin();
+		$response = json_decode($subscriber_resource->importSubscribers($list_id, $subscribers)['body']);
+		if(!empty($response->createdResourceId)){
+			if(!empty($last_order_id)) $last_synch['contacts'][$list_id]['orders'] = $last_order_id;	
+			if(!empty($last_user_id)) $last_synch['contacts'][$list_id]['users'] = $last_user_id;
+			update_option('dplrwoo_last_synch', $last_synch);
+		}
+
+	}
+
+	//Excecution of sync cron functions for buyers and contacts.
+	public function dplrwoo_synch_cron_func() {
+		$this->dplrwoo_synch_buyers_cron();
+		$this->dplrwoo_synch_contacts_cron();
 	}
 
 	/**
 	 * Clear buyers and contacts List.
 	 */
-	public function dplrwoo_clear_lists(){
+	public function dplrwoo_clear_lists() {
 		update_option( 'dplr_subscribers_list', array('buyers','') );
 		update_option( 'dplr_subscribers_list', array('contacts','') );
 		echo '1';
@@ -606,25 +832,13 @@ class Doppler_For_Woocommerce_Admin {
 	}
 	
 	/**
-	 * Validates on site tracking code.
-	 */
-	public function validate_tracking_code($code) {
-		return preg_match("/(<|%3C)script[\s\S]*?(>|%3E)[\s\S]*?(<|%3C)(\/|%2F)script[\s\S]*?(>|%3E)/", $code);
-	}
-	
-	/**
-	 * Sanitize on site tracking pasted code.
-	 */
-	public function sanitize_tracking_code($code) {
-		//Is valid to save empty value in this case.
-		if($code === '') return $code;
-		return sanitize_text_field(htmlentities(trim($code)));
-	}
-
-	/**
 	 * If want to show an admin message, 
 	 * set $this->admin_notice = array( $class, $text), 
 	 * where class is success, warning, etc.
+	 * 
+	 * Also, will show messages from 
+	 * Doppler_For_WooCommerce_Admin_Notice class, that
+	 * persists through page redirects.
 	 */
 	public function show_admin_notice() {
 		$class = $this->admin_notice[0];
@@ -636,6 +850,7 @@ class Doppler_For_Woocommerce_Admin {
 				</div>
 			<?php
 		}
+		Doppler_For_WooCommerce_Admin_Notice::display_admin_notice();
 	}
 	
 	/**
@@ -735,8 +950,198 @@ class Doppler_For_Woocommerce_Admin {
 	 * Check if list id exists in an array of lists.
 	 * Lists must have list_id as key
 	 */
-	private function list_exists( $list_id, $lists){
+	private function list_exists( $list_id, $lists) {
 		return in_array($list_id, array_keys($lists));
 	}
 
+	/**
+	 * Check if a key is saved (already connected) when synching. 
+	 * If not, generate a WC API KEY
+	 * submit to App, wait for response, and save flag.
+	 * 
+	 * @return object
+	 */
+	public function dplrwoo_verify_keys() {
+		if(!empty(get_option('dplrwoo_api_connected'))){
+			wp_send_json_success();
+		}else{
+			$options = get_option('dplr_settings');
+		    if( !empty($options['dplr_option_useraccount']) &&  !empty($options['dplr_option_apikey'] )){
+				
+				$app_connect = new Doppler_For_WooCommerce_App_Connect(
+					$options['dplr_option_useraccount'],
+					$options['dplr_option_apikey'], 
+					DOPPLER_WOO_API_URL,
+					DOPPLER_FOR_WOOCOMMERCE_ORIGIN
+				);
+
+				$response = $app_connect->connect();
+				if($response['response']['code'] === 200){
+					update_option('dplrwoo_api_connected', array(
+						'account' => $options['dplr_option_useraccount'],
+						'status' => 'on'
+					));
+					wp_send_json_success();
+				}
+			}		
+		}
+		wp_send_json_error();
+	}
+
+	/**
+	 * Define custom API endpoint
+	 */
+	public function dplrwoo_abandoned_endpoint( $controllers ) {
+		//Register abadoned cart endpoint.
+		register_rest_route( 'wc/v3', 'abandoned-carts', array(
+			'methods' => 'GET',
+			'callback' => array($this, 'get_abandoned_carts')
+		));
+		//Register product views endpoint.
+		register_rest_route( 'wc/v3', 'viewed-products', array(
+			'methods' => 'GET',
+			'callback' => array($this, 'get_viewed_products')
+		));
+	}
+
+	/**
+	 * Get abandoned carts.
+	 */
+
+	function fix_get_user_data_by_consumer_key( $consumer_key ) {
+		return hash_hmac( 'sha256', sanitize_text_field( $consumer_key ), 'wc-api' );
+    }
+
+	function get_abandoned_carts() {
+		global $wpdb;
+		$result = $wpdb->get_row("SELECT consumer_secret, consumer_key FROM {$wpdb->prefix}woocommerce_api_keys WHERE description = 'Doppler App integration'");
+		$temporal = $this->fix_get_user_data_by_consumer_key($_REQUEST['oauth_consumer_key']);
+		if( 
+			($temporal == $result->consumer_key) ||
+			(
+				(
+					!empty($result->consumer_secret) && 
+					!empty($_SERVER['PHP_AUTH_PW']) && 
+					($_SERVER['PHP_AUTH_PW'] === $result->consumer_secret)
+				) || 
+				substr(PHP_SAPI, 0, 3) == 'cgi' 
+			)
+		){
+				if(empty($_GET['from']) || empty($_GET['to'])){
+					return array("code"=>"woocommerce_rest_wrong_parameter_count","message"=>"Wrong parameter count","data"=>array("status"=>400));
+				}
+				if(!$this->validateDate($_GET['from']) || !$this->validateDate($_GET['to'])){
+					return array("code"=>"woocommerce_rest_wrong_parameter_count","message"=>"Invalid parameter","data"=>array("status"=>400));
+				}
+				return $wpdb->get_results( $wpdb->prepare("SELECT id, name, lastname, email, phone, location, cart_contents, cart_total,
+				currency, time, session_id, other_fields, cart_url, restored 
+				FROM ". $wpdb->prefix . DOPPLER_ABANDONED_CART_TABLE . 
+				" WHERE time BETWEEN '%s' AND '%s' ", $_GET['from'], $_GET['to']));
+		}else{
+			return array("code"=>"woocommerce_rest_cannot_view","message"=>"forbidden","data"=>array("status"=>401));
+		}
+	}
+
+	/**
+	 * Get viewed products.
+	 */
+	function get_viewed_products() {
+		global $wpdb;
+		$result = $wpdb->get_row("SELECT consumer_secret, consumer_key FROM {$wpdb->prefix}woocommerce_api_keys WHERE description = 'Doppler App integration'");
+		$temporal = $this->fix_get_user_data_by_consumer_key($_REQUEST['oauth_consumer_key']);
+		if(
+		    ($temporal == $result->consumer_key) ||
+			(
+				(
+					!empty($result->consumer_secret) && 
+					!empty($_SERVER['PHP_AUTH_PW']) && 
+					($_SERVER['PHP_AUTH_PW'] === $result->consumer_secret)
+				) || 
+				substr(PHP_SAPI, 0, 3) == 'cgi' 
+			)
+		){
+				if(empty($_GET['from']) || empty($_GET['to'])){
+					return array("code"=>"woocommerce_rest_wrong_parameter_count","message"=>"Wrong parameter count","data"=>array("status"=>400));
+				}
+				if(!$this->validateDate($_GET['from']) || !$this->validateDate($_GET['to'])){
+					return array("code"=>"woocommerce_rest_wrong_parameter_count","message"=>"Invalid parameter","data"=>array("status"=>400));
+				}
+				return $wpdb->get_results( $wpdb->prepare(
+					"SELECT id, user_id, user_name, user_lastname, user_email, product_id, product_name, 
+					product_slug, product_link, product_price, product_regular_price, product_description, currency, visited_time, product_image
+					FROM ". $wpdb->prefix . DOPPLER_VISITED_PRODUCTS_TABLE .
+					" WHERE visited_time BETWEEN '%s' AND '%s' ", $_GET['from'], $_GET['to']));
+		}else{
+			return array("code"=>"woocommerce_rest_cannot_view","message"=>"forbidden","data"=>array("status"=>401));
+		}
+	}
+
+	/**
+	 * Delete old abandoned carts registers. (older than 1 day).
+	 */
+	function dplrwoo_delete_carts() {
+		global $wpdb;
+		$result = $wpdb->query("DELETE FROM {$wpdb->prefix}dplrwoo_abandoned_cart 
+			WHERE time < NOW() - INTERVAL 7 DAY " );
+	}
+
+	/**
+	 * Delete old product views. (older than 7 days).
+	 */
+	function dplrwoo_delete_product_views() {
+		global $wpdb;
+		$result = $wpdb->query("DELETE FROM {$wpdb->prefix}dplrwoo_visited_products 
+			WHERE visited_time < NOW() - INTERVAL 7 DAY " );
+	}
+
+	/**
+	 * Check database version, update if necessary.
+	 * This is done to update db older than version 1.0.2
+	 */
+	private function update_database() {
+		global $wpdb;
+		$options = get_option('dplr_settings');
+
+		$abandoned_table_name = $wpdb->prefix . 'dplrwoo_abandoned_cart';
+		$visited_table_name = $wpdb->prefix . 'dplrwoo_visited_products';
+		if(
+			!($wpdb->get_var("SHOW TABLES LIKE '$visited_table_name'") == $visited_table_name) || 
+			!($wpdb->get_var("SHOW TABLES LIKE '$abandoned_table_name'") == $abandoned_table_name)){
+			require_once DOPPLER_FOR_WOOCOMMERCE_PLUGIN_DIR_PATH . 'includes/class-doppler-for-woocommerce-activator.php';
+			Doppler_For_Woocommerce_Activator::activate();
+		}
+		//Connect if version es < 1.1.0 and connect flag is false.
+		$current_version =  get_option('dplrwoo_version');
+		if( version_compare($current_version, '1.1.0', '<') ){
+			if( empty(get_option('dplrwoo_api_connected'))	&&
+			!empty($options['dplr_option_useraccount']) && 
+			!empty($options['dplr_option_apikey']) ){
+				$DopplerAppConnect = new Doppler_For_WooCommerce_App_Connect(
+					$options['dplr_option_useraccount'], $options['dplr_option_apikey'],
+					DOPPLER_WOO_API_URL, DOPPLER_FOR_WOOCOMMERCE_ORIGIN
+				);
+				$response = $DopplerAppConnect->connect();
+				if($response['response']['code']==200){
+					//save flag with current account.
+					update_option('dplrwoo_api_connected', array(
+						'account' => $options['dplr_option_useraccount'],
+						'status' => 'on'
+					));
+				}
+			}
+			update_option('dplrwoo_version', DOPPLER_FOR_WOOCOMMERCE_VERSION);
+		}
+	}
+
+	/**
+	 * Display confirm window for deactivation
+	 */
+	public function display_deactivation_confirm_html() {
+		?>
+		<div id="dplrwoo-dialog" title="<?php _e("Doppler for WooCommerce", "doppler-for-woocommerce")?>">
+			<p><span class="dashicons dashicons-warning" style="float:left; margin:12px 12px 20px 0;"></span>
+			<?php _e("By confirming this action some automations in your Doppler Woocommerce activation can be lost. <br> ¿Do yo wish to continue? ", "doppler-for-woocommerce")?></p>
+		</div>
+		<?php
+	}
 }
