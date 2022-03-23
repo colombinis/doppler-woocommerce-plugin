@@ -653,10 +653,10 @@ class Doppler_For_Woocommerce_Admin {
 		$last_synch = get_option('dplrwoo_last_synch');
 		
 		//Synch!
-		// if(!empty($last_synch) && isset($last_synch['buyers'][$list_id])){
-		// 	//synch orders from the beginning
-		// 	$condition.=" AND id > ".$last_synch['buyers'][$list_id]." ";
-		// }
+		if(!empty($last_synch) && isset($last_synch['buyers'][$list_id])){
+			//synch orders from the beginning
+			$condition.=" AND id > ".$last_synch['buyers'][$list_id]." ";
+		}
 
 		//get registered users
 		$registered_users = $this->get_registered_users();

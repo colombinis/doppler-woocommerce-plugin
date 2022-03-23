@@ -314,7 +314,7 @@ class Doppler_For_Woocommerce {
 				wp_schedule_event( time(), 'daily', 'dplrwoo_cron_clean_views' );  
 			}
 			if( !wp_next_scheduled( 'dplrwoo_synch_cron' ) ) {  
-				wp_schedule_event( time(), '30-seconds', 'dplrwoo_synch_cron' );  
+				wp_schedule_event( time(), '2min', 'dplrwoo_synch_cron' );  
 			}
 		});
 	}
