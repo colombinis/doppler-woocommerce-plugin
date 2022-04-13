@@ -1012,12 +1012,30 @@ class Doppler_For_Woocommerce_Admin {
 		return hash_hmac( 'sha256', sanitize_text_field( $consumer_key ), 'wc-api' );
     }
 
+	function validateKeys($result){
+		// tengo q matchear de alguna manera lo q viene de
+		// request con lo que viene de la DB.
+		if(stripos($_REQUEST['consumer_key'], '_')){
+			$request_ck = substr($_REQUEST['consumer_key'], stripos($_REQUEST['consumer_key'], '_') + 1);
+		}
+		else{
+			$request_ck = $_REQUEST['consumer_key'];
+		}
+
+		if( $request_ck == $result->consumer_key ) {
+			return true;
+		}
+		return false;
+	}
+
 	function get_abandoned_carts() {
 		global $wpdb;
 		$result = $wpdb->get_row("SELECT consumer_secret, consumer_key FROM {$wpdb->prefix}woocommerce_api_keys WHERE description = 'Doppler App integration'");
-		$temporal = $this->fix_get_user_data_by_consumer_key($_REQUEST['oauth_consumer_key']);
+		$temporal = $this->fix_get_user_data_by_consumer_key($_REQUEST['consumer_key']);
+		$new_verification = $this->validateKeys($result);
 		if( 
-			($temporal == $result->consumer_key) ||
+			( $temporal == $result->consumer_key ) ||
+			( $new_verification ) ||
 			(
 				(
 					!empty($result->consumer_secret) && 
@@ -1027,16 +1045,16 @@ class Doppler_For_Woocommerce_Admin {
 				substr(PHP_SAPI, 0, 3) == 'cgi' 
 			)
 		){
-				if(empty($_GET['from']) || empty($_GET['to'])){
-					return array("code"=>"woocommerce_rest_wrong_parameter_count","message"=>"Wrong parameter count","data"=>array("status"=>400));
-				}
-				if(!$this->validateDate($_GET['from']) || !$this->validateDate($_GET['to'])){
-					return array("code"=>"woocommerce_rest_wrong_parameter_count","message"=>"Invalid parameter","data"=>array("status"=>400));
-				}
-				return $wpdb->get_results( $wpdb->prepare("SELECT id, name, lastname, email, phone, location, cart_contents, cart_total,
-				currency, time, session_id, other_fields, cart_url, restored 
-				FROM ". $wpdb->prefix . DOPPLER_ABANDONED_CART_TABLE . 
-				" WHERE time BETWEEN '%s' AND '%s' ", $_GET['from'], $_GET['to']));
+			if(empty($_GET['from']) || empty($_GET['to'])){
+				return array("code"=>"woocommerce_rest_wrong_parameter_count","message"=>"Wrong parameter count","data"=>array("status"=>400));
+			}
+			if(!$this->validateDate($_GET['from']) || !$this->validateDate($_GET['to'])){
+				return array("code"=>"woocommerce_rest_wrong_parameter_count","message"=>"Invalid parameter","data"=>array("status"=>400));
+			}
+			return $wpdb->get_results( $wpdb->prepare("SELECT id, name, lastname, email, phone, location, cart_contents, cart_total,
+			currency, time, session_id, other_fields, cart_url, restored 
+			FROM ". $wpdb->prefix . DOPPLER_ABANDONED_CART_TABLE . 
+			" WHERE time BETWEEN '%s' AND '%s' ", $_GET['from'], $_GET['to']));
 		}else{
 			return array("code"=>"woocommerce_rest_cannot_view","message"=>"forbidden","data"=>array("status"=>401));
 		}
