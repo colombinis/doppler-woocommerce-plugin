@@ -1013,8 +1013,6 @@ class Doppler_For_Woocommerce_Admin {
     }
 
 	function validateKeys($result){
-		// tengo q matchear de alguna manera lo q viene de
-		// request con lo que viene de la DB.
 		if(stripos($_REQUEST['consumer_key'], '_')){
 			$request_ck = substr($_REQUEST['consumer_key'], stripos($_REQUEST['consumer_key'], '_') + 1);
 		}
