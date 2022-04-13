@@ -1030,7 +1030,7 @@ class Doppler_For_Woocommerce_Admin {
 		global $wpdb;
 		$result = $wpdb->get_row("SELECT consumer_secret, consumer_key FROM {$wpdb->prefix}woocommerce_api_keys WHERE description = 'Doppler App integration'");
 		$temporal = $this->fix_get_user_data_by_consumer_key($_REQUEST['consumer_key']);
-		$new_verification = $this->validateKeys($result);
+		$new_verification = $this->validateKeys($result); 
 		if( 
 			( $temporal == $result->consumer_key ) ||
 			( $new_verification ) ||
